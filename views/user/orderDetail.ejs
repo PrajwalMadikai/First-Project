@@ -1,0 +1,197 @@
+<%- include("../partials/homeHeader") %>
+<%- include("../partials/mainHeader") %>
+
+<style>
+    .order-status {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+  }
+  .order-status .step {
+    text-align: center;
+    flex: 1;
+  }
+  .step .icon {
+    width: 30px;
+    height: 30px;
+    background-color: #6c63ff;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .step p {
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  .order-item img {
+    max-width: 100px;
+    margin-right: 15px;
+  }
+  .order-item {
+    display: flex;
+    align-items: center;
+  }
+  .order-summary {
+    border-left: 1px solid #ddd;
+    padding-left: 20px;
+  }
+  .card-equal {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .equal-height-row {
+    display: flex;
+    align-items: stretch;
+  }
+  .textColor{
+    color: black;
+  }
+</style>
+
+<body>
+  <div class="container mt-4">
+    <div class="text-center mb-4">
+      <button class="btn btn-secondary">Invoice Download</button>
+    </div>
+
+    <!-- Display delivery address -->
+    <div class="card pl-4 pt-4 mb-4">
+      <h5>Delivered Address</h5>
+      <p class="mb-0"><%= order.address[0].house %></p>
+      <p class="mb-0"><%= order.address[0].city %></p>
+      <p class="mb-0"><%= order.address[0].district %></p>
+      <p class="mb-0"><%= order.address[0].state %> - <%=  order.address[0].pin %></p>
+      <p class="mb-2"><%= order.address[0].phone %></p>
+    </div>
+ 
+
+    <!-- Display product and order summary in two equal-height columns -->
+    <div class="row mb-4 equal-height-row">
+      <div class="col-md-8 d-flex">
+        <!-- Display products in the order -->
+        <div class="card p-4 card-equal w-100">
+          <div class="order-item d-flex">
+            <div>
+              <img src="/public/product_img/<%= product.image %>" alt="<%= product.name %>">
+            </div>
+            <div class="ml-3">
+              <p class="textColor"><strong><%= product.name %></strong></p>
+              <p class="textColor">Quantity: <%= product.quantity %></p>
+              <p class="textColor">Price: ₹<%= product.price %></p>
+            </div>
+            <!-- Center the order status in the right space -->
+            <div class="ml-auto d-flex align-items-center">
+              <div class="text-center">
+                <% if(product.status=='Cancelled'){ %>
+                <p class="badge  p-2" style="color: red ; font-size: medium;"><%= product.status %></p>
+                <% }else if(product.status=='Delivered'){ %>
+                <p class="badge  p-2" style="color: green; font-size: medium;"><%= product.status %></p>  
+                <% }else if(product.status=='Requested') {%>
+                <p class="badge  p-2" style="color: rgb(255, 0, 0); font-size: medium;"><%= product.status %></p>  
+                 <% } %> 
+              </div>
+
+              <div class="text-center d-flex justify-content-start align-items-center mb-3">
+                <% if(product.status=='Delivered'){ %>
+              <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#returnModal">Return</button>
+                <% }else if(product.status=='Pending'){ %>
+                  <form action="/cancelOrder/<%=product._id %>" method="POST">
+                  <button class="btn btn-danger" type="submit">Cancel</button>
+                </form>
+                <% } %> 
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <!-- Order summary details on the right -->
+      <div class="col-md-4 d-flex">
+        <div class="card p-4 card-equal w-100 order-summary">
+          <h5>Order Summary</h5>
+          <p class="textColor" style="font-weight: 800;">
+            Applied Coupon: <%= order.coupon_name  %><br>
+            Delivery Charge: Free<br>
+            Total Amount: ₹<%= order.totalAmount %><br>
+            <% if( order.paymentOption=="cod" ){ %>
+            Payment Method: Cash On Delivery<br>
+            <% }else if(order.paymentOption=='razor'){ %>
+              Payment Method: Razorpay<br>
+              <% }else{ %>
+                Payment Method: Wallet<br>
+                <% } %>
+          </p>
+        </div>
+      </div>
+    </div>
+    
+
+  </div>
+
+  <!-- Return Modal -->
+<!-- Return Modal -->
+<div class="modal fade" id="returnModal" tabindex="-1" aria-labelledby="returnModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="returnModalLabel">Return Product</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="/return/<%=product._id %>" method="POST">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="returnReason" class="form-label">Reason</label>
+            <textarea id="reason" name="returnReason" rows="5" cols="40" class="form-control" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" >Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+document.getElementById('returnForm').addEventListener('submit', async function(event) {
+    event.preventDefault(); // Prevent the form from submitting the traditional way
+    
+    let reason = document.getElementById('reason').value;
+    let productId = '<%= product._id %>'; // Get the product ID from your template (EJS)
+
+    try {
+        let response = await fetch(`/return/${productId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ returnReason: reason }) // Send the reason in the body
+        });
+
+        if (response.ok) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Your return request has been submitted.',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = '/orders'; // Redirect after showing success
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Something went wrong!',
+                confirmButtonText: 'OK'
+            });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Network error or request failed.',
+            confirmButtonText: 'OK'
+        });
+    }
+});
+
+</script>
+<%- include("../partials/homeFooter") %>

@@ -1,0 +1,242 @@
+.logImg{
+    background-image: url('/images/k.jpg');
+}
+.btnYellow{
+    background-color: #EBD96B;
+    color: white;
+    font-weight: bold;
+}
+
+.custom-btn {
+    background-color: orange; /* Default background color */
+    border-color: orange;     /* Default border color */
+    color: white;             /* Text color */
+}
+
+.custom-btn:hover {
+    background-color: darkorange; /* Background color on hover */
+    border-color: darkorange;     /* Border color on hover */
+    color: white;                 /* Text color on hover */
+}
+.trendView{
+    font-size: 25px;
+    font-family: "Cabin", sans-serif;
+}
+/* .maincolor{
+    
+} */
+
+.homeImage{
+    background-image: url('../images/k.jpg');
+}
+#main-price{
+    font-weight: 700;
+
+}
+#old-price{
+    color: gray;
+    font-weight: 700;
+    font-size: 14px;
+}
+.product-name{
+    
+    font-size: 20px;
+    color: black;
+}
+.product-card .position-relative {
+    position: relative;
+    overflow: hidden;
+}
+
+.product-card .add-to-cart {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.product-card:hover .add-to-cart {
+    opacity: 1;
+}
+.heart{
+    position: relative;
+    top: -60px;
+    left: -30px;
+}
+.brands-area{
+     
+    width: 100%;
+    height: 120px;
+}
+#buy{
+    width: 130px;
+    height: 47px;
+    font-weight: 800;
+    font-size: 13px;
+    padding-left: 5px;
+    padding-right: 5px;
+    background-color: #EBD96B;
+    border-radius: 50px;
+}
+#buy:hover{
+    color: white;
+}
+#addtocart:hover{
+    color: white;
+}
+#addtocart{
+    width: 160px;
+    height: 47px;
+    font-weight: 800;
+    font-size: 13px;
+    padding-left: 10px;
+    padding-right: 15px;
+    background-color: #EBD96B;
+    border-radius: 50px;
+}
+.textF{
+    color: black;
+}
+.searchBtn{
+    width: 150px;
+    background-color:black;
+}
+.sorting-section {
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+  }
+  
+  .sort-option {
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin: 5px 0;
+    cursor: pointer;
+    background-color: white;
+    transition: background-color 0.3s;
+  }
+  
+  .sort-option:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .sort-option.selected {
+    background-color: #007bff;
+    color: white;
+  }
+  .bread{
+    background-color:#ccc;
+  }
+  #sorting-options {
+    padding: 10px;
+    width: 200px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  .d-none {
+    display: none;
+  }
+  
+  #search-section {
+    margin-top: 10px;
+  }
+  .logIn {
+    width: 70px;
+    height: 30px;
+    margin-top: 35px;
+    border: 1px solid black;
+    margin-bottom: 30px;
+  }
+  .logIn a{
+    color: black;
+    font-size: 15px;
+    text-decoration: none;
+    border: none;
+    padding-left: 15px;
+    padding-top: 30px;
+    font-weight: bold;
+  }
+  
+/* Default styles for the brand boxes */
+.brand-box {
+  width: 100px;
+  height: 40px;
+  background-color: #f8f9fa;
+  color: #000000;
+  border: 1px solid #dee2e6;
+  cursor: pointer;
+  text-align: center;
+  /* padding: 20px; */
+  /* border-radius: 12px; */
+  transition: background-color 0.4s ease, color 0.4s ease, transform 0.3s ease, box-shadow 0.4s ease;
+  font-size: 15px;
+  /* font-weight: bold; */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover effect for the brand boxes */
+.brand-box:hover {
+  background-color: #000000;
+  color: white;
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Active state styles when the box is selected */
+.brand-box.active {
+  background-color: #343a40;
+  color: white;
+  border: 2px solid #343a40;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Smooth hover transition */
+.brand-boxes {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+}
+
+ 
+
+.logos{
+    height: 400px;
+}
+/* Heart  */
+  
+/* Container for the image */
+.image-container {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Default product image */
+.product-image {
+  transition: 0.3s ease;
+}
+
+ 
+/* Eye icon */
+ 
+/* Hover effects */
+.image-container:hover .overlay {
+  opacity: 1;
+}
+
+.image-container:hover .eye-icon {
+  opacity: 1;
+}
+
+.image-container:hover .product-image {
+  transform: scale(1.1); /* Slight zoom effect */
+}
+.related-section{
+  width: 210px;
+  height: 50px;
+}

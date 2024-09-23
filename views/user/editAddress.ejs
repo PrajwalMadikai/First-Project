@@ -1,0 +1,41 @@
+<%- include("../partials/homeHeader") %>
+<%- include("../partials/mainHeader") %>
+ 
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Address</h1>
+            <form action="/editAddress/<%= address._id %>" method="POST">
+                <div class="mb-3">
+                    <label for="name " class="form-label">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" value="<%= address.name %>">
+                </div>
+                <div class="mb-3">
+                    <label for="houseName" class="form-label">House Name</label>
+                    <input type="text" class="form-control" id="houseName " name="houseName" value="<%= address.houseName %>">
+                </div>
+                <div class="mb-3">
+                    <label for="city " class="form-label">City</label>
+                    <input type="text" class="form-control" id="city " name="city" value="<%= address.city %>">
+                </div>
+                <div class="mb-3">
+                    <label for="district " class="form-label">District</label>
+                    <input type="text" class="form-control" id="district " name="district" value="<%= address.district %>">
+                </div>
+                <div class="mb-3">
+                    <label for="state " class="form-label">State</label>
+                    <input type="text" class="form-control" id="state" name="state" value="<%= address.state %>">
+                </div>
+                <div class="mb-3">
+                    <label for="pin" class="form-label">Pin Code</label>
+                    <input type="text" class="form-control" id="pin" name="pinCode" value="<%= address.pin %>">
+                </div>
+                <div class="mb-3">
+                    <label for="phone " class="form-label">Phone</label>
+                    <input type="text" class="form-control" id="phone " name="phone" value="<%= address.phone %>">
+                </div>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </form>
+            <hr>
+    </div>
+<%- include("../partials/homeFooter") %>

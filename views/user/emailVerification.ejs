@@ -1,0 +1,57 @@
+<%- include('../partials/header.ejs') %>
+
+<body>
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+        <div class="card p-4 shadow-lg" style="max-width: 400px; width: 100%;">
+            <div class="card-body text-center">
+                <h3 class="card-title mb-3">OTP Verification</h3>
+                <p class="text-muted mb-4">Please enter the OTP sent to your email</p>
+                <%  if(message.error) {%>
+                    <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center" role="alert">
+                      <div class="flex-grow-1">
+                        <strong><%= message.error %></strong> 
+                      </div>
+                       
+                    </div>
+                    <% } %> 
+
+                <!-- OTP Form -->
+                <form action="/emailcode" method="POST">
+                    <div class="mb-3">
+                        <p class="d-flex justify-content-center">Please enter the four-digit number that has been sent to your email address for email verification</p>
+                        <label for="otp" class="form-label">OTP</label>
+                        <input type="text" class="form-control" id="otp" name="otp" placeholder="Enter OTP" required>
+                    </div>
+                <div class="d-flex justify-content-center text-danger fw-bold pt-1 pb-2">otp expires in: <span id="time">60</span> seconds</div>
+                 <p class="otp-timer text-center" id="otp-timer"></p>
+                    <button type="submit" class="btn btn-primary w-100">Verify OTP</button>
+                </form>
+
+                
+            </div>
+        </div>
+    </div>
+
+    <script>
+    let timeleft = localStorage.getItem('timeleft') ? parseInt(localStorage.getItem('timeleft')) : 60;
+    const timer = setInterval(() => {
+    timeleft--;
+    document.getElementById('time').innerText = timeleft;
+
+    // Store the remaining time in localStorage
+    localStorage.setItem('timeleft', timeleft);
+
+    if (timeleft <= 0) {
+        clearInterval(timer);
+        localStorage.removeItem('timeleft'); // Clear storage when time is up
+        document.getElementById('otp-timer').innerHTML = `Didn’t receive OTP?<button class="btn btn-primary"> <a href='/otp-resent' class='text-danger text-decoration-none'>Resend OTP</a></button>`;
+    }
+}, 1000);
+
+// If the user submits a wrong OTP or refreshes the page, the timer will continue from the last value stored in localStorage
+
+    </script>
+</body>
+
+
+<%- include('../partials/footer.ejs') %>

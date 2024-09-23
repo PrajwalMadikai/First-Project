@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Admin  |  trendView</title>
+  <!-- base:css -->
+  <link rel="stylesheet" href="/vendors/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="/vendors/feather/feather.css">
+  <link rel="stylesheet" href="/vendors/base/vendor.bundle.base.css">
+  <!-- endinject -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="/public/css/admin.css">
+  <!-- endinject -->
+  <link rel="shortcut icon" href="../../images/favicon.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://unpkg.com/cropperjs/dist/cropper.css" />
+
+</head>
+
+<body>
+  <div class="container-scroller">
+    <!-- partial:../../partials/_navbar.html -->
+    <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+      <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+        <a class="navbar-brand brand-logo" href="index.html"><img src="images/logo.svg" alt="logo"/></a>
+        <a class="navbar-brand brand-logo-mini" href="index.html"><img src="images/logo-mini.svg" alt="logo"/></a>
+      </div>
+      <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+        <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+          <span class="icon-menu"></span>
+        </button>
+        <ul class="navbar-nav mr-lg-2">
+          <li class="nav-item nav-search d-none d-lg-block">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="search">
+                  <i class="icon-search"></i>
+                </span>
+              </div>
+              <input type="text" class="form-control" placeholder="Search Projects.." aria-label="search" aria-describedby="search">
+            </div>
+          </li>
+        </ul>
+        <ul class="navbar-nav navbar-nav-right">
+            <li class="nav-item dropdown d-lg-flex d-none">
+                <button type="button" class="btn btn-info font-weight-bold">+ Create New</button>
+            </li>
+          <li class="nav-item dropdown d-flex">
+            <a class="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center" id="messageDropdown" href="#" data-toggle="dropdown">
+              <i class="icon-air-play mx-0"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="messageDropdown">
+              <p class="mb-0 font-weight-normal float-left dropdown-header">Messages</p>
+              <a class="dropdown-item preview-item">
+                <div class="preview-thumbnail">
+                    <img src="images/faces/face4.jpg" alt="image" class="profile-pic">
+                </div>
+                <div class="preview-item-content flex-grow">
+                  <h6 class="preview-subject ellipsis font-weight-normal">David Grey
+                  </h6>
+                  <p class="font-weight-light small-text text-muted mb-0">
+                    The meeting is cancelled
+                  </p>
+                </div>
+              </a>
+              <a class="dropdown-item preview-item">
+                <div class="preview-thumbnail">
+                    <img src="images/faces/face2.jpg" alt="image" class="profile-pic">
+                </div>
+                <div class="preview-item-content flex-grow">
+                  <h6 class="preview-subject ellipsis font-weight-normal">Tim Cook
+                  </h6>
+                  <p class="font-weight-light small-text text-muted mb-0">
+                    New product launch
+                  </p>
+                </div>
+              </a>
+              <a class="dropdown-item preview-item">
+                <div class="preview-thumbnail">
+                    <img src="images/faces/face3.jpg" alt="image" class="profile-pic">
+                </div>
+                <div class="preview-item-content flex-grow">
+                  <h6 class="preview-subject ellipsis font-weight-normal"> Johnson
+                  </h6>
+                  <p class="font-weight-light small-text text-muted mb-0">
+                    Upcoming board meeting
+                  </p>
+                </div>
+              </a>
+            </div>
+          </li>
+          <li class="nav-item dropdown d-flex mr-4 ">
+            <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center" id="notificationDropdown" href="#" data-toggle="dropdown">
+              <i class="icon-cog"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+              <p class="mb-0 font-weight-normal float-left dropdown-header">Settings</p>
+              <a class="dropdown-item preview-item">               
+                  <i class="icon-head"></i> Profile
+              </a>
+              <a class="dropdown-item preview-item">
+                  <i class="icon-inbox"></i> Logout
+              </a>
+            </div>
+          </li>
+          <li class="nav-item dropdown mr-4 d-lg-flex d-none">
+            <a class="nav-link count-indicatord-flex align-item s-center justify-content-center" href="#">
+              <i class="icon-grid"></i>
+            </a>
+          </li>
+        </ul>
+        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+          <span class="icon-menu"></span>
+        </button>
+      </div>
+    </nav>
+    
+
+    
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper mr-5">
+      <!-- partial:../../partials/_sidebar.html -->
+      
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <div class="user-profile">
+          <!-- <div class="user-image">
+            <img src="../../images/faces/face28.png">
+          </div> -->
+          <div class="user-name adminName">
+             Prajwal
+          </div>
+          <div class="user-designation">
+              Admin
+          </div>
+        </div>
+        <ul class="nav a">
+          <li class="nav-item">
+            <a class="nav-link" href="../../index.html">
+              <i class="icon-box menu-icon"></i>
+              <span class="menu-title">Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../../index.html">
+              <i class="fa-solid fa-user mr-4"></i>
+              <span class="menu-title">Users</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../../index.html">
+                <i class="fa-solid fa-cube mr-4"></i>
+              <span class="menu-title">Products</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../../index.html">
+              <i class="fa-regular fa-square-check mr-4"></i>
+              <span class="menu-title">Orders</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../../index.html">
+                <i class="fa-solid fa-shirt mr-4"></i>
+              <span class="menu-title">Categories</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../../index.html">
+                <i class="fa-solid fa-bars mr-4"></i>
+              <span class="menu-title">Brands</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../../index.html">
+                <i class="fa-solid fa-paper-plane mr-4"></i>
+              <span class="menu-title">Promo code</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../../index.html">
+                <i class="fa-solid fa-credit-card mr-4"></i>
+              <span class="menu-title">Payment</span>
+            </a>
+          </li>
+          
+          <li class="nav-item">
+            <a class="nav-link" href="../../index.html">
+                <i class="fa-solid fa-right-from-bracket mr-4"></i>
+              <span class="menu-title">Logout</span>
+            </a>
+          </li>
+          
+        </ul>
+      </nav>
+      
+      <!-- partial -->
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="container mt-5">
+              <h2 class="mb-4">Upload New Product</h2>
+              <form action="/admin/product/edit/<%= product._id %>?_method=PUT" method="POST" enctype="multipart/form-data">
+                <!-- Product Name -->
+                <div class="form-group">
+                  <label for="productName">Product Name</label>
+                  <input type="text" class="form-control" id="productName" value="<%= product.title %>" name="productName" placeholder="Enter product name" required>
+                </div>
+          
+                <!-- Category -->
+                <div class="form-group">
+                  <label for="category">Category</label>
+                  <input type="text" class="form-control" id="category" name="category" value="<%= product.category %>" placeholder="Enter product category" required>
+                </div>
+          
+                <!-- Brand -->
+                <div class="form-group">
+                  <label for="brand">Brand</label>
+                  <input type="text" class="form-control" id="brand" name="brand" value="<%= product.brand %>" placeholder="Enter product brand" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="design">Design</label>
+                  <input type="text" class="form-control" id="design" name="design" value="<%= product.design %>" placeholder="Enter design">
+              </div>
+
+              <div class="form-group">
+                  <label for="fit">Fit</label>
+                  <input type="text" class="form-control" id="fit" name="fit" value="<%= product.fit %>" placeholder="Enter fit">
+              </div>
+               
+              <div class="form-group">
+                  <label for="occassion">Occasion</label>
+                  <input type="text" class="form-control" id="occassion" name="occassion" value="<%= product.occasion %>" placeholder="Enter occasion">
+              </div>
+
+              <div class="form-group">
+                  <label for="material">Material</label>
+                  <input type="text" class="form-control" id="material" name="material" value="<%= product.material %>" placeholder="Enter material ">
+              </div>
+
+                <div class="form-group">
+                  <label for="brand">Stock</label>
+                  <input type="text" class="form-control" id="stock" name="stock" value="<%= product.stock %>" placeholder="Enter product stock" required>
+                </div>
+          
+                <!-- Price -->
+                <div class="form-group">
+                  <label for="price">Price</label>
+                  <input type="number" class="form-control" id="price" name="price" value="<%= product.price %>" placeholder="Enter product price" required>
+                </div>
+          
+                <!-- Image Upload -->
+                <div class="form-group text-center">
+                  <label for="productImages">Image Upload</label>
+                  <div class="d-flex justify-content-center">
+                      <!-- Box 1 -->
+                      <div class="product-image-box mx-2">
+                          <label for="productImage1" class="image-label">
+                              <img id="previewImage1" class="image-preview" src="/public/product_img/<%= product.image.image1 %>" alt="">
+                              <i class="fa fa-picture-o"></i>
+                              <input type="file" class="form-control-file image-input"
+                                  id="productImage1" accept="image/*"   
+                                  onchange="openCropperModal('productImage1', 'previewImage1')"
+                                  name="img1">
+                          </label>
+                      </div>
+
+                      <!-- Box 2 -->
+                      <div class="product-image-box mx-2">
+                          <label for="productImage2" class="image-label">
+                              <img id="previewImage2" class="image-preview" src="/public/product_img/<%= product.image.image2 %>" alt="">
+                              <i class="fa fa-picture-o"></i>
+                              <input type="file" class="form-control-file image-input"
+                                  id="productImage2" accept="image/*"  
+                                  onchange="openCropperModal('productImage2', 'previewImage2')"
+                                  name="img2">
+                          </label>
+                      </div>
+                      <!-- Box 3 -->
+                      <div class="product-image-box mx-2">
+                          <label for="productImage3" class="image-label">
+                              <img id="previewImage3" class="image-preview" src="/public/product_img/<%= product.image.image3 %>" alt="">
+                              <i class="fa fa-picture-o"></i>
+                              <input type="file" class="form-control-file image-input"
+                                  id="productImage3" accept="image/*"   
+                                  onchange="openCropperModal('productImage3', 'previewImage3')"
+                                  name="img3">
+                          </label>
+                      </div>
+                      
+                  </div>
+                  <p id="productImageError" class="text-danger fs-15"></p>
+              </div>
+               
+           </div>
+          
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-success d-flex justify-content-center mt-4">Submit</button>
+              </form>
+            </div>
+
+       </div>
+       </div>
+       </div>
+
+      
+      
+       
+         
+      </div>
+      <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+
+  <!-- modal  -->
+  <div class="modal fade" id="cropModel" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 50%; width: auto;">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h1 class="modal-title fs-15">Crop Image</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <img id="imageToCrop" class="image-preview" style="width: 50%;">
+          </div>
+          <div class="modal-footer d-flex justify-content-center">
+              <button type="button" class="btn btn-primary" id="cropButton">Crop and Save</button>
+          </div>
+      </div>
+  </div>
+
+ </div>
+
+  <!-- container-scroller -->
+  <!-- base:js -->
+  <script src="/vendors/base/vendor.bundle.base.js"></script>
+  <!-- endinject -->
+  <!-- inject:js -->
+  <script src=" /js/off-canvas.js"></script>
+  <script src=" /js/hoverable-collapse.js"></script>
+  <script src=" /js/template.js"></script>
+  <!-- endinject -->
+  <!-- plugin js for this page -->
+  <script src=" /vendors/chart.js/Chart.min.js"></script>
+  <!-- End plugin js for this page -->
+  <!-- Custom js for this page-->
+  <script src="/js/chart.js"></script>
+  <!-- End custom js for this page-->
+   <!-- font-awesome -->
+  <script src="https://kit.fontawesome.com/a5e10914c4.js" crossorigin="anonymous"></script>
+   <!-- End font-awesome -->
+   <script>
+    let cropper;
+    let currentImageInput;
+    let currentPreviewId;
+
+    function openCropperModal(imageInputId, previewId) {
+        const imageInput = document.getElementById(imageInputId);
+        const file = imageInput.files[0];
+        currentImageInput = imageInput;
+        currentPreviewId = previewId;
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const imageElement = document.getElementById('imageToCrop');
+                imageElement.src = e.target.result;
+
+                const cropModal = new bootstrap.Modal(document.getElementById('cropModel'));
+                cropModal.show();
+
+                cropModal._element.addEventListener('shown.bs.modal', function () {
+                    if (cropper) {
+                        cropper.destroy();
+                    }
+                    cropper = new Cropper(imageElement, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        autoCropArea: 0.9,
+                    });
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    document.getElementById('cropButton').addEventListener('click', function () {
+        if (cropper) {
+            const canvas = cropper.getCroppedCanvas();
+            canvas.toBlob(function (blob) {
+                const croppedImageUrl = URL.createObjectURL(blob);
+
+                const previewElement = document.getElementById(currentPreviewId);
+                previewElement.src = croppedImageUrl;
+                previewElement.style.display = 'block';
+
+                const iconElement = previewElement.parentElement.querySelector('i');
+                if (iconElement) {
+                    iconElement.style.display = 'none';
+                }
+
+                // Replace the file input value with the cropped image blob
+                const fileInputContainer = new DataTransfer();
+                fileInputContainer.items.add(new File([blob], currentImageInput.files[0].name, { type: 'image/png' }));
+                currentImageInput.files = fileInputContainer.files;
+
+                const cropModal = bootstrap.Modal.getInstance(document.getElementById('cropModel'));
+                cropModal.hide();
+            });
+        }
+    });
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+  <script src="https://unpkg.com/cropperjs"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+</body>
+
+ </html>

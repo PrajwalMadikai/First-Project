@@ -1,0 +1,98 @@
+<header>
+    <!-- Header Start -->
+    <div class="header-area maincolor">
+        <div class="main-header header-sticky">
+            <div class="container-fluid">
+                <div class="menu-wrapper d-flex align-items-center justify-content-between">
+                    <!-- Logo -->
+                    <div class="logo">
+                        <h4 class="trendView ml-3">trendView</h4>
+                    </div>
+    
+                    <!-- Main-menu -->
+                    <div class="main-menu d-none d-lg-block mt-3">
+                        <nav>
+                            <ul id="navigation" class="d-flex align-items-center">  
+                                <li><a href="/">Home</a></li>
+                                <li><a href="/shirt">Shirts</a></li>
+                                <li><a href="#">Pants</a></li>
+                                <li><a href="#">T-Shirt</a></li>
+                                <li><a href="#">Formals</a></li>
+                            </ul>
+                            <!-- <form class="d-flex me-5 d-md-none d-s-flex">
+                                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                                <button class="btn btn-primary" type="submit">Search</button>
+                            </form> -->
+                        </nav>
+                    </div>
+    
+                    <!-- Header Right: Search Bar, Wishlist Icon, User Icon, Logout Button -->
+                    <div class="d-flex align-items-center">
+                        <div class="header-right d-none d-lg-flex align-items-center">
+                            <!-- Search Form -->
+                            <!-- <form class="d-flex me-5 ">
+                                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                                <button class=" searchBtn" type="submit">Search</button>
+                            </form> -->
+    
+                            <!-- Wishlist Icon -->
+                            <a href="/whistlist" class="    me-3">
+                                <img src="/public/icons/heart.png" alt="" style="height: 20px;">
+                            </a>
+                            <a href="/cart-items" class="    me-3">
+                                <img src="/public/icons/shopping-cart.png" alt="" style="height: 20px;">
+                            </a>
+                            
+
+    
+                            <!-- User Icon -->
+                            <a href="/profile" class="    me-3">
+                                <img src="/public/icons/user.png" alt="" style="height: 20px;">
+                            </a>
+
+    
+                            <!-- Logout Button -->
+                            <% if(!user) {%>
+                                <div class="logIn me-2" type="">
+                                    <a href="/login" class="custom-link logIn" >Login</a>
+                                  </div>
+                                  
+                                <% }else{ %>
+                                    <button class="btn btn-danger me-2" type="button"> <a href="/logout" style="text-decoration: none;">Logout</a></button>
+                            <% } %>
+                        </div>
+    
+                        <!-- Mobile Right-Side Content -->
+                        <div class="mobile-right d-flex d-lg-none align-items-center align-items-center mr-3 mb-4">
+                            <a href="#" class="    me-3">
+                                <img src="/public/icons/heart.png" alt="" style="height: 20px;">
+                            </a>
+                            <a href="#" class="    me-3">
+                                <img src="/public/icons/shopping-cart.png" alt="" style="height: 20px;">
+                            </a>
+    
+                            <!-- User Icon -->
+                            <a href="#" class="    me-3">
+                                <img src="/public/icons/user.png" alt="" style="height: 20px;">
+                            </a>
+                            <% if(!user ) {%>
+                                <button class=" me-2 logIn" type=" "> <a href="/login" style="text-decoration: none;  ">Login</a></button>
+                                <% }else{ %>
+                                    <button class="btn btn-danger  me-2" type="button"> <a href="/logout" style="text-decoration: none;">Logout</a></button>
+                            <% } %>
+                        </div>
+    
+                        <!-- Mobile Menu -->
+                        <div class="d-lg-none ms-3">
+                            <div class="mobile_menu"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+
+    <!-- Header End -->
+</header>

@@ -1,0 +1,243 @@
+<%- include("../partials/homeHeader") %>
+<%- include("../partials/mainHeader") %>
+<style>
+    .product_cart_item, 
+    .product_cartitem_text, 
+    .quantity__item, 
+    .cart__price {
+        padding: 10px; /* Add padding to create space inside each <td> */
+    }
+
+    /* Alternatively, you can add margin to the inner divs */
+    .product_cartitem_pic, 
+    .product_cartitem_text h6, 
+    .product_cartitem_text h5, 
+    .quantity, 
+    .cart__price {
+        margin: 0 10px; /* Add margin to create space between elements inside <td> */
+    }
+    .quantity-input {
+    border: none;          /* Remove border */
+    background: none;      /* Remove background */
+    width: 40px;           /* Adjust width as needed */
+    text-align: center;    /* Center the text */
+    outline: none;         /* Remove the outline on focus */
+    font-size: 16px;       /* Adjust font size as needed */
+    color: #333;           /* Adjust text color */
+    appearance: none;      /* Remove default styling in certain browsers */
+}
+
+.quantity-input:focus {
+    outline: none;         /* Ensure there's no outline on focus */
+}
+.quantity-selector {
+            display: flex;
+            align-items: center;
+        }
+        .quantity-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: gray;
+            border: 1px solid #dee2e6;
+            cursor: pointer;
+        }
+
+</style>
+<!-- Shopping Cart Section Begin -->
+<section class="shopping-cart spad">
+        <% if (cart) { %>
+            <div class="container">
+               
+               
+                <div class="row">
+                    <!-- Cart Items Section -->
+                    <div class="col-lg-8">
+                        
+                <% cart.items.forEach((element,index) => { %>
+                        <div class="card mb-3" id="cart-item-<%= element._id %>">
+                            <div class="row no-gutters">
+                                <!-- Product Image -->
+                                <div class="col-md-3 d-flex align-items-center justify-content-center">
+                                    <img src="/public/product_img/<%= element.product_id.image.image1 %>" alt="Product Image" class="img-fluid" style="width: 80px; height: 80px; object-fit: cover;">
+                                </div>
+                                <!-- Product Details -->
+                                <div class="col-md-6">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><%= element.product_id.title %></h5>
+                                        <p class="card-text">Price: ₹<span id="itemPrice"><%= element.product_id.price %></span></p>
+                                        <div class="quantity-selector my-3">
+                                            <div class="quantity-btn" id="decrease-btn" onclick="decrease('<%=element.product_id.stock %>','<%=element.product_id._id %>','<%= element.product_id.price%>' )">-</div>
+                                            <input type="number" class="quantity-input" name="quantity" id="quantity_<%=element.product_id._id  %>" value="<%=element.quantity %>" readonly>
+                                            <div class="quantity-btn" id="increase-btn" onclick="increase('<%=element.product_id.stock %>','<%=element.product_id._id %>','<%= element.product_id.price%>' )">+</div>
+                                          </div>
+                                    </div>
+                                </div>
+                                <!-- Total Price and Delete Button -->
+                                <div class="col-md-3 d-flex flex-column align-items-center justify-content-center">
+                                    <h5 id="price_<%=element.product_id._id %>">₹<%= element.price%></h5>
+                                    <button class="btn btn-danger mt-2 delete-btn" onclick="deleteCart('<%=element.product_id._id %>')">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                        <% }); %>
+                       
+                    </div>
+            
+                    <!-- Proceed to Checkout Section -->
+                    <div class="col-lg-4">
+                        <div class="card mt-3">
+                            <div class="card-body">
+                                
+                                <h6 class="text-center mt-4">Cart total</h6>
+                                <ul class="list-group">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Total MRP
+                                        <h5 id="totalPrice">₹<%= cart.total_price %> </h5>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Delivary Charge
+                                        <span style="color: green;">Free</span>
+                                    </li>
+                                </ul>
+                                <a href="/checkout" class="btn btn-primary btn-block mt-4">Proceed to checkout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+         <% } else { %> 
+             <div class="container">
+              <div class="text d-flex justify-content-center align-items-center fw-bold"> your cart is empty</div> 
+            </div>
+        <% } %>
+    </section>
+    <script>
+       function deleteCart(id){
+        Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you want to delete the item?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'No, cancel!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // User confirmed, proceed with the deletion
+            fetch(`/deleteCart/${id}`, {
+                method: 'get',
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then((res) => {
+                if (res.ok) {
+                    Swal.fire(
+                        'Deleted!',
+                        'Your item has been deleted.',
+                        'success'
+                    ).then(() => {
+                        // Redirect after deletion
+                        window.location.href = '/cart-items';
+                    });
+                } else {
+                    Swal.fire(
+                        'Error!',
+                        'There was a problem deleting the item.',
+                        'error'
+                    );
+                }
+            }).catch(err => {
+                console.error('Error:', err);
+                Swal.fire(
+                    'Error!',
+                    'There was a problem processing your request.',
+                    'error'
+                );
+            });
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            // User canceled the action
+            Swal.fire(
+                'Cancelled',
+                'Your item delete was cancelled.',
+                'error'
+            ).then(() => {
+                // Optionally redirect or do something else after cancel
+                window.location.href = '/cart-items';
+            });
+        }
+    });
+       }
+
+
+       async function updateCart(id,quantity,price ){
+            try{
+            const product_id=id
+           let response=await fetch(`/updateCart/${product_id}`,{
+                method:'post',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({quantity,price})
+            }) 
+          
+            let data=await response.json()
+            console.log('data is:',data);
+            
+            const total=data.total
+            console.log('total is:',total);
+            
+                    
+            document.getElementById('totalPrice').innerHTML = `₹${total}`;
+        }catch(err){
+            console.log(err);
+            
+        }
+
+
+        }
+
+        function increase(stock,id,price)
+        {
+        const quantityInput = document.getElementById(`quantity_${id}`);
+        let quantity = parseInt(quantityInput.value);
+       
+        let priceField=document.getElementById(`price_${id}`)
+
+        if(quantity <stock)
+        {
+            quantity+=1;
+            
+            quantityInput.value=quantity
+            
+             
+            let proPrice=quantity*price
+
+            document.getElementById(`price_${id}`).innerText = `₹${proPrice}`;
+            // let total=priceField.value
+
+            updateCart(id,quantity,proPrice)
+        }
+        }
+
+    function decrease(stock, id, price) {
+    const quantityInput = document.getElementById(`quantity_${id}`);
+    let quantity = parseInt(quantityInput.value);
+
+    if (quantity > 1) {
+        quantity -= 1;
+        quantityInput.value = quantity;
+
+        let proPrice = quantity * price;
+        document.getElementById(`price_${id}`).innerText = `₹${proPrice}`;
+
+        updateCart(id, quantity, proPrice);
+    }
+}
+    </script>
+    
+        
+
+<%- include("../partials/homeFooter") %>

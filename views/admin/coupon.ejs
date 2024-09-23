@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Admin  |  trendView</title>
+  <!-- base:css -->
+  <link rel="stylesheet" href="/vendors/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="/vendors/feather/feather.css">
+  <link rel="stylesheet" href="/vendors/base/vendor.bundle.base.css">
+  <!-- endinject -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="/public/css/admin.css">
+  <!-- endinject -->
+  <link rel="shortcut icon" href="../../images/favicon.png" />
+</head>
+ 
+<body>
+  <div class="container-scroller">
+    <!-- partial:../../partials/_navbar.html -->
+    <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+      <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+        <a class="navbar-brand brand-logo" href="index.html"><img src="images/logo.svg" alt="logo"/></a>
+        <a class="navbar-brand brand-logo-mini" href="index.html"><img src="images/logo-mini.svg" alt="logo"/></a>
+      </div>
+      <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+        <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+          <span class="icon-menu"></span>
+        </button>
+        <ul class="navbar-nav mr-lg-2">
+          <li class="nav-item nav-search d-none d-lg-block">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="search">
+                  <i class="icon-search"></i>
+                </span>
+              </div>
+              <input type="text" class="form-control" placeholder="Search Projects.." aria-label="search" aria-describedby="search">
+            </div>
+          </li>
+        </ul>
+        <ul class="navbar-nav navbar-nav-right">
+            <li class="nav-item dropdown d-lg-flex d-none">
+                <button type="button" class="btn btn-info font-weight-bold">+ Create New</button>
+            </li>
+          <li class="nav-item dropdown d-flex">
+            <a class="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center" id="messageDropdown" href="#" data-toggle="dropdown">
+              <i class="icon-air-play mx-0"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="messageDropdown">
+              <p class="mb-0 font-weight-normal float-left dropdown-header">Messages</p>
+              <a class="dropdown-item preview-item">
+                <div class="preview-thumbnail">
+                    <img src="images/faces/face4.jpg" alt="image" class="profile-pic">
+                </div>
+                <div class="preview-item-content flex-grow">
+                  <h6 class="preview-subject ellipsis font-weight-normal">David Grey
+                  </h6>
+                  <p class="font-weight-light small-text text-muted mb-0">
+                    The meeting is cancelled
+                  </p>
+                </div>
+              </a>
+              <a class="dropdown-item preview-item">
+                <div class="preview-thumbnail">
+                    <img src="images/faces/face2.jpg" alt="image" class="profile-pic">
+                </div>
+                <div class="preview-item-content flex-grow">
+                  <h6 class="preview-subject ellipsis font-weight-normal">Tim Cook
+                  </h6>
+                  <p class="font-weight-light small-text text-muted mb-0">
+                    New product launch
+                  </p>
+                </div>
+              </a>
+              <a class="dropdown-item preview-item">
+                <div class="preview-thumbnail">
+                    <img src="images/faces/face3.jpg" alt="image" class="profile-pic">
+                </div>
+                <div class="preview-item-content flex-grow">
+                  <h6 class="preview-subject ellipsis font-weight-normal"> Johnson
+                  </h6>
+                  <p class="font-weight-light small-text text-muted mb-0">
+                    Upcoming board meeting
+                  </p>
+                </div>
+              </a>
+            </div>
+          </li>
+          <li class="nav-item dropdown d-flex mr-4 ">
+            <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center" id="notificationDropdown" href="#" data-toggle="dropdown">
+              <i class="icon-cog"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+              <p class="mb-0 font-weight-normal float-left dropdown-header">Settings</p>
+              <a class="dropdown-item preview-item">               
+                  <i class="icon-head"></i> Profile
+              </a>
+              <a class="dropdown-item preview-item">
+                  <i class="icon-inbox"></i> Logout
+              </a>
+            </div>
+          </li>
+          <li class="nav-item dropdown mr-4 d-lg-flex d-none">
+            <a class="nav-link count-indicatord-flex align-item s-center justify-content-center" href="#">
+              <i class="icon-grid"></i>
+            </a>
+          </li>
+        </ul>
+        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+          <span class="icon-menu"></span>
+        </button>
+      </div>
+    </nav>
+    
+
+    
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper ">
+      <!-- partial:../../partials/_sidebar.html -->
+      
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <div class="user-profile">
+          <!-- <div class="user-image">
+            <img src="../../images/faces/face28.png">
+          </div> -->
+          <div class="user-name adminName">
+             Prajwal
+          </div>
+          <div class="user-designation">
+              Admin
+          </div>
+        </div>
+        <ul class="nav a">
+          <li class="nav-item">
+            <a class="nav-link" href="../../index.html">
+              <i class="icon-box menu-icon"></i>
+              <span class="menu-title">Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/user">
+              <i class="fa-solid fa-user mr-4"></i>
+              <span class="menu-title">Users</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/sales-report">
+              <i class="fa-solid fa-user mr-4"></i>
+              <span class="menu-title">Sales Report</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/product">
+                <i class="fa-solid fa-cube mr-4"></i>
+              <span class="menu-title">Products</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/orderList">
+              <i class="fa-regular fa-square-check mr-4"></i>
+              <span class="menu-title">Orders</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/category">
+                <i class="fa-solid fa-shirt mr-4"></i>
+              <span class="menu-title">Categories</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../../index.html">
+                <i class="fa-solid fa-bars mr-4"></i>
+              <span class="menu-title">Brands</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/coupon">
+                <i class="fa-solid fa-paper-plane mr-4"></i>
+              <span class="menu-title">Coupon code</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/offerManagment">
+                <i class="fa-solid fa-credit-card mr-4"></i>
+              <span class="menu-title">Offers</span>
+            </a>
+          </li>
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/logout">
+                <i class="fa-solid fa-right-from-bracket mr-4"></i>
+              <span class="menu-title">Logout</span>
+            </a>
+          </li>
+          
+        </ul>
+      </nav>
+      
+        <!-- Main Content -->
+ <div class="col-md-9 " >
+    <div class="col-12 grid-margin stretch-card " >
+      <div class="card stretch-card w-100">
+        <div class="card-body " style="width: 1200px;">
+        <!-- Add New Coupon Section -->
+        <div class="mt-4 mb-4">
+            <h5>+ Add New Coupon</h5>
+            <form id="couponForm" class="d-flex flex-wrap align-items-start">
+                <div class="d-flex flex-column me-2 mb-2" style="width: 140px;">
+                    <input type="text" name="couponCode" id="couponCode" class="form-control mb-2" placeholder="Coupon Code" required>
+                    <textarea name="description" id="description" class="form-control" placeholder="Coupon Description" rows="1" style="width: 180px;" required></textarea>
+                </div>
+                <input type="number" name="discount" id="discount" class="form-control me-2 mb-2" placeholder="Discount (%)" style="width: 140px;" required>
+                <input type="date" id="startDate" name="startDate" class="form-control me-2 mb-2" placeholder="Start Date" style="width: 150px;" required>
+                <input type="date" id="expiryDate" name="expiryDate" class="form-control me-2 mb-2" placeholder="Expiry Date" style="width: 150px;" required>
+                <input type="number" name="minimumAmount" id="minimumAmount" class="form-control me-2 mb-2" placeholder="Minimum Amount" style="width: 180px;" required>
+                <input type="number" name="maximumAmount" id="maximumAmount" class="form-control me-2 mb-2 mr-3" placeholder="Maximum Coupon Amount" style="width: 180px;" required>
+                <button type="submit" class="btn btn-dark mb-2" style="white-space: nowrap;">Add Coupon</button>
+            </form>
+        </div>
+        
+        
+
+          <h4 class="card-title">Coupon Management</h4>
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr style="color: black;">
+                  <th>Coupon Id</th>
+                  <th>Coupon Code</th>
+                  <th>Discount (%)</th>
+                  <th>Start Date</th>
+                  <th>Expiry Date</th>
+                  <th>Minimum Amount</th>
+                  <th>Maximum Amount</th>
+                  <th>Edit</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody  >
+                <% coupons.forEach((coupon, index) => { %>
+                <tr style="color: black;"  >
+                  <td class="text-center">#<%= index + 1 %></td>
+                  <td class="text-center"><%= coupon.coupon_code %></td>
+                  <td class="text-center"><%= coupon.discount %> %</td>
+                  <td class="text-center"><%= coupon.start_date.toDateString() %></td>
+                  <td class="text-center"><%= coupon.expiry_date.toDateString() %></td>
+                  <td class="text-center">$<%= coupon.minimum_purchase_amount %></td>
+                  <td class="text-center">$<%= coupon.maximum_coupon_amount %></td>
+                </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+
+           
+        </div>
+      </div>
+    </div>
+  </div>
+
+      
+      
+       
+       
+      <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const couponForm = document.getElementById('couponForm');
+    const startDateInput = document.getElementById('startDate');
+    const expiryDateInput = document.getElementById('expiryDate');
+    const couponCodeInput = document.getElementById('couponCode');
+    const discountInput = document.getElementById('discount');
+    const minimumAmountInput = document.getElementById('minimumAmount');
+    const maximumAmountInput = document.getElementById('maximumAmount');
+    const descriptionInput = document.getElementById('description');
+
+    // Set minimum start date as today
+    const today = new Date().toISOString().split('T')[0];
+    startDateInput.setAttribute('min', today);
+
+    startDateInput.addEventListener('change', () => {
+        const startDate = new Date(startDateInput.value);
+        const startDateString = startDate.toISOString().split('T')[0];
+        expiryDateInput.setAttribute('min', startDateString);
+    });
+
+
+    couponForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = {
+            couponCode: couponCodeInput.value,
+            discount: discountInput.value,
+            startDate: startDateInput.value,
+            expiryDate: expiryDateInput.value,
+            minimumAmount: minimumAmountInput.value,
+            maximumAmount: maximumAmountInput.value,
+            description: descriptionInput.value
+        };
+
+        // Front-end validation
+        if (!formData.couponCode || !formData.discount || !formData.startDate || !formData.expiryDate || !formData.minimumAmount || !formData.maximumAmount) {
+            Swal.fire('Error', 'Please fill out all fields.', 'error');
+            return;
+        }
+
+        if (formData.discount <= 0 || formData.discount > 100) {
+            Swal.fire('Error', 'Discount must be between 1 and 100.', 'error');
+            return;
+        }
+
+        if (formData.minimumAmount <= 0) {
+            Swal.fire('Error', 'Minimum amount must be greater than 0.', 'error');
+            return;
+        }
+
+        if (formData.maximumAmount <= 0) {
+            Swal.fire('Error', 'Maximum coupon amount must be greater than 0.', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch('/admin/add-coupon', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                Swal.fire('Success', 'Coupon added successfully!', 'success').then(() => {
+                    window.location.reload();
+                });
+            } else {
+                Swal.fire('Error', result.message || 'Failed to add coupon.', 'error');
+            }
+        } catch (error) {
+            Swal.fire('Error', 'An error occurred while adding the coupon.', 'error');
+        }
+    });
+});
+</script>
+
+
+  <!-- container-scroller -->
+  <!-- base:js -->
+  <script src="/vendors/base/vendor.bundle.base.js"></script>
+  <!-- endinject -->
+  <!-- inject:js -->
+  <script src=" /js/off-canvas.js"></script>
+  <script src=" /js/hoverable-collapse.js"></script>
+  <script src=" /js/template.js"></script>
+  <!-- endinject -->
+  <!-- plugin js for this page -->
+  <script src=" /vendors/chart.js/Chart.min.js"></script>
+  <!-- End plugin js for this page -->
+  <!-- Custom js for this page-->
+  <script src="/js/chart.js"></script>
+  <!-- End custom js for this page-->
+   <!-- font-awesome -->
+  <script src="https://kit.fontawesome.com/a5e10914c4.js" crossorigin="anonymous"></script>
+   <!-- End font-awesome -->
+</body>
+
+</html>

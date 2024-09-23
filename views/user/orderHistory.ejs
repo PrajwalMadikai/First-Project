@@ -1,0 +1,107 @@
+<%- include("../partials/homeHeader") %>
+<%- include("../partials/mainHeader") %>
+    <style>
+.order-card {
+    transition: all 0.3s ease-in-out;
+    padding: 20px;
+    background-color: #f9f9f9;
+    transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.order-card:hover {
+    box-shadow: 0 8px 20px rgba(32, 1, 17, 0.2);
+    transform: scale(1.02);
+    background-color: #eaeaea;
+}
+
+/* Flexbox styling for horizontal alignment */
+.d-flex {
+    display: flex;
+}
+
+.justify-content-between {
+    justify-content: space-between;
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+.flex-item {
+    flex: 1;
+    padding: 0 10px;
+    text-align: center;
+}
+
+
+    </style>
+</head>
+ 
+<div class="container order-list-container">
+    <h1 class="mb-4 text-center">My Orders</h1>
+    <!-- Header Row with Titles -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between text-center">
+                        <div class="flex-item">
+                            <h5 class="card-title mb-0">Order ID</h5>
+                        </div>
+                        <div class="flex-item">
+                            <h5 class="card-title mb-0">Total Price</h5>
+                        </div>
+                        <div class="flex-item">
+                            <h5 class="card-title mb-0">Payment Method</h5>
+                        </div>
+                        <div class="flex-item">
+                            <h5 class="card-title mb-0">Status</h5>
+                        </div>
+                        <div class="flex-item">
+                            <h5 class="card-title mb-0">Details</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Order Details Rows -->
+        <% orders.forEach(order=> { %>
+            <% order.products.forEach(product => { %>
+            <div class="row mt-2">
+                <div class="col-md-12">
+                    <div class="card shadow-sm order-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between text-center align-items-center">
+                                <div class="flex-item">
+                                    <p class="mb-0"><%= order.orderNumber %></p>  
+                                </div>
+                                <div class="flex-item">
+                                    <p class="mb-0">₹<%= order.totalAmount %></p>  
+                                </div>
+                                <div class="flex-item">
+                                    <p class="mb-0"><%= order.paymentOption %></p>  
+                                </div>
+                                <div class="flex-item">
+                                    <% if(product.status=='Pending'){ %>
+                                    <p class="mb-0 text-success"><%= product.status %></p>
+                                    <% }else if(product.status=='Cancelled'){ %>
+                                    <p class="mb-0 text-danger"><%= product.status %></p>
+                                     <% }else{ %>
+                                        <p class="mb-0 text-primary"><%= product.status %></p>
+                                     <% } %>       
+                                </div>
+                                <div class="flex-item">
+                                    <a href=/orderDetail/<%= product._id %>><p class="mb-0 text-success">View</p></a>  
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+        <% }) %>
+    <% }) %>
+</div>
+
+<%- include("../partials/homeFooter") %>
