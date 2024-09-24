@@ -60,6 +60,9 @@ const order=new schema({
             },
             returnReason:{
                 type:String
+            },
+            discounted_price:{
+                type:Number
             }
         }
     ],

@@ -46,13 +46,13 @@ async function updateProductStock(products, checkProducts) {
 
 exports.placeOrder = async (req, res) => {
     try {
-        const { addressId, paymentType,appliedCoupon } = req.body;
+        const { addressId, paymentType,appliedCoupon,amount} = req.body;
         
         let user = await User.findOne({ email: req.session.userAuth });
         let cart = await Cart.findOne({ user_id: user._id }).populate('items.product_id');
         
         // Make sure you have the updated total_price
-        let totalPrice = Math.floor(cart.total_price);
+        let totalPrice = Math.floor(amount);
         console.log("new cart price:",totalPrice);
       
 
@@ -65,7 +65,7 @@ exports.placeOrder = async (req, res) => {
             image: item.product_id.image.image1,
             name: item.product_id.title,
             quantity: item.quantity,
-            price: item.price
+            price: item.final_price
         }));
 
         let productIds = products.map(product => product.productId);
@@ -241,7 +241,6 @@ exports.getOrderDetail=async(req,res)=>{
         const id=req.params.id
         let user=await User.findOne({ email: req.session.userAuth });
         let order=await Order.findOne({userId:user._id,'products._id':id})
-        console.log('addresa',order.address);
         
         const product = order.products.find(p => p._id.toString() === id);
         
@@ -273,9 +272,17 @@ exports.returnProduct=async(req,res)=>{
 exports.cancelProduct=async(req,res)=>{
     try {
         const id=req.params.id
+        const {returnReason,quantity}=req.body
+        let stockInc=Number(quantity)
+        console.log("prod Id:",id);
+        
         let user=await User.findOne({ email: req.session.userAuth });
+
+        await Product.findByIdAndUpdate(id,{
+            $inc: { stock: stockInc } 
+        })
         await Order.updateOne({userId:user._id,'products._id':id},
-            { $set: { 'products.$.status':"Cancelled"} }
+            { $set: { 'products.$.status':"Cancelled",'products.$.returnReason':returnReason} }
         )
         res.json({success:true,message:"successfull"})
 
@@ -286,48 +293,94 @@ exports.cancelProduct=async(req,res)=>{
 }
 exports.couponApply = async (req, res) => {
     try {
-
         let user = await User.findOne({ email: req.session.userAuth });
-        
-        let cart = await Cart.findOne({ user_id: user._id }); 
+
+        let cart = await Cart.findOne({ user_id: user._id });
         if (!cart) {
             return res.status(404).json({ message: "Cart not found" });
         }
 
         let couponCode = req.body.couponID;  
-        req.session.coupon=couponCode
-        
+        req.session.coupon = couponCode;
 
-        let coupon = await Coupon.findOne({ coupon_code:  req.session.coupon });
+        let coupon = await Coupon.findOne({ coupon_code: req.session.coupon });
         if (!coupon) {
             return res.status(400).json({ message: "Invalid coupon" });
         }
 
-        console.log("Coupon data:", coupon); // Log coupon data
+        // Calculate the discount
+        let discountPercentage = coupon.discount || 0; 
+        let discountAmount = Math.floor((cart.total_price * discountPercentage) / 100) || 0;
 
-        // Calculate the discount and update the cart total_price
-        let discountPercentage = coupon.discount;
-        let discountAmount = (cart.total_price * discountPercentage) / 100;
-
-        let maxCouponAmount = coupon.maximum_coupon_amount;
+        let maxCouponAmount = coupon.maximum_coupon_amount || 0; 
         if (discountAmount > maxCouponAmount) {
             discountAmount = maxCouponAmount;
         }
-         console.log("discount amount:",discountAmount);
-         
-        cart.total_price -= discountAmount;
+
+        console.log("Total Discount Amount:", discountAmount);
+
+        // Get total cart price
+        let totalCartPrice = cart.total_price || 0; 
+        let products = cart.items;
+
+        // Sort products by price descending
+        products.sort((a, b) => b.price - a.price);
+
+        let remainingDiscount = discountAmount;
+
+        // Apply discount proportionally to each product
+        products = products.map((product) => {
+            let proportionateDiscount = (product.price / totalCartPrice) * discountAmount;
+
+            let minPrice = 1; // Minimum price to apply
+            let finalPrice = Math.max(product.price - proportionateDiscount, minPrice);
+
+            let appliedDiscount = product.price - finalPrice;
+            remainingDiscount -= appliedDiscount;
+
+            // Update final_price for the product
+            product.final_price = Math.floor(finalPrice);
+
+            console.log(`Product: ${product.product_id}, Original Price: ${product.price}, Final Price: ${finalPrice}, Applied Discount: ${appliedDiscount}`);
+
+            return {
+                ...product,
+                discounted_price: finalPrice,
+                appliedDiscount 
+            };
+        });
+
+        // Apply any remaining discount to the most expensive product
+        if (remainingDiscount > 0 && products.length > 0) {
+            products[0].final_price -= remainingDiscount; 
+            products[0].final_price = Math.max(products[0].final_price, 1);
+        }
+
+        console.log("Products after discount:", products);
+
+        // Update cart items with the final prices
+        cart.items = products;
+
+        // Calculate the new total price by subtracting the discount from the original total price
+        let newTotalPrice = Math.max(totalCartPrice - discountAmount, 1); // Ensure total is at least 1
+
+        // Log new total price
+        console.log("New Total Price:", newTotalPrice);
+
+     
+        // Save the updated cart after updating total_price
         await cart.save();
 
-        console.log("Updated cart total price:", cart.total_price); // Log updated total price
-
+        // Return the updated product prices and discount details
         res.status(200).json({
             message: "Coupon applied successfully",
-            newTotalPrice:Math.floor(cart.total_price),
             discountAmount: discountAmount,
-            coupon_name:coupon.coupon_code
+            coupon_name: coupon.coupon_code,
+            order_amount: newTotalPrice, // Use the updated total_price
+            products // Return products with discounted prices
         });
     } catch (error) {
-        console.error("Error applying coupon:", error);  
+        console.error("Error applying coupon:", error);
         res.status(500).json({ message: "Server error" });
     }
 };

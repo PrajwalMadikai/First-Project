@@ -19,6 +19,28 @@ exports.getProfile=async(req,res)=>{
         
     }
  }
+ 
+
+ exports.editProfile=async(req,res)=>{
+    try {
+        const {firstName,email,phone}=req.body
+        await User.updateOne(
+            { email: email },
+            {
+                $set: {
+                    firstName: firstName,
+                    phone: phone
+                }
+            }
+        );
+        
+        res.redirect('/profile')
+        
+    } catch (error) {
+        console.log(error);
+        
+    }
+ }
  exports.loadAddress=async(req,res)=>{
     
     try {

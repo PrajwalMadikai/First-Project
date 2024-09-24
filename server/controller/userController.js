@@ -123,9 +123,8 @@ exports.forgotGet=async (req,res)=>{
 }
 exports.forgotPost=async(req,res)=>{
      
-        req.session.emailVerification=req.body.email;
-          
-        
+        req.session.userEmail=req.body.email
+
         try {
             let user=await User.find({email:req.body.email})
             
@@ -134,16 +133,15 @@ exports.forgotPost=async(req,res)=>{
 
                 const mailOptions = {
                     from: process.env.EMAIL,
-                    to:req.session.emailVerification,
+                    to:req.session.userEmail,
                     subject: 'Email Verification for trendView!',
                     text: `Please enter ${otp} for verifying your account`
                 };
-                console.log(otp);
-                console.log("User Email:", req.body.email);
+                console.log("User Email in forgot pass: ", req.session.userEmail);
                 req.session.otp=otp; 
                     const newOtp=new userOtpVerification({
                             otp:otp,
-                            email:req.session.emailVerification,
+                            email: req.session.userEmail,
                             createdAt:Date.now(),
                             
                         })
@@ -151,7 +149,7 @@ exports.forgotPost=async(req,res)=>{
                 await userOtpVerification.create(newOtp)
                 console.log("document saved");
                 
-                await userOtpVerification.updateOne({email:req.session.emailVerification},{$set:{otp:otp}})  // if not work put single otp field
+                await userOtpVerification.updateOne({email:req.session.userEmail},{$set:{otp:otp}})  // if not work put single otp field
 
                 await transporter.sendMail(mailOptions)
                 
@@ -169,9 +167,8 @@ exports.forgotPost=async(req,res)=>{
 }
 exports.emailVerifyGet=async(req,res)=>{
     try {
-        let email=req.session.emailVerification;
          
-        res.render("./user/emailVerification",{email})
+        res.render("./user/emailVerification")
     } catch (error) {
         console.log(error);
         
@@ -179,7 +176,7 @@ exports.emailVerifyGet=async(req,res)=>{
 }
 exports.emailVerifyPost=async(req,res)=>{
     try {
-        let user=await userOtpVerification.findOne({email:req.session.emailVerification})
+        let user=await userOtpVerification.findOne({email:req.session.userEmail})
         console.log('verify User:',user);
         
         if(req.body.otp==user.otp)
@@ -225,7 +222,7 @@ exports.newPassPatch=async(req,res)=>{
 
 exports.otpResent=async(req,res)=>{
     try {
-
+        let user=await User.findOne({email:req.session.userEmail})
         const otp=`${Math.floor(1000+Math.random()*9000)}`;
 
         const mailOptions = {
@@ -234,10 +231,10 @@ exports.otpResent=async(req,res)=>{
             subject: 'Welcome to Our Service!',
             text: `Please enter ${otp} for verifying your account`
           };
-          console.log(otp);
+          console.log("resent otp:",otp);
            
           req.session.otp=otp; 
-         console.log(req.session.userEmail);
+         console.log("resent otp email in forgot:",req.session.userEmail);
          
         const newOtp=new userOtpVerification({
                     otp:otp,
@@ -248,7 +245,7 @@ exports.otpResent=async(req,res)=>{
 
        await userOtpVerification.create(newOtp)
 
-       await userOtpVerification.updateOne({ email: req.session.userEmail}, { $set: { otp } });
+       await userOtpVerification.updateOne({ email: req.session.userEmail}, { $set: { otp:otp } });
 
        await transporter.sendMail(mailOptions)
         
@@ -318,7 +315,7 @@ exports.loginPost=async(req,res)=>{
         )
         res.cookie('token',token,{httpOnly:true})
 
-        if(isMatch && findUser.isAdmin==false && findUser.isBlock==false && req.session.isBlock==false){
+        if(isMatch && findUser.isAdmin==false && findUser.isBlock==false || req.session.isBlock==false){
             req.session.user=findUser.email
         
             res.redirect('/')

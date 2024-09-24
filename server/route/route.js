@@ -70,6 +70,7 @@ router.post('/updateCart/:id',isAuthenticate.isLogin,isValid,cartController.upda
 router.get('/deleteCart/:id',isAuthenticate.isLogin,isValid,cartController.deleteCart) 
 //     <-- profile -->
 router.get('/profile',isAuthenticate.isLogin,profileController.getProfile)
+router.post('/edit-profile',isAuthenticate.isLogin,profileController.editProfile)
 router.delete('/removeAddress/:id',isAuthenticate.isLogin,orderController.removeAddress)
 router.get('/updateAddress/:id',isAuthenticate.isLogin,orderController.getupdateAddress)
 router.post('/updateAddress/:id',isAuthenticate.isLogin,orderController.updateAddress)
@@ -96,13 +97,11 @@ router.get('/wallet-amount',isAuthenticate.isLogin,profileController.addAmount)
 // <-- Whistlist -->
 router.get('/whistlist',isAuthenticate.isLogin,whistlistController.loadWhistlist)
 router.post('/whistlist/:id',isAuthenticate.isLogin,whistlistController.addWhistlist)
-router.post('//whistlist-delete//:id',isAuthenticate.isLogin,whistlistController.deleteWhistlist)
+router.post('/whistlist-delete/:id',isAuthenticate.isLogin,whistlistController.deleteWhistlist)
 
 
  
-
-//order
-router.delete('/cancelOrder/:id',isAuthenticate.isLogin,orderController.deleteOrder)
+ 
 
 
 router.get('/logout',isAuthenticate.isLogin,isValid,controller.logout) 

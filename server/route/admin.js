@@ -64,7 +64,7 @@ router.post('/offerManagment/addProductOffer',isAdminAuth,adminController.produc
 router.post('/offerManagment/addCategoryOffer',isAdminAuth,adminController.categoryOffer)
 
 //sales report
-router.get('/sales-report',isAdminAuth,adminController.loadSalesReport)
+// router.get('/sales-report',isAdminAuth,adminController.loadSalesReport)
 
 
 // logout 

@@ -345,12 +345,16 @@ exports.categoryOffer = async (req, res) => {
 
 
 
-exports.loadSalesReport=async(req,res)=>{
-    try {
-        let order=await Order.find({})
-        res.render("./admin/salesReport",{order})
-    } catch (error) {
-        console.log(error);
+// exports.loadSalesReport=async(req,res)=>{
+//     try {
+//         let totalOrders=await Order.countDocuments({})
+//         let allOrders=await Order.find({})
+//         let totalAmount =allOrders.reduce((sum, order) => sum + order.totalAmount, 0);
+//         let totalDiscount=
+//         let order=await Order.find({})
+//         res.render("./admin/salesReport",{order,totalOrders,totalAmount})
+//     } catch (error) {
+//         console.log(error);
         
-    }
-}
+//     }
+// }

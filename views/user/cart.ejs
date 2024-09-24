@@ -50,8 +50,6 @@
 <section class="shopping-cart spad">
         <% if (cart) { %>
             <div class="container">
-               
-               
                 <div class="row">
                     <!-- Cart Items Section -->
                     <div class="col-lg-8">
@@ -216,9 +214,18 @@
             let proPrice=quantity*price
 
             document.getElementById(`price_${id}`).innerText = `₹${proPrice}`;
-            // let total=priceField.value
 
             updateCart(id,quantity,proPrice)
+        }
+        if(quantity=stock)
+        {
+            Swal.fire({
+            icon: 'warning',
+            title: 'Maximum Stock Reached',
+            text: 'You have reached the maximum stock for this product.',
+            confirmButtonText: 'OK'
+        });
+
         }
         }
 
@@ -235,8 +242,17 @@
 
         updateCart(id, quantity, proPrice);
     }
+    if(quantity=1)
+    {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Minimum Stock Reached',
+            text: 'You have reached the minimum stock for this product.',
+            confirmButtonText: 'OK'
+        });
+    }
 }
-    </script>
+</script>
     
         
 

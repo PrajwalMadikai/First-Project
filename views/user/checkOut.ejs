@@ -1,7 +1,28 @@
 <%- include("../partials/homeHeader") %>
 <%- include("../partials/mainHeader") %>
     <style>
-        /* Existing styles */
+      .container, .order-summary {
+    overflow-y: visible;
+}
+#couponsList {
+    max-height: 200px;
+    overflow-y: auto;
+}
+.coupon-box {
+    display: block;
+    overflow-y: auto;
+    max-height: 200px;
+}
+html {
+    scroll-behavior: smooth;
+}
+.order-summary {
+    max-height: calc(100vh - 50px); /* Adjust based on viewport */
+    overflow-y: auto;
+}
+
+
+
         body {
             background-color: #f4f4f4;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -224,7 +245,7 @@
                                 <span><%= item.product_id.title %></span><br>
                             </div>
                         </div>
-                        <span>$<%= item.price %></span>
+                        <span>₹<%= item.price%></span>
                     </div>
                     <% subtotal += Number(item.price) %>
                     <% }); %>
@@ -232,7 +253,7 @@
                     <hr>
                     <div class="product-item">
                         <span>Subtotal:</span>
-                        <span>$<%= subtotal %></span>
+                        <span>₹<%= subtotal %></span>
                     </div>
                     <div class="product-item">
                         <span>Shipping:</span>
@@ -240,7 +261,7 @@
                     </div>
                     <div class="product-item total">
                         <span>Total:</span>
-                        <span id="total_price">$<%= subtotal %></span>
+                        <span id="total_price">₹<%= subtotal %></span>
                     </div>
                     <% } else { %>
                     <p>Your cart is empty.</p>
@@ -265,7 +286,7 @@
                     <input type="hidden" id="couponsData" value='<%= JSON.stringify(coupons) %>'>
                     <div class="coupon-section">
                         <!-- Applied Coupon Section (Initially hidden) -->
-                        <div id="appliedCouponSection" class="d-none border-dashed p-3 mb-4">
+                        <div id="appliedCouponSection" class="d-none border border-2 border-dashed p-3 mb-4">
                             <div class="d-flex justify-content-between">
                                 <div>
                                     <strong>You Save: ₹<span id="appliedCouponDiscount"></span></strong><br>
@@ -359,8 +380,10 @@ async function coupon() {
             const data = await response.json();
             document.getElementById("total_price").innerText = "₹"+data.newTotalPrice;
             document.getElementById("couponFeedback").innerText = "Coupon applied successfully!";
+            document.getElementById("appliedCouponSection").classList.remove('d-none');
             document.getElementById("appliedCouponDiscount").innerHTML=data.discountAmount
             document.getElementById("appliedCouponCode").innerHTML=data.coupon_name
+            document.getElementById("total_price").innerHTML="₹"+data.order_amount
 
             disableForm()
 
@@ -419,6 +442,7 @@ async function checkout(event) {
         const addressElement = document.querySelector('input[name="addressId"]:checked');
         const paymentMethodElement = document.querySelector('input[name="paymentType"]:checked');
         const appliedCoupon=document.getElementById('couponCode').value;
+       const amount=document.getElementById("total_price").value
         
         if (!addressElement) {
             Swal.fire({
@@ -443,7 +467,7 @@ async function checkout(event) {
         let response = await fetch("/placeOrder", {
             method: "post",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ paymentType, addressId,appliedCoupon })
+            body: JSON.stringify({ paymentType, addressId,appliedCoupon ,amount})
         });
 
         if (response.ok) {

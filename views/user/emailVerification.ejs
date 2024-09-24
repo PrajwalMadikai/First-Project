@@ -44,7 +44,7 @@
     if (timeleft <= 0) {
         clearInterval(timer);
         localStorage.removeItem('timeleft'); // Clear storage when time is up
-        document.getElementById('otp-timer').innerHTML = `Didn’t receive OTP?<button class="btn btn-primary"> <a href='/otp-resent' class='text-danger text-decoration-none'>Resend OTP</a></button>`;
+        document.getElementById('otp-timer').innerHTML = `Didn’t receive OTP?<button class="btn btn-primary ml-3" style="background-color:transparent; border:none"> <a href='/otp-resent' class='text-danger text-decoration-none'>Resend OTP</a></button>`;
     }
 }, 1000);
 
