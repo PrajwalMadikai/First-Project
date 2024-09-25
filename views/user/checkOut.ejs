@@ -150,7 +150,7 @@ html {
     </style>
 </head>
 <div class="container">
-    <form action="/placeOrder" method="POST" id="orderForm">
+    <form   id="orderForm">
         <div class="row">
             <div class="col-md-7">
                 <div class="billing-details">
@@ -343,7 +343,7 @@ html {
 
                     <!-- Place Order Button -->
                     <div class="d-flex justify-content-center">
-                        <button type="submit" class="btnplace mt-2 " onclick="checkout(event)">PLACE ORDER</button>
+                        <button type="button" class="btnplace mt-2 " onclick="checkout(event)">PLACE ORDER</button>
                     </div>
                 </div>
             </div>
@@ -442,7 +442,8 @@ async function checkout(event) {
         const addressElement = document.querySelector('input[name="addressId"]:checked');
         const paymentMethodElement = document.querySelector('input[name="paymentType"]:checked');
         const appliedCoupon=document.getElementById('couponCode').value;
-       const amount=document.getElementById("total_price").value
+     
+       
         
         if (!addressElement) {
             Swal.fire({
@@ -467,7 +468,7 @@ async function checkout(event) {
         let response = await fetch("/placeOrder", {
             method: "post",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ paymentType, addressId,appliedCoupon ,amount})
+            body: JSON.stringify({ paymentType, addressId,appliedCoupon })
         });
 
         if (response.ok) {

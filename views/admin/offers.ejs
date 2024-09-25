@@ -56,6 +56,70 @@
 .custom-width {
     width: 100px; /* Adjust as needed */
 }
+#editOfferFormContainer {
+    display: none; /* Initially hidden */
+    background-color: #f9f9f9; /* Light background */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    max-width: 600px; /* Maximum width for the form */
+    margin: 20px auto; /* Center the form on the page */
+}
+
+#editOfferFormContainer .header {
+    display: flex;
+    justify-content: space-between; /* Space between title and cancel button */
+    align-items: center;
+    border-bottom: 1px solid #ddd; /* Line below header */
+    padding-bottom: 10px;
+}
+
+#editOfferFormContainer .header h5 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #333; /* Darker text */
+}
+
+#editOfferFormContainer .btn-close {
+    font-size: 1.2rem;
+    background: none;
+    border: none;
+    color: #888; /* Slightly lighter cancel icon */
+}
+
+#editOfferFormContainer .btn-close:hover {
+    color: #333; /* Darker on hover */
+}
+
+#editOfferFormContainer .body {
+    padding-top: 15px;
+}
+
+#editOfferForm .form-control {
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    transition: all 0.3s ease;
+}
+
+#editOfferForm .form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Blue border and shadow on focus */
+}
+
+#editOfferForm .btn-primary {
+    width: 100%; /* Full width button */
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #007bff; /* Bootstrap primary blue */
+    border: none;
+    font-size: 1.1rem;
+}
+
+#editOfferForm .btn-primary:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
 
 </style>
 
@@ -133,76 +197,98 @@
           </ul>
     </nav>
 
-    <div class="mb-3">Offer Managment</div>
-     <!-- Navigation for offer types -->
-     <ul class="nav nav-tabs mb-4" id="offerTabs">
+    <div class="mb-3">Offer Management</div>
+    <!-- Navigation for offer types -->
+    <ul class="nav nav-tabs mb-4" id="offerTabs">
         <li class="nav-item me-5">
-            <a class="nav-link active custom-tab " id="productOffersTab" href="javascript:void(0)" onclick="showOfferSection('productOffers')">Product Offers</a>
+            <a class="nav-link active custom-tab" id="productOffersTab" href="javascript:void(0)" onclick="showOfferSection('productOffers')">Product Offers</a>
         </li>
         <li class="nav-item me-5">
-            <a class="nav-link custom-tab " id="categoryOffersTab" href="javascript:void(0)" onclick="showOfferSection('categoryOffers')">Category Offers</a>
+            <a class="nav-link custom-tab" id="categoryOffersTab" href="javascript:void(0)" onclick="showOfferSection('categoryOffers')">Category Offers</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link custom-tab " id="referralOffersTab" href="javascript:void(0)" onclick="showOfferSection('referralOffers')">Referral Offers</a>
-        </li>
+         
     </ul>
-
-     <!-- Offer sections -->
-     <div id="offerContent" class="main-content flex-grow-1">
+    
+    <!-- Offer sections -->
+    <div id="offerContent" class="main-content flex-grow-1">
         <!-- Product Offers (default section) -->
         <div id="productOffers" class="offer-section">
             <h4>Product Offers</h4>
             <div class="d-flex justify-content-end">
-                <button class="mb-3 addBtn border-0" onclick="showAddOfferForm()">
-                    + Add Offer
-                </button>
+                <button class="mb-3 addBtn border-0" onclick="showAddOfferForm()">+ Add Offer</button>
             </div>
-             
-     <!-- Add Product Offer Form -->
-<div id="addProductOfferForm" class="mt-4 p-4 border rounded bg-light" style="display: none; width: 1100px;">
-    <h5 class="mb-4">Add Product Offer</h5>
-    <form id="add-productOffer">
-        <div id="productOffer-error" class="alert alert-danger d-none"></div>
-        
-        <div class="mb-3">
-            <label for="productId" class="form-label">Select Product</label>
-            <select name="productId" class="form-select" id="">
-                <option value="">Select product</option>
-                <% products.forEach(product => { %>
-                <option value="<%= product._id %>" class="mb-1" ><%= product.title %></option>
-                <% }) %>
-            </select>
-            <p id="productId-notvalid" class="text-danger fs-14 d-none"></p>
-        </div>
-
-        <div class="mb-3">
-            <label for="productDiscountPercentage" class="form-label">Discount Percentage</label>
-            <input id="productDiscountPercentage" class="form-control" name="productDiscountPercentage" type="text" placeholder="Enter discount percentage">
-            <p id="productDiscountPercentage-notvalid" class="text-danger fs-14 d-none"></p>
-        </div>
-
-        <div class="mb-3">
-            <label for="ProductOffExpiry" class="form-label">Expires at</label>
-            <input id="ProductOffExpiry" type="datetime-local" class="form-control" name="ProductOffExpiry">
-            <p id="ProductOffExpiry-notvalid" class="text-danger fs-14 d-none"></p>
-        </div>
-
-        <div class="d-flex justify-content-between">
-            <button type="submit" class="btn btn-success">Save changes</button>
-            <button type="button" class="btn btn-secondary" onclick="hideAddOfferForm()">Cancel</button>
-        </div>
-    </form>
-</div>
-
-
-            <!-- product offers list -->
+            <div id="editOfferFormContainer" style="display: none;">
+                <div class="content">
+                    <div class="header">
+                        <h5>Edit Offer</h5>
+                        <!-- Cancel button to hide the form -->
+                        <button type="button" id="cancelButton" class="btn-close" aria-label="Close">cancel</button>
+                    </div>
+                    <div class="body">
+                        <form id="editOfferForm">
+                            <!-- Hidden input for product ID -->
+                            <input type="input" id="editproductId" name="editproductId">
+                            
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Product Name</label>
+                                <input type="text" class="form-control" id="Editname" name="Editname" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="discount" class="form-label">Discount (%)</label>
+                                <input type="number" class="form-control" id="Editdiscount" name="Editdiscount" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="date" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="Editdate" name="Editdate" required>
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="editOffer()">Save changes</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <!-- Add Product Offer Form -->
+            <div id="addProductOfferForm" class="mt-4 p-4 border rounded bg-light" style="display: none; width: 1100px;">
+                <h5 class="mb-4">Add Product Offer</h5>
+                <form id="add-productOffer">
+                    <div id="productOffer-error" class="alert alert-danger d-none"></div>
+                    
+                    <div class="mb-3">
+                        <label for="productId" class="form-label">Select Product</label>
+                        <select name="productId" class="form-select" id="productId">
+                            <option value="">Select product</option>
+                            <% products.forEach(product => { %>
+                            <option value="<%= product._id %>" class="mb-1"><%= product.title %></option>
+                            <% }) %>
+                        </select>
+                        <p id="productId-notvalid" class="text-danger fs-14 d-none"></p>
+                    </div>
+    
+                    <div class="mb-3">
+                        <label for="productDiscountPercentage" class="form-label">Discount Percentage</label>
+                        <input id="productDiscountPercentage" class="form-control" name="productDiscountPercentage" type="text" placeholder="Enter discount percentage">
+                        <p id="productDiscountPercentage-notvalid" class="text-danger fs-14 d-none"></p>
+                    </div>
+    
+                    <div class="mb-3">
+                        <label for="ProductOffExpiry" class="form-label">Expires at</label>
+                        <input id="ProductOffExpiry" type="datetime-local" class="form-control" name="ProductOffExpiry">
+                        <p id="ProductOffExpiry-notvalid" class="text-danger fs-14 d-none"></p>
+                    </div>
+    
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-success">Save changes</button>
+                        <button type="button" class="btn btn-secondary" onclick="hideAddOfferForm()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+    
+            <!-- Product Offers List -->
             <div class="table-responsive border mt-2">
                 <table class="table table-striped" style="width: 1250px;">
                     <thead>
                         <tr>
-                            <th class="checkbox-align">
-                                <input type="checkbox" id="selectAll">
-                            </th>
                             <th scope="col">Product</th>
                             <th scope="col">Image</th>
                             <th scope="col">Discount Percentage (%)</th>
@@ -213,22 +299,18 @@
                     </thead>
                     <tbody>
                         <% offerProductsList.forEach(offerProduct => { %>
-                        <tr id="product-<%= offerProduct.productId %>" class="align-middle">
-                            <th class="checkbox-align">
-                                <input type="checkbox" id="selectAll">
-                            </th>
+                        <tr id="product-<%= offerProduct._id %>" class="align-middle">
+                          
                             <td><%= offerProduct.title %></td>
                             <td><img src="/public/product_img/<%= offerProduct.image.image1 %>" alt="" style="width: 50px; height: 50px;"></td>
                             <td class="text text-center"><%= offerProduct.discount %>%</td>
                             <td><%= new Date(offerProduct.expireAt).toLocaleString('en-US', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }) %></td>
                             <td class="<%= offerProduct.coupon_valid ? 'text-success' : 'text-danger' %>"><%= offerProduct.coupon_valid ? 'active' : 'expired' %></td>
                             <td class="text-end">
-                                <button class="border-0" onclick="deleteProductOffer('/admin/deleteProductOffer/<%= offerProduct.productId %>','<%= offerProduct.productId %>')">
-                                    <i class="fa-solid fa-trash text-danger fs-4"></i>
-                                </button>
-                                <button class="border-0">
-                                    <i class="fas fa-edit text-primary fs-4"></i>
-                                </button>
+                                <button class="border-0 btn " style="background-color: black;color:white" onclick="deleteProductOffer('<%= offerProduct._id %>')">Delete</button>
+                                <button class="border-0 btn btn-success" onclick="editProductOffer('<%= offerProduct._id %>', '<%= offerProduct.title%>', '<%= offerProduct.discount %>', '<%= offerProduct.expireAt %>')">Edit</button>
+
+
                             </td>
                         </tr>
                         <% }) %>
@@ -237,114 +319,217 @@
             </div>
         </div>
     
-            <!-- Category Offers Section -->
-            <div id="categoryOffers" class="offer-section">
-                <h4>Category Offers</h4>
-                <div class="d-flex justify-content-end">
-                    <button class="mb-3 addBtn border-0" onclick="showAddCategoryOfferForm()">
-                        + Add Offer
-                    </button>
-                </div>
-        
-                <!-- Add Category Offer Form -->
-                <div id="addCategoryOfferForm" class="mt-4 p-4 border rounded bg-light" style="display: none; width: 1100px;">
-                    <h5 class="mb-4">Add Category Offer</h5>
-                    <form id="add-categoryOffer">
-                        <div id="categoryOffer-error" class="alert alert-danger d-none"></div>
-        
-                        <div class="mb-3">
-                            <label for="categoryId" class="form-label">Select Category</label>
-                            <select name="categoryId" class="form-select" id="">
-                                <option value="">Select category</option>
-                                <% categories.forEach(category => { %>
-                                <option value="<%= category._id %>" class="mb-1"><%= category.name %></option>
-                                <% }) %>
-                            </select>
-                            <p id="categoryId-notvalid" class="text-danger fs-14 d-none"></p>
-                        </div>
-        
-                        <div class="mb-3">
-                            <label for="categoryDiscountPercentage" class="form-label">Discount Percentage</label>
-                            <input id="categoryDiscountPercentage" class="form-control" name="categoryDiscountPercentage" type="text" >
-                            <p id="categoryDiscountPercentage-notvalid" class="text-danger fs-14 d-none"></p>
-                        </div>
-        
-                        <div class="mb-3">
-                            <label for="categoryOffExpiry" class="form-label">Expires at</label>
-                            <input id="categoryOffExpiry" type="datetime-local" class="form-control" name="categoryOffExpiry">
-                            <p id="categoryOffExpiry-notvalid" class="text-danger fs-14 d-none"></p>
-                        </div>
-        
-                        <div class="d-flex justify-content-between">
-                            <button type="submit" class="btn btn-success">Save changes</button>
-                            <button type="button" class="btn btn-secondary" onclick="hideAddCategoryOfferForm()">Cancel</button>
-                        </div>
-                    </form>
-                </div>
-        
-                <!-- Category Offers List -->
-                <div class="table-responsive border mt-2">
-                    <table class="table table-striped" style="width: 1250px;">
-                        <thead>
-                            <tr>
-                                <th class="checkbox-align">
-                                    <input type="checkbox" id="selectAll">
-                                </th>
-                                <th scope="col">Category</th>
-                                <th scope="col">Discount Percentage (%)</th>
-                                <th scope="col">Expires At</th>
-                                <th scope="col">Status</th>
-                                <th scope="col" class="text-end">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% offerCategoryList.forEach(offerCategory => { %>
-                            <tr id="category-<%= offerCategory._id %>" class="align-middle"> 
-                                <th class="checkbox-align"> 
-                                    <input type="checkbox" id="selectAll">
-                                </th>
-                                <td><%= offerCategory.name %></td>
-                                <td><%= offerCategory.discount %> %</td>
-                                <td><%= new Date(offerCategory.expireAt).toLocaleString('en-US', { 
-                                    day: '2-digit', month: '2-digit', year: 'numeric', 
-                                    hour: '2-digit', minute: '2-digit', second: '2-digit', 
-                                    hour12: true 
-                                }) %></td>
-                                <td class="<%= offerCategory.coupon_valid ? 'text-success' : 'text-danger' %>"><%= offerCategory.coupon_valid ? 'active' : 'expired' %></td>
-                                <td class="text-end">
-                                    <button class="border-0" onclick="deleteCategoryOffer('/admin/deleteCategoryOffer/<%= offerCategory._id %>')">
-                                        <i class="fa-solid fa-trash text-danger fs-4"></i>
-                                    </button> 
-                                    <button class="border-0">
-                                        <i class="fas fa-edit text-primary fs-4"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <% }) %>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-        <!-- Referral Offers (hidden by default) -->
-        <div id="referralOffers" class="offer-section" style="display: none;">
-            <h4>Referral Offers</h4>
+        <!-- Category Offers Section -->
+        <div id="categoryOffers" class="offer-section" style="display: none;">
+            <h4>Category Offers</h4>
             <div class="d-flex justify-content-end">
-                <button class="mb-3 primary-btn border-0" data-bs-toggle="modal" data-bs-target="#addReferelOfferModal">
-                    <a href="#" class="text-decoration-none text-white ">+ Add Offer</a>   
-                </button>
+                <button class="mb-3 addBtn border-0" onclick="showAddCategoryOfferForm()">+ Add Offer</button>
             </div>
-            <p>Here you can manage your referral offers.</p>
-
-        </div>
-    </div>
     
-</div>        
+            <!-- Add Category Offer Form -->
+            <div id="addCategoryOfferForm" class="mt-4 p-4 border rounded bg-light" style="display: none; width: 1100px;">
+                <h5 class="mb-4">Add Category Offer</h5>
+                <form id="add-categoryOffer">
+                    <div id="categoryOffer-error" class="alert alert-danger d-none"></div>
+    
+                    <div class="mb-3">
+                        <label for="categoryId" class="form-label">Select Category</label>
+                        <select name="categoryId" class="form-select" id="">
+                            <option value="">Select category</option>
+                            <% categories.forEach(category => { %>
+                            <option value="<%= category._id %>" class="mb-1"><%= category.name %></option>
+                            <% }) %>
+                        </select>
+                        <p id="categoryId-notvalid" class="text-danger fs-14 d-none"></p>
+                    </div>
+    
+                    <div class="mb-3">
+                        <label for="categoryDiscountPercentage" class="form-label">Discount Percentage</label>
+                        <input id="categoryDiscountPercentage" class="form-control" name="categoryDiscountPercentage" type="text">
+                        <p id="categoryDiscountPercentage-notvalid" class="text-danger fs-14 d-none"></p>
+                    </div>
+    
+                    <div class="mb-3">
+                        <label for="categoryOffExpiry" class="form-label">Expires at</label>
+                        <input id="categoryOffExpiry" type="datetime-local" class="form-control" name="categoryOffExpiry">
+                        <p id="categoryOffExpiry-notvalid" class="text-danger fs-14 d-none"></p>
+                    </div>
+    
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-success">Save changes</button>
+                        <button type="button" class="btn btn-secondary" onclick="hideAddCategoryOfferForm()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+    
+            <!-- Category Offers List -->
+            <div class="table-responsive border mt-2">
+                <table class="table table-striped" style="width: 1250px;">
+                    <thead>
+                        <tr>
+                             
+                            <th scope="col">Category</th>
+                            <th scope="col">Discount Percentage (%)</th>
+                            <th scope="col">Expires At</th>
+                            <th scope="col">Status</th>
+                            <th scope="col" class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% offerCategoryList.forEach(offerCategory => { %>
+                        <tr id="category-<%= offerCategory._id %>" class="align-middle"> 
+                            
+                            <td><%= offerCategory.name %></td>
+                            <td class="text text-start"><%= offerCategory.discount %>%</td>
+                            <td><%= new Date(offerCategory.expireAt).toLocaleString('en-US', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }) %></td>
+                            <td class="<%= offerCategory.coupon_valid ? 'text-success' : 'text-danger' %>"><%= offerCategory.coupon_valid ? 'active' : 'expired' %></td>
+                            <td class="text-end">
+                                <button class="border-0 btn btn-danger" onclick="deleteCategoryOffer('<%= offerCategory._id %>')">
+                                    Delete
+                                </button>
+                                 
+                            </td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    
+        
+    </div>
+    <script>
+        function editProductOffer(id, title, discount, expireAt) {
+            console.log("editProductOffer called with:", id);
+    
+            document.getElementById('Editname').value = title.trim(); // Ensure no extra spaces
+            document.getElementById('Editdiscount').value = discount;
+    
+            const date = new Date(expireAt);
+            const formattedDate = date.toISOString().split('T')[0];
+            document.getElementById('Editdate').value = formattedDate;
+    
+            document.getElementById('editproductId').value = id;
+    
+            document.getElementById('editOfferFormContainer').style.display = 'block';
+        }
+    
+        document.getElementById('cancelButton').addEventListener('click', function() {
+            document.getElementById('editOfferFormContainer').style.display = 'none';
+        });
+    
+    function editOffer() {
 
+    // Collect form data
+    let productId = document.getElementById('editproductId').value;
+    let name = document.getElementById('Editname').value;
+    let discount = document.getElementById('Editdiscount').value;
+    let date = document.getElementById('Editdate').value;
 
+    // Send data to the server
+    fetch(`/admin/update-product-offer/${productId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({productId,name,discount,date})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                title: 'Success!',
+                text: 'Product offer updated successfully.',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                document.getElementById('editOfferFormContainer').style.display = 'none';
+                window.location.reload()
+            });
+        } else {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Failed to update the product offer.',
+                icon: 'error',
+                confirmButtonText: 'Try Again'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
 
+    </script>
+<script src="https://kit.fontawesome.com/a5e10914c4.js" crossorigin="anonymous"></script>
+ 
 <script>
-   
+   async function deleteProductOffer(productId) {
+    try {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You want to remove the offer",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+          }).then((result)=>{
+            if(result.isConfirmed)
+          {
+           fetch(`/admin/deleteProductOffer/${productId}`,{
+            method:"post",
+            headers:{"Content-Type":"application/json"},
+            
+           }).then(response => response.json())
+           .then((result)=>{
+            if(result.success)
+           {
+            window.location.reload()
+           }
+           })
+          }
+
+          })
+    } catch (error) {
+        console.log(error);
+        
+    }
+    
+   }
+   async function deleteCategoryOffer(categoryId) {
+    try {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You want to remove the offer",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+          }).then((result)=>{
+            if(result.isConfirmed)
+          {
+           fetch(`/admin/deleteCategoryOffer/${categoryId}`,{
+            method:"post",
+            headers:{"Content-Type":"application/json"},
+            
+           }).then(response => response.json())
+           .then((result)=>{
+            if(result.success)
+           {
+            window.location.reload()
+           }
+           })
+          }
+
+          })
+    } catch (error) {
+        console.log(error);
+        
+    }
+    
+   }
 
 
     function showAddOfferForm() {
@@ -392,9 +577,7 @@ function hideAddCategoryOfferForm() {
         case 'categoryOffers':
             document.getElementById('categoryOffersTab').classList.add('active');
             break;
-        case 'referralOffers':
-            document.getElementById('referralOffersTab').classList.add('active');
-            break;
+       
     }
 }
 
@@ -503,6 +686,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+
+ 
  
 
 //==========add category offer==========//
@@ -578,89 +763,10 @@ categoryOfferForm.addEventListener('submit', event =>{
     
 })
 
-
-//===========delete product offer===========//
-function deleteProductOffer(url,productId){
-    try {
-
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You want to remove the offer",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!"
-          })
-          .then(result => {
-            if(result.isConfirmed){
-
-                fetch(url,{
-                    method:'DELETE',
-                    headers:{
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(result => {
-                    if(result.success){
-                        document.getElementById(`product-${productId}`).remove()
-                        console.log(result.message)
-                    }else{
-        
-                    }
-                })
-                .catch(error => console.error('error',error))
-
-            }
-          })
-    } catch (error) {
-        conosole.error('something went wrong',error)
-    }
-}
+ 
 
 
-
-//===========delete category offer===========//
-function deleteCategoryOffer(url,categoryId){
-    console.log('categoryid',categoryId)
-    try {
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You want to remove the offer",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!"
-          })
-          .then(result => {
-            if(result.isConfirmed){
-
-                fetch(url,{
-                    method:'DELETE',
-                    headers:{
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(result => {
-                    if(result.success){
-                       document.getElementById(`category-${categoryId}`).remove()
-                       console.log(result.message)
-                    }else{
-        
-                    }
-                })
-                .catch(error => console.error('error',error))
-
-            }
-          })
-        
-    } catch (error) {
-        conosole.error('something went wrong',error)
-    }
-}
+ 
  </script>
 
 <%-include('../partials/adminFooter')  %>

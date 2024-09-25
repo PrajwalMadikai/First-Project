@@ -134,7 +134,7 @@
                             </select>
                           </td>
 
-                          <td>₹<%= order.totalAmount %></td>
+                          <td>₹<%= product.price %></td>
 
                           <% if(product.status==='Pending'){ %>
                           <form action="/admin/delivered/<%= product._id %>" method="POST">

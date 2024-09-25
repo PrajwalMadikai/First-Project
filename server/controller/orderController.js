@@ -46,13 +46,13 @@ async function updateProductStock(products, checkProducts) {
 
 exports.placeOrder = async (req, res) => {
     try {
-        const { addressId, paymentType,appliedCoupon,amount} = req.body;
+        const { addressId, paymentType,appliedCoupon} = req.body;
         
         let user = await User.findOne({ email: req.session.userAuth });
         let cart = await Cart.findOne({ user_id: user._id }).populate('items.product_id');
         
         // Make sure you have the updated total_price
-        let totalPrice = Math.floor(amount);
+        let totalPrice = cart.total_price
         console.log("new cart price:",totalPrice);
       
 
@@ -242,7 +242,7 @@ exports.getOrderDetail=async(req,res)=>{
         let user=await User.findOne({ email: req.session.userAuth });
         let order=await Order.findOne({userId:user._id,'products._id':id})
         
-        const product = order.products.find(p => p._id.toString() === id);
+        const product = order. products.find(p => p._id.toString() === id);
         
         res.render('./user/orderDetail',{order,user,product})
     } catch (error) {
@@ -342,7 +342,7 @@ exports.couponApply = async (req, res) => {
             product.final_price = Math.floor(finalPrice);
 
             console.log(`Product: ${product.product_id}, Original Price: ${product.price}, Final Price: ${finalPrice}, Applied Discount: ${appliedDiscount}`);
-
+            
             return {
                 ...product,
                 discounted_price: finalPrice,
@@ -367,7 +367,7 @@ exports.couponApply = async (req, res) => {
         // Log new total price
         console.log("New Total Price:", newTotalPrice);
 
-     
+        cart.total_price=newTotalPrice
         // Save the updated cart after updating total_price
         await cart.save();
 

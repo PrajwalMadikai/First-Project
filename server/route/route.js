@@ -11,6 +11,7 @@ const profileController=require('../controller/profileController')
 const orderController=require('../controller/orderController')
 const productController=require('../controller/productController')
 const whistlistController=require('../controller/whistlistController')
+const walletController=require('../controller/walletController')
 const isValid=require('../middleware/isBlock');
 const order = require('../model/order');
 
@@ -92,7 +93,8 @@ router.post('/cancelOrder/:id',isAuthenticate.isLogin,orderController.cancelProd
 router.post('/apply-coupon',isAuthenticate.isLogin,orderController.couponApply)
 
 //   <-- Wallet -->
-router.get('/wallet-amount',isAuthenticate.isLogin,profileController.addAmount)
+router.post('/wallet-amount',isAuthenticate.isLogin,walletController.addAmount)
+router.post('/wallet-veryfypayment',isAuthenticate.isLogin,walletController.verifyPaymentPOST)
 
 // <-- Whistlist -->
 router.get('/whistlist',isAuthenticate.isLogin,whistlistController.loadWhistlist)

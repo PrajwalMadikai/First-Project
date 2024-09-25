@@ -10,9 +10,16 @@ exports.getProfile=async(req,res)=>{
         let user=await User.findOne({email: req.session.userAuth})
         const info = await Address.find({ userId: user._id })
         const wallet=await Wallet.find({userId:user._id})
-        let orders=await Order.find({userId:user._id,"products.status":"Returned"})
+        let orders = await Order.find(
+            { userId: user._id, products: { $elemMatch: { status: "Returned" } } },
+            { "products.$": 1 }  // This will return only the matched product(s)
+        );
+        
+        // Map the returned orders to extract the returned products
+        let returnedProducts = orders.map(order => order.products[0]);  // Extract only the products
+
          
-        res.render('./user/profile', { user,info,wallet,orders});
+        res.render('./user/profile', { user,info,wallet,orders:returnedProducts});
         
     } catch (error) {
         console.log(error);
@@ -175,13 +182,4 @@ exports.getProfile=async(req,res)=>{
     }
  }
 
- exports.addAmount=async(req,res)=>{
-    try {
-        const {amount}=req.body
-        
-        
-    } catch (error) {
-        console.log(error);
-        
-    }
- }
+ 

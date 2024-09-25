@@ -39,6 +39,15 @@ const trendView= new schema({
         type:Boolean,
         required:false
     },
+    refferal_code:{
+        type:String
+    },
+    used_refferal:{
+        type:Number
+    },
+    expireAt:{
+        type:Date
+    },
     createdAt:{
         type:Date,
         default:Date.now()

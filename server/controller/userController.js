@@ -1,13 +1,15 @@
 const user=require('../model/userSchema')
 const mongoose=require('mongoose')
-let bcrypt=require('bcrypt')
-let nodemailer=require('nodemailer')
-let userOtpVerification=require('../model/otpSchema')
-let productSchema=require('../model/productSchema')
-let categorySchema=require('../model/categorySchema')
+const bcrypt=require('bcrypt')
+const nodemailer=require('nodemailer')
+const userOtpVerification=require('../model/otpSchema')
+const productSchema=require('../model/productSchema')
+const categorySchema=require('../model/categorySchema')
 const User=require('../model/userSchema')
-let Cart=require('../model/addtoCart')
+const Cart=require('../model/addtoCart')
+const Wallet=require('../model/wallet')
 const jwt=require('jsonwebtoken')
+const crypto = require('crypto');
  
 
 
@@ -34,6 +36,7 @@ exports.signPost=async(req,res)=>{
         phone:req.body.phone,
         email:req.body.email,
         password:req.body.password,
+        used_refferal:req.body.refferal,
         isBlock:false,
         isAdmin:false
 
@@ -42,7 +45,21 @@ exports.signPost=async(req,res)=>{
 
     req.session.user=newUser;
     req.session.userEmail=req.body.email;
-      
+
+    // Generate the referral code
+    const namePrefix = req.body.firstName.slice(0, 3).toUpperCase(); // First 3 letters of the first name
+    const randomId = crypto.randomBytes(4).toString('hex'); // Generate a random 4-byte hex string
+    newUser.refferal_code = `${namePrefix}-${randomId}`; // Combine them to form the referral code
+     let walletUser=await user.findOne({refferal_code:req.body.referral})
+     if(walletUser)
+     {
+      await Wallet.findOneAndUpdate({referral_code:req.body.refferal},
+        {$inc:{balance:500}}
+      )
+
+     }
+
+
     const otp=`${Math.floor(1000+Math.random()*9000)}`;
 
         const mailOptions = {
@@ -300,6 +317,12 @@ exports.loginPost=async(req,res)=>{
         req.session.isBlock=findUser.isBlock;
         req.session.userInfo=findUser
         req.session.userId=findUser._id
+
+        let wallet=new Wallet({
+            userId:findUser._id,
+            referral_code:findUser.refferal_code
+        })
+        await Wallet.create(wallet)
          
         console.log('User Email sign:', req.session.userEmail);
         console.log('Is Block sign:', req.session.isBlock);

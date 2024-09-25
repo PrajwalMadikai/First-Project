@@ -62,6 +62,9 @@ router.post('/add-coupon',isAdminAuth,adminController.addCoupon)
 router.get('/offerManagment',isAdminAuth,adminController.offerLoad)
 router.post('/offerManagment/addProductOffer',isAdminAuth,adminController.productOffer)
 router.post('/offerManagment/addCategoryOffer',isAdminAuth,adminController.categoryOffer)
+router.post('/deleteProductOffer/:id',isAdminAuth,adminController.deleteProductOffer)
+router.post('/update-product-offer/:id',isAdminAuth,adminController.updateProductOffer)
+router.post('/deleteCategoryOffer/:id',isAdminAuth,adminController.deleteCategoryOffer)
 
 //sales report
 // router.get('/sales-report',isAdminAuth,adminController.loadSalesReport)

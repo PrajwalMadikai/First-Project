@@ -197,21 +197,14 @@ exports.approveReturn=async(req,res)=>{
         // Get the price of the product being returned
         const product = order.products.find(product => product._id.equals(id));
         const productPrice = product.price;  // Assuming price is a field in the product object
-        console.log("returned price:", productPrice);
         
   
          const wallet = await Wallet.findOne({ userId: user._id });
         
-         if (wallet) {
+         
              wallet.balance +=Number(productPrice);
              await wallet.save();
-         } else {
-             const newWallet = new Wallet({
-                 userId: user._id,
-                 balance: productPrice  
-             });
-             await newWallet.save();
-         }
+          
 
         res.redirect('/admin/orderList')
 
@@ -270,7 +263,8 @@ exports.offerLoad=async(req,res)=>{
         let offerProductsList=await fileUpload.find({coupon_valid:true})
         let categories=await category.find()
         let offerCategoryList=await category.find({coupon_valid:true})
-        res.render('./admin/offers',{products,offerProductsList,categories,offerCategoryList})
+        let users=await user.find()
+        res.render('./admin/offers',{products,offerProductsList,categories,offerCategoryList,user:users})
     } catch (error) {
         console.log(error);
         
@@ -292,7 +286,7 @@ exports.productOffer = async (req, res) => {
         const categoryDiscount = categories.length > 0 ? categories[0].discount : 0; // Get the category discount if it exists
 
         // Calculate the effective discount percentage
-        const effectiveDiscountPercentage =Number(discountPercentage) + Number(categoryDiscount);
+        const effectiveDiscountPercentage =Number(discountPercentage) > Number(categoryDiscount) ? Number(discountPercentage) : Number(categoryDiscount);
         
 
         // Calculate the new price after applying the effective discount
@@ -323,7 +317,6 @@ exports.productOffer = async (req, res) => {
 exports.categoryOffer = async (req, res) => {
     try {
         const { categoryId, discountPercentage, expirAt } = req.body;
-        console.log('expu',expirAt);
         
 
         await category.findByIdAndUpdate(categoryId, {
@@ -343,7 +336,88 @@ exports.categoryOffer = async (req, res) => {
     }
 };
 
+ 
 
+exports.deleteProductOffer = async (req, res) => {
+    try {
+        let id = req.params.id;
+        const product = await fileUpload.findById(id); 
+
+        if (product) {
+            await fileUpload.findByIdAndUpdate(id, {
+                $set: {
+                    discount: "", 
+                    coupon_valid: false,  
+                    price: product.oldPrice 
+                }
+            });
+            res.json({ success: true, message: "Offer removed and price reset" });
+        } else {
+            res.status(404).json({ success: false, message: "Product not found" });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+exports.updateProductOffer = async (req, res) => {
+    try {
+        // const productId = req.params.productId;
+        const { productId,name, discount, date } = req.body;
+
+        const product = await fileUpload.findById(productId);
+        if (!product) {
+            return res.status(404).json({ success: false, message: "Product not found" });
+        }
+
+        const categories = await category.find({ name: product.category });
+
+        const categoryDiscount = categories.length > 0 ? categories[0].discount : 0;
+
+        const effectiveDiscountPercentage = Number(discount) > Number(categoryDiscount) ? Number(discount) : Number(categoryDiscount);
+
+        const discountAmount = (product.price * effectiveDiscountPercentage) / 100;
+        const newPrice = product.price - discountAmount;
+
+        await fileUpload.findByIdAndUpdate(productId, {
+            $set: {
+                title: name,
+                discount: effectiveDiscountPercentage,
+                price: Math.floor(newPrice),
+                expireAt: date 
+            }
+        });
+
+        res.json({ success: true, message: "Product offer updated successfully" });
+    } catch (error) {
+        console.log("Error during update:", error);
+        res.status(500).json({ success: false, message: "Error updating product offer" });
+    }
+};
+
+
+exports.deleteCategoryOffer=async(req,res)=>{
+    try {
+        let categoryId=req.params.id
+        console.log("cate",categoryId);
+        await category.findByIdAndUpdate(categoryId,
+            {
+                $set:
+                {
+                    coupon_valid:false,
+                    discount:"",
+                    expireAt:""
+                }
+            }
+        )
+        res.json({success:true,message:"Category Offer removed"})
+        
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
 
 // exports.loadSalesReport=async(req,res)=>{
 //     try {

@@ -7,11 +7,28 @@ const walletschema=new schema({
         ref:'users'
     },
     balance:{
-        type:Number
+        type:Number,
+        default:0
     },
-    credited:{
-        type:Number
-    }
+    referral_code:{
+        type:String
+    },
+    wallet_history:[
+       {
+         date:{
+            type:Date
+           },
+           amount:{
+            type:Number
+           },
+           description:{
+            type:String
+           },
+           transactionType:{
+            type:String
+           }
+       }
+    ]
 })
 
 module.exports=mongoose.model('wallet',walletschema)
