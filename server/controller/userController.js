@@ -28,15 +28,15 @@ exports.signGet=async(req,res)=>{
 exports.signPost=async(req,res)=>{
 
   try {
-         
+       const {firstName,lastName,email,phone,password,refferal}=req.body  
 
         let newUser= new user({
-        firstName:req.body.firstName,
-        lastName:req.body.lastName,
-        phone:req.body.phone,
-        email:req.body.email,
-        password:req.body.password,
-        used_refferal:req.body.refferal,
+        firstName:firstName,
+        lastName: lastName,
+        phone:phone,
+        email:email,
+        password:password,
+        used_refferal:refferal,
         isBlock:false,
         isAdmin:false
 
@@ -47,18 +47,29 @@ exports.signPost=async(req,res)=>{
     req.session.userEmail=req.body.email;
 
     // Generate the referral code
-    const namePrefix = req.body.firstName.slice(0, 3).toUpperCase(); // First 3 letters of the first name
+    const namePrefix = firstName.slice(0, 3).toUpperCase(); // First 3 letters of the first name
     const randomId = crypto.randomBytes(4).toString('hex'); // Generate a random 4-byte hex string
     newUser.refferal_code = `${namePrefix}-${randomId}`; // Combine them to form the referral code
-     let walletUser=await user.findOne({refferal_code:req.body.referral})
+
+    console.log('refferal:',newUser.refferal_code);
+    
+     let walletUser=await user.findOne({refferal_code:refferal})
      if(walletUser)
      {
-      await Wallet.findOneAndUpdate({referral_code:req.body.refferal},
-        {$inc:{balance:500}}
-      )
-
-     }
-
+      
+        await Wallet.findOneAndUpdate(
+            { referral_code: refferal },
+            {
+                $set: {
+                    'wallet_history.date': Date.now(),
+                    'wallet_history.amount': 500,
+                    'wallet_history.transactionType': "Referral Reward",
+                },
+                $inc: { balance: 500 }
+            }
+        );
+        
+    }
 
     const otp=`${Math.floor(1000+Math.random()*9000)}`;
 
@@ -87,10 +98,9 @@ exports.signPost=async(req,res)=>{
         
 
        console.log("OTP sented");
+
        res.redirect('/otp-page')
-        
-        
-    
+
     } catch (error) {
         console.log(error);
         

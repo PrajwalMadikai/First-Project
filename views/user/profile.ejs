@@ -227,6 +227,7 @@ body {
             <p class="mb-1"><strong>Name:</strong> <%= user.firstName %></p>
             <p class="mb-1"><strong>Email Address:</strong> <%= user.email %></p>
             <p class="mb-1"><strong>Contact:</strong> <%= user.phone %></p>
+            <p class="mb-1"><strong>Refferal Code</strong> <%= user.refferal_code %></p>
 
             <!-- Button Container -->
             <div class="d-flex justify-content-end align-items-center">
@@ -320,86 +321,7 @@ body {
                     </div>
                 </div>
                 
-                <div id="addAddressModal" class="modal">
-<div class="modal-content">
-    <span class="close" onclick="closeAddAddressModal()">&times;</span>
-    <h2>Add Address</h2>
-    <form id="addAddressForm" onsubmit="saveAddress(event)">
-        
-        <div class="col-12 d-flex main_flex_div">
-        <div class="col-4 d-flex flex-column inner_flex_div">
-            <label for="name">Name:</label>
-        <input type="text" id="name" required><br>
-        </div>
-        <div class="col-4 d-flex flex-column inner_flex_div">
-            <label for="mobile">Mobile No.:</label>
-        <input type="tel" id="mobile" required pattern="[0-9]{10}">
-        </div>
-        <div class="col-4 d-flex flex-column inner_flex_div">
-             <label for="pincode">Pin code:</label>
-        <input type="text" id="pincode" required><br>
-
-        </div>
-        </div>
-        
-        
-         <div class="col-12 d-flex main_flex_div">
-        
-        <div class="col-4 d-flex flex-column inner_flex_div">
-            <label for="locality">Locality:</label>
-        <input type="text" id="locality" required><br>
-        </div>
-
-        <div class="col-4 d-flex flex-column inner_flex_div">
-           <label for="city">City/District/Town:</label>
-        <input type="text" id="city" required><br>
-
-        </div>
-        
-        <div class="col-4 d-flex flex-column inner_flex_div">
-           <label for="state">State:</label>
-        <select id="state" required>
-            <option value="">Select a state</option>
-            <option value="State 1">State 1</option>
-            <option value="State 2">State 2</option>
-            <option value="State 3">State 3</option>
-        </select><br>
-        </div>
-        
-        </div>
-        
-         <div class="col-12 d-flex main_flex_div">
-        <div class="col-12 d-flex flex-column inner_flex_div">
-            <label for="address">Address:</label>
-         <textarea id="address" required></textarea><br>
-        </div>
-       
-        </div>
-        
-        
-         <div class="col-12 d-flex main_flex_div">
-        <div class="col-6 d-flex flex-column inner_flex_div">
-              <label for="landmark">Landmark (Optional):</label>
-        <input type="text" id="landmark"><br>
-
-        </div>
-        <div class="col-6 d-flex flex-column inner_flex_div">
-           <label for="alternatePhone">Alternate Phone (Optional):</label>
-        <input type="tel" id="alternatePhone" pattern="[0-9]{10}"><br>
-        </div>
-
-        
-        </div>
-        
-         <div class="col-12 d-flex button_div">
-         <button type="submit">Save</button>
-        <button type="button" onclick="closeAddAddressModal()">Cancel</button>
-        </div>
-        
-        
-    </form>
-</div>
-</div>
+ 
 
 
                 </div>

@@ -81,7 +81,7 @@
                         Continue with Google
                     </a>
 
-                    <form action="/signup" method="POST" id="signupForm" onsubmit="return validateRegister()">
+                    <form action="/signup" method="post" id="signupForm" onsubmit="return validateRegister()">
                         <div class="mb-3">
                             <input type="text" class="form-control" id="firstName" placeholder="First Name" name="firstName"  >
                             <p class="text d-flex justify-content-end text-danger" id="name-error"></p>
@@ -112,7 +112,7 @@
                         <div class="text text-danger text-bold d-flex justify-content-end mt-3 mb-3"><%= message.error %></div>
 
                         <div class="mb-4 text-center">
-                            <button type="submit" class="btn btn-primary signup-btn" >Sign Up</button>
+                            <button type="submit" class="btn btn-primary signup-btn">Sign Up</button>
                         </div>
                         <div class="text-center">
                             <p>Already have an account? <a href="/" class="fw-bold text-dark">Login here!</a></p>
@@ -182,12 +182,43 @@
         document.getElementById('cpassword-error').textContent="Password doesnt match!"
       return false;
       }
-      
         return true;
         
       };
          
         </script>
+
+
+<!-- <script>
+    function signup(){
+
+        const name = document.getElementById('firstName').value;
+        const lastName = document.getElementById('lastName').value;
+        const email = document.getElementById('email').value;
+        const mobile = document.getElementById('phone').value;
+        const password = document.getElementById('password').value;
+        const refferal=document.getElementById('refferal_code').value;
+
+        fetch('/signup',{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({name,lastName,email,mobile,password,refferal})
+        }).then((response)=>{
+            if(response.ok)
+           {
+            window.location.href='/otp-page'
+          }else{
+            Swal.fire({
+            icon: 'warning',
+            title: 'Invalid Refferal Code',
+            text: 'Please check the refferal code.',
+            confirmButtonText: 'OK'
+        });
+        }
+        })
+        
+    }
+</script> -->
 </body>
 
 </html>
