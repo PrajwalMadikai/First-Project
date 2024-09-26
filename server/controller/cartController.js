@@ -3,66 +3,65 @@ const Cart=require("../model/addtoCart")
 const User=require("../model/userSchema")
 
 
-exports.addCart=async(req,res)=>{
+exports.addCart = async (req, res) => {
     try {
-        
-        const id=req.params.id;
-    
-        const quantity = req.body.quantity;
-
-        
-        const newProduct=await Product.findOne({_id:id});
-        const newUser=await User.findOne({email: req.session.userAuth});
-        let quantityValue =Number(quantity,10)
-        let cartPrice=quantityValue*newProduct.price;
-
-       
-        
-
-        let cartItem=await Cart.findOne({user_id:newUser._id})
-        
-        if(cartItem)
-        {
-            const itemIndex=cartItem.items.findIndex(item=> item.product_id.toString()=== newProduct._id.toString())
-
-            if(itemIndex > -1)
-            {
-                cartItem.items[itemIndex].quantity+=parseInt(quantity)
-                cartItem.items[itemIndex].price+=cartPrice
-            }else{
-                cartItem.items.push({
-                    product_id:newProduct._id,
-                    stock:newProduct.stock,
-                    quantity:quantityValue,
-                    price:cartPrice,
-                    createdAt:Date.now(),
-                })
-                cartItem.total_price = cartItem.total_price + cartPrice ;
-            }
-        }else{
-                cartItem=new Cart({
-                    user_id:newUser._id,
-                    items:[{
-                        product_id:newProduct._id,
-                        stock:newProduct.stock,
-                        quantity:quantityValue,
-                        price:cartPrice,
-                        createdAt:Date.now(),
-                    }]
-                });
-                cartItem.total_price=cartItem.items.reduce((acc,item)=> acc+item.price,0)
+      const id = req.params.id;
+      const quantity = req.body.quantity;
+  
+      const newProduct = await Product.findOne({ _id: id });
+      const newUser = await User.findOne({ email: req.session.userAuth });
+      let quantityValue = Number(quantity, 10);
+      let cartPrice = quantityValue * newProduct.price;
+  
+      let cartItem = await Cart.findOne({ user_id: newUser._id });
+  
+      if (cartItem) {
+        const itemIndex = cartItem.items.findIndex(
+          (item) => item.product_id.toString() === newProduct._id.toString()
+        );
+  
+        if (itemIndex > -1) {
+          cartItem.items[itemIndex].quantity += parseInt(quantity);
+          cartItem.items[itemIndex].price += cartPrice;
+  
+          cartItem.total_price += cartPrice;
+        } else {
+          cartItem.items.push({
+            product_id: newProduct._id,
+            stock: newProduct.stock,
+            quantity: quantityValue,
+            price: cartPrice,
+            createdAt: Date.now(),
+          });
+  
+          cartItem.total_price += cartPrice;
         }
-         
-
-        await cartItem.save()
-        console.log('item saved');
-        
-        return res.status(200).json({ success: true, message: "Item added to cart" });
+      } else {
+        cartItem = new Cart({
+          user_id: newUser._id,
+          items: [
+            {
+              product_id: newProduct._id,
+              stock: newProduct.stock,
+              quantity: quantityValue,
+              price: cartPrice,
+              createdAt: Date.now(),
+            },
+          ],
+          total_price: cartPrice,  
+        });
+      }
+  
+      await cartItem.save();
+      console.log("Added to Cart!!");
+  
+      return res.status(200).json({ success: true, message: "Item added to cart" });
     } catch (error) {
-        console.log(error);
-        
+      console.log(error);
+      return res.status(500).json({ success: false, message: "Error adding item to cart" });
     }
-}
+  };
+  
 exports.getCart=async(req,res)=>{
     try {
 

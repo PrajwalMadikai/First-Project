@@ -384,6 +384,7 @@ exports.loginPost=async(req,res)=>{
  exports.shirtGet=async(req,res)=>{
     try {
         let user=await User.findOne({email:req.session.user})
+        let category=await categorySchema.find({})
         const sort = req.query.sort || '';
         const query = ''; // Ensure query is always defined
         const searchQuery = req.query.query || ''; 
@@ -401,7 +402,7 @@ exports.loginPost=async(req,res)=>{
         const product = await productSchema.find({category:"Shirt", isBlock: false ,title: { $regex: searchQuery, $options: 'i' } })
             .sort(sortOption);
 
-           res.render('./user/shirt',{product,sort,user,searchQuery })
+           res.render('./user/shirt',{product,sort,user,searchQuery,category})
          
     } catch (error) {
         console.log(error);
@@ -415,9 +416,9 @@ exports.loginPost=async(req,res)=>{
         const id=new mongoose.Types.ObjectId(req.params.id)
         let productData=await productSchema.findOne({_id:id})
         let relatedProduct=await productSchema.find({category:productData.category}).limit(6)
-        let cart=await Cart.findOne({user_id:user._id,'items.product_id':id})
+        // let cart=await Cart.findOne({user_id:user._id,'items.product_id':id})
 
-        res.render('./user/productView',{productData,relatedProduct,user,cart})
+        res.render('./user/productView',{productData,relatedProduct,user})
          
         
     } catch (error) {

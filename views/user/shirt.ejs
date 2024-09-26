@@ -26,18 +26,15 @@
                 <!-- Categories Section -->
                 <div class="mt-4">
                     <h6 class="font-weight-bold">CATEGORIES</h6>
+                    <% category.forEach((element)=>{ %>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="tshirts">
+                        <input class="form-check-input" type="checkbox" id="tshirts" value="<%= element._id %>">
                         <label class="form-check-label" for="tshirts">
-                            Tshirts <span class="text-muted">(150567)</span>
+                            <%= element.name %> <span class="text-muted">()</span>
                         </label>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="lounge-tshirts">
-                        <label class="form-check-label" for="lounge-tshirts">
-                            Lounge Tshirts <span class="text-muted">(1397)</span>
-                        </label>
-                    </div>
+                    
+                    <% }) %>
                 </div>
             
                 <!-- Brand Section -->

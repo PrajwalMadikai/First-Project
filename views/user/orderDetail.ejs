@@ -221,15 +221,15 @@ document.getElementById('cancelForm').addEventListener('submit', async function(
     event.preventDefault(); // Prevent the form from submitting the traditional way
 
     let reason = document.getElementById('cancelReason').value;
-    let quantity='<%= product.quantity %>';
+    let quantity = '<%= product.quantity %>';
     let productId = '<%= product.productId %>'; // Get the product ID from your template (EJS)
-    console.log("product id ",productId);
+    console.log("Product ID: ", productId);
 
     try {
         let response = await fetch(`/cancelOrder/${productId}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ returnReason: reason,quantity,id:productId })  
+            body: JSON.stringify({ returnReason: reason, quantity })  
         });
 
         if (response.ok) {
@@ -259,5 +259,6 @@ document.getElementById('cancelForm').addEventListener('submit', async function(
         });
     }
 });
+
 </script>
 <%- include("../partials/homeFooter") %>

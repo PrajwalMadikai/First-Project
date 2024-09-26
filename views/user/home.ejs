@@ -206,24 +206,27 @@
             <div class="row mt-4">
                 <% product.forEach(element=>{%>
                 <div class="col-md-3 mb-5">
+                    <a href=/product/<%= element._id %> style="text-decoration: none; color: inherit;">
                     <div class="card product-card text-start ">
                         <div class="position-relative">
-                            <span class="discount-badge">-40%</span>
-                             
+                            <% if(element.discount){%>
+                            <span class="discount-badge"><%= element.discount %>%</span>
+                             <% } %>
                             <img src="/public/product_img/<%= element.image.image1 %>" alt="Product 1">
-                            <span class="add-to-cart">Add to Cart</span>
+                            <button class="add-to-cart" onclick="addToCart(event)">Add to Cart</button>
                         </div>
                         
                         <h4 class="product-name pl-2 pt-3 mb-0"><%= element.title%></h4>
                          
                         
-                        <p class="pl-2 mb-0"> <strong class="pr-2 text-black"> ₹<%=element.price  %></strong><del class="fs-6">$<%= element.oldPrice %></del></p>
+                        <p class="pl-2 mb-0"> <strong class="pr-2 text-black"><strong>Rs.</strong><%=element.price  %></strong><del class="fs-6"><%= element.oldPrice %></del></p>
                         <div class="ratings pl-2">★★★★☆ (88)</div>  
                         <!-- <div class="heart  d-flex  mt-3">
                              
                             <i class="fa-regular fa-heart"></i>
                         </div> -->
                     </div>
+                    </a>
                 </div>
                 <% }); %>
         
@@ -288,10 +291,11 @@
                     <div class="col-md-3">
                         <div class="card product-card text-start ">
                             <div class="position-relative">
+                                <input type="hidden" name="productId" id="productId" value="<%=element._id  %>">
                                 <span class="discount-badge">-40%</span>
                                  
                                 <img src="/public/product_img/<%= element.image.image1 %>" alt="Product 1">
-                                <button class="add-to-cart">Add to Cart</button>
+                                <button class="add-to-cart" >Add to Cart</button>
                             </div>
                             
                             <h4 class="product-name pl-2 pt-3 mb-0"><%= element.title %></h4>
@@ -454,5 +458,38 @@
     </div>
     <!-- Search model end -->
    
+<script>
+        function addToCart(event){
+            event.stopPropagation();
+        const productId=document.getElementById('productId').value;
+        const quantity=1;
 
+        fetch(`/cart/${productId}`,{
+            method:'post',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({quantity:quantity})
+        }).then(res=>{
+        if(res.ok){
+            Swal.fire({
+                    title: 'Success!',
+                    text: 'The item has been added to your cart.',
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    position: 'top',
+                    toast: true,
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+        })
+        
+        }
+        else{
+            console.log("something went wrong")
+        }
+        })
+        .catch(err=>{
+        console.error('Error:',err)
+        })
+        }
+</script>
     <%- include('../partials/homeFooter') %>

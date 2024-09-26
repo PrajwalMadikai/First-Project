@@ -129,6 +129,17 @@ exports.productUnblock=async(req,res)=>{
    
 } 
 
+exports.loadBrands=async(req,res)=>{
+    try {
+        
+        res.render('./admin/brands')
+        
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+
 exports.logout=async(req,res)=>{
     req.session.destroy((err)=>{
     if(err)
@@ -275,33 +286,34 @@ exports.productOffer = async (req, res) => {
     try {
         const { productId, discountPercentage, expirAt } = req.body;
 
-        // Fetch the product by ID
+        // Validate discountPercentage
+        if (isNaN(discountPercentage) || discountPercentage === '') {
+            return res.status(400).json({ success: false, message: "Invalid discount percentage" });
+        }
+
         const product = await fileUpload.findById(productId);
         if (!product) {
             return res.status(404).json({ success: false, message: "Product not found" });
         }
 
-        // Fetch the category associated with the product
         const categories = await category.find({ name: product.category });
-        const categoryDiscount = categories.length > 0 ? categories[0].discount : 0; // Get the category discount if it exists
+        const categoryDiscount = categories.length > 0 ? categories[0].discount : 0;
 
-        // Calculate the effective discount percentage
-        const effectiveDiscountPercentage =Number(discountPercentage) > Number(categoryDiscount) ? Number(discountPercentage) : Number(categoryDiscount);
-        
+        // Ensure categoryDiscount is a valid number
+        if (isNaN(categoryDiscount)) {
+            return res.status(400).json({ success: false, message: "Invalid category discount" });
+        }
 
-        // Calculate the new price after applying the effective discount
+        const effectiveDiscountPercentage = Number(discountPercentage) > Number(categoryDiscount) ? Number(discountPercentage) : Number(categoryDiscount);
+
         const discountAmount = (product.price * effectiveDiscountPercentage) / 100;
-        console.log("Discount Amount:", discountAmount);
-        
         const newPrice = product.price - discountAmount;
-        console.log("New Price:", newPrice);
 
-        // Update the product with the new price and offer details
         await fileUpload.findByIdAndUpdate(productId, {
             $set: {
                 oldPrice: Math.floor(product.price),
                 price: Math.floor(newPrice),
-                discount: effectiveDiscountPercentage,  
+                discount: effectiveDiscountPercentage,
                 expireAt: expirAt,
                 coupon_valid: true
             }
@@ -313,6 +325,7 @@ exports.productOffer = async (req, res) => {
         res.status(500).json({ success: false, message: "Error applying product offer" });
     }
 };
+
 
 exports.categoryOffer = async (req, res) => {
     try {
@@ -363,7 +376,6 @@ exports.deleteProductOffer = async (req, res) => {
 
 exports.updateProductOffer = async (req, res) => {
     try {
-        // const productId = req.params.productId;
         const { productId,name, discount, date } = req.body;
 
         const product = await fileUpload.findById(productId);
@@ -419,16 +431,30 @@ exports.deleteCategoryOffer=async(req,res)=>{
     }
 }
 
-// exports.loadSalesReport=async(req,res)=>{
-//     try {
-//         let totalOrders=await Order.countDocuments({})
-//         let allOrders=await Order.find({})
-//         let totalAmount =allOrders.reduce((sum, order) => sum + order.totalAmount, 0);
-//         let totalDiscount=
-//         let order=await Order.find({})
-//         res.render("./admin/salesReport",{order,totalOrders,totalAmount})
-//     } catch (error) {
-//         console.log(error);
+exports.loadSalesReport = async (req, res) => {
+    try {
+        let totalOrders = await Order.countDocuments({});
+
+        let orders = await Order.find({}).populate('products');
         
-//     }
-// }
+        
+
+        let totalAmount = orders.reduce((sum, order) => sum + order.totalAmount, 0);
+
+        let totalDiscount = orders.reduce((totalDiscountSum, order) => {
+            const orderDiscount = order.products.reduce((sum, product) => {
+                return sum + (product.price - product.discounted_price);
+            }, 0);
+            return totalDiscountSum + orderDiscount;
+        }, 0);
+
+        res.render("./admin/salesReport", {
+            orders,
+            totalOrders,
+            totalAmount,
+            totalDiscount,   
+        });  
+    } catch (error) {
+        console.log(error);
+    }
+};

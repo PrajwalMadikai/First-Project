@@ -36,6 +36,8 @@ router.delete('/product/delete/:id',isAdminAuth,productController.deleteProduct)
 router.get('/product/block/:id',isAdminAuth,adminController.productBlock)
 router.get('/product/unblock/:id',isAdminAuth,adminController.productUnblock)
 
+router.get('/brands',isAdminAuth,adminController.loadBrands)
+
 // //category
 
 router.get('/category',isAdminAuth,categoryController.getCategory)
@@ -66,8 +68,8 @@ router.post('/deleteProductOffer/:id',isAdminAuth,adminController.deleteProductO
 router.post('/update-product-offer/:id',isAdminAuth,adminController.updateProductOffer)
 router.post('/deleteCategoryOffer/:id',isAdminAuth,adminController.deleteCategoryOffer)
 
-//sales report
-// router.get('/sales-report',isAdminAuth,adminController.loadSalesReport)
+// sales report
+router.get('/sales-report',isAdminAuth,adminController.loadSalesReport)
 
 
 // logout 

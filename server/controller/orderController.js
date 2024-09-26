@@ -65,8 +65,9 @@ exports.placeOrder = async (req, res) => {
             image: item.product_id.image.image1,
             name: item.product_id.title,
             quantity: item.quantity,
-            price: item.final_price
-        }));
+            price: item.final_price,
+            discounted_price: item.price - item.final_price  
+                    }));
 
         let productIds = products.map(product => product.productId);
         let checkProducts = await Product.find({ _id: { $in: productIds } });
@@ -142,6 +143,8 @@ exports.placeOrder = async (req, res) => {
 exports.orderHistory=async(req,res)=>{
     try {
         let user=await User.findOne({email: req.session.userAuth})
+        console.log("loged user:",user.email);
+        
         let orders=await Order.find({userId:user._id}).populate('products.productId') 
         res.render('./user/orderHistory',{orders,user})
         
@@ -269,28 +272,39 @@ exports.returnProduct=async(req,res)=>{
     }
 }
  
-exports.cancelProduct=async(req,res)=>{
+exports.cancelProduct = async (req, res) => {
     try {
-        const id=req.params.id
-        const {returnReason,quantity}=req.body
-        let stockInc=Number(quantity)
-        console.log("prod Id:",id);
+        const productId = req.params.id;  
+        const { returnReason, quantity } = req.body;
+        let stockInc = Number(quantity);
+        console.log("reason:",returnReason);
         
-        let user=await User.findOne({ email: req.session.userAuth });
 
-        await Product.findByIdAndUpdate(id,{
-            $inc: { stock: stockInc } 
-        })
-        await Order.updateOne({userId:user._id,'products._id':id},
-            { $set: { 'products.$.status':"Cancelled",'products.$.returnReason':returnReason} }
-        )
-        res.json({success:true,message:"successfull"})
+        let user = await User.findOne({ email: req.session.userAuth });
+
+        await Product.findByIdAndUpdate(productId, {
+            $inc: { stock: stockInc }
+        });
+
+        await Order.updateOne(
+            { userId: user._id, 'products.productId': productId },   
+            {
+                $set: {
+                    'products.$.status': "Cancelled", 
+                    'products.$.returnReason': returnReason
+                }
+            }
+        );
+
+        res.json({ success: true, message: "Order cancelled successfully" });
 
     } catch (error) {
         console.log(error);
-        
+        res.status(500).json({ success: false, message: "Failed to cancel the order" });
     }
-}
+};
+
+
 exports.couponApply = async (req, res) => {
     try {
         let user = await User.findOne({ email: req.session.userAuth });
@@ -337,7 +351,9 @@ exports.couponApply = async (req, res) => {
 
             let appliedDiscount = product.price - finalPrice;
             remainingDiscount -= appliedDiscount;
-
+            
+           
+           
             // Update final_price for the product
             product.final_price = Math.floor(finalPrice);
 
