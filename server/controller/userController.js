@@ -8,6 +8,7 @@ const categorySchema=require('../model/categorySchema')
 const User=require('../model/userSchema')
 const Cart=require('../model/addtoCart')
 const Wallet=require('../model/wallet')
+const Brand=require('../model/brandSchema')
 const jwt=require('jsonwebtoken')
 const crypto = require('crypto');
  
@@ -381,13 +382,18 @@ exports.loginPost=async(req,res)=>{
     }
  }
 
- exports.shirtGet=async(req,res)=>{
+ exports.shirtGet = async (req, res) => {
     try {
-        let user=await User.findOne({email:req.session.user})
-        let category=await categorySchema.find({})
+        let user = await User.findOne({ email: req.session.user });
+        let category = await categorySchema.find({});
+        let brands = await Brand.find({});
+
         const sort = req.query.sort || '';
-        const query = ''; // Ensure query is always defined
-        const searchQuery = req.query.query || ''; 
+        const searchQuery = req.query.query || '';
+
+        const categories = req.query.categories ? req.query.categories.split(',') : []; // Split categories into an array
+        const brandz = req.query.brands ? req.query.brands.split(',') : []; // Split brands into an array
+
         let sortOption = {};
         if (sort === 'priceLowHigh') {
             sortOption = { price: 1 };
@@ -398,15 +404,65 @@ exports.loginPost=async(req,res)=>{
         } else if (sort === 'nameZA') {
             sortOption = { title: -1 };
         }
-    
-        const product = await productSchema.find({category:"Shirt", isBlock: false ,title: { $regex: searchQuery, $options: 'i' } })
-            .sort(sortOption);
 
-           res.render('./user/shirt',{product,sort,user,searchQuery,category})
-         
+        // Build the filter conditions
+        let filterConditions = {
+            isBlock: false,
+            title: { $regex: searchQuery, $options: 'i' }
+        };
+
+        // Add category filter if provided
+        if (categories.length > 0) {
+            filterConditions.category = { $in: categories }; // Adjust based on your schema
+        }
+
+        // Add brand filter if provided
+        if (brandz.length > 0) {
+            filterConditions.brand = { $in: brandz }; // Adjust based on your schema
+        }
+
+        // Find products with the built filter conditions
+        const product = await productSchema.find(filterConditions).sort(sortOption);
+
+        res.render('./user/shirt', { product, sort, user, searchQuery, category, brands });
+
     } catch (error) {
         console.log(error);
-        
+        res.status(500).send('Server error'); // Send a response in case of an error
+    }
+};
+
+
+
+ exports.filterProduct=async(req,res)=>{
+    try {
+        const selectedCategories = req.query.categories ? req.query.categories.split(',') : [];
+        const selectedBrands = req.query.brands ? req.query.brands.split(',') : [];
+        const priceRange = req.query.priceRange || '';
+
+        let query = { isBlock: false };
+
+        // Apply category filter if any are selected
+        if (selectedCategories.length > 0) {
+            query.category = { $in: selectedCategories };
+        }
+
+        // Apply brand filter if any are selected
+        if (selectedBrands.length > 0) {
+            query.brand = { $in: selectedBrands };
+        }
+
+        // Apply price range filter
+        if (priceRange) {
+            query.price = { $lte: priceRange };
+        }
+
+        const products = await productSchema.find(query);
+
+        res.json({ products });
+    } catch (error) {
+        console.log('Error fetching filtered products:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
  }
 

@@ -59,6 +59,7 @@ router.get('/',controller.homeGet)
 //  <-- Shirt -->
 
 router.get('/shirt',controller.shirtGet)
+router.get('/filter-products',controller.filterProduct)
 
 //  <-- view product  -->
 

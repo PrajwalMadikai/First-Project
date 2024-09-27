@@ -15,219 +15,176 @@
   <link rel="stylesheet" href="/public/css/admin.css">
   <!-- endinject -->
   <link rel="shortcut icon" href="../../images/favicon.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <style>
+    
+  </style>
 </head>
 
 <body>
-  <div class="container-scroller">
-    <!-- partial:../../partials/_navbar.html -->
-    <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
-      <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-        <a class="navbar-brand brand-logo" href="index.html"><img src="images/logo.svg" alt="logo"/></a>
-        <a class="navbar-brand brand-logo-mini" href="index.html"><img src="images/logo-mini.svg" alt="logo"/></a>
-      </div>
-      <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
-        <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
-          <span class="icon-menu"></span>
-        </button>
-        <ul class="navbar-nav mr-lg-2">
-          <li class="nav-item nav-search d-none d-lg-block">
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="search">
-                  <i class="icon-search"></i>
-                </span>
-              </div>
-              <input type="text" class="form-control" placeholder="Search Projects.." aria-label="search" aria-describedby="search">
-            </div>
-          </li>
-        </ul>
-        <ul class="navbar-nav navbar-nav-right">
-            <li class="nav-item dropdown d-lg-flex d-none">
-              <a href="/admin/logout"><button type="button" class="btn btn-danger font-weight-bold" >Log out</button></a>
-            </li>
-          <li class="nav-item dropdown d-flex">
-            <a class="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center" id="messageDropdown" href="#" data-toggle="dropdown">
-              <i class="icon-air-play mx-0"></i>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="messageDropdown">
-              <p class="mb-0 font-weight-normal float-left dropdown-header">Messages</p>
-              <a class="dropdown-item preview-item">
-                <div class="preview-thumbnail">
-                    <img src="images/faces/face4.jpg" alt="image" class="profile-pic">
-                </div>
-                <div class="preview-item-content flex-grow">
-                  <h6 class="preview-subject ellipsis font-weight-normal">David Grey
-                  </h6>
-                  <p class="font-weight-light small-text text-muted mb-0">
-                    The meeting is cancelled
-                  </p>
-                </div>
-              </a>
-              <a class="dropdown-item preview-item">
-                <div class="preview-thumbnail">
-                    <img src="images/faces/face2.jpg" alt="image" class="profile-pic">
-                </div>
-                <div class="preview-item-content flex-grow">
-                  <h6 class="preview-subject ellipsis font-weight-normal">Tim Cook
-                  </h6>
-                  <p class="font-weight-light small-text text-muted mb-0">
-                    New product launch
-                  </p>
-                </div>
-              </a>
-              <a class="dropdown-item preview-item">
-                <div class="preview-thumbnail">
-                    <img src="images/faces/face3.jpg" alt="image" class="profile-pic">
-                </div>
-                <div class="preview-item-content flex-grow">
-                  <h6 class="preview-subject ellipsis font-weight-normal"> Johnson
-                  </h6>
-                  <p class="font-weight-light small-text text-muted mb-0">
-                    Upcoming board meeting
-                  </p>
-                </div>
-              </a>
-            </div>
-          </li>
-          <li class="nav-item dropdown d-flex mr-4 ">
-            <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center" id="notificationDropdown" href="#" data-toggle="dropdown">
-              <i class="icon-cog"></i>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
-              <p class="mb-0 font-weight-normal float-left dropdown-header">Settings</p>
-              <a class="dropdown-item preview-item">               
-                  <i class="icon-head"></i> Profile
-              </a>
-              <a class="dropdown-item preview-item">
-                  <i class="icon-inbox"></i> Logout
-              </a>
-            </div>
-          </li>
-          <li class="nav-item dropdown mr-4 d-lg-flex d-none">
-            <a class="nav-link count-indicatord-flex align-item s-center justify-content-center" href="#">
-              <i class="icon-grid"></i>
-            </a>
-          </li>
-        </ul>
-        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
-          <span class="icon-menu"></span>
-        </button>
-      </div>
-    </nav>
-    
-
-    
-    <!-- partial -->
-    <div class="container-fluid page-body-wrapper ">
-      <!-- partial:../../partials/_sidebar.html -->
-      
+  <div class="container-fluid d-flex flex-column" style="min-height: 100vh;">
+    <div class="row flex-grow-1">
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <div class="user-profile">
-          <!-- <div class="user-image">
-            <img src="../../images/faces/face28.png">
-          </div> -->
-          <div class="user-name adminName">
-             Prajwal
-          </div>
-          <div class="user-designation">
-              Admin
-          </div>
+          <div class="user-name adminName">Prajwal</div>
+          <div class="user-designation">Admin</div>
         </div>
         <%- include('../partials/adminSidebar') %>
       </nav>
       
-      <!-- partial -->
-      <div class="main-panel">
+      <div class="main-panel flex-grow-1">
         <div class="content-wrapper">
+          <!-- Alerts and other content -->
           <div class="row d-flex justify-content-center">
-            <% if(message.success) {%>
+            <% if(message.success) { %>
               <div class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert">
                 <div class="flex-grow-1">
-                  <strong><%= message.success %></strong> 
+                  <strong><%= message.success %></strong>
                 </div>
-                <button type="button" class="btn-close ms-2 ml-2" data-bs-dismiss="alert" aria-label="Close" style="background-color: transparent; border: none;"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" class="btn-close ms-2 ml-2" data-bs-dismiss="alert" aria-label="Close" style="background-color: transparent; border: none;">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
               </div>
-              
-             <% }else if(message.error) {%>
+            <% } else if(message.error) { %>
               <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center" role="alert">
                 <div class="flex-grow-1">
-                  <strong><%= message.error %></strong> 
+                  <strong><%= message.error %></strong>
                 </div>
-                <button type="button" class="btn-close ms-2 ml-2" data-bs-dismiss="alert" aria-label="Close" style="background-color: transparent; border: none;"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" class="btn-close ms-2 ml-2" data-bs-dismiss="alert" aria-label="Close" style="background-color: transparent; border: none;">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
               </div>
-              <% } %> 
+            <% } %>
           </div>
+
           <div class="row">
-         <div class="btn btn-success d-flex justify-content-end  mb-4 " ><a  href="/admin/addProduct" style="text-decoration: none; color: inherit;">Add Product</a></div>
-                  
-         <div class="table-responsive">
-
-            <table class="table table-stripped table-sm">
-             <thead>
-               <tr>
-                 <th scope="col">Product Name</th>
-                 <th scope="col">Image</th>
-                 <th scope="col">Catrgory</th>
-                 <th scope="col">Brand</th>
-                 <th scope="col">Stock</th>
-                 <th scope="col">Price</th>
-                 <th scope="col">Status</th>
-               </tr>
-             </thead>
-             <tbody>
-             <% products.forEach(element=>{ %>
-                <tr class="align-middle">
-                    <td><%=element.title %></td>
-                    <td><img class="rounded-0" src="/public/product_img/<%= element.image.image1 %>" style="width: 60px; height: auto;" alt="" ></td>
-                    <td><%=element.category %></td>
-                    <td><%=element.brand %></td>
-                    <td><%=element.stock %></td>
-                    <td><%=element.price %></td>
-                    <td class="text-end">
-                        <div class="d-flex flex-row justify-content-start gap-2">
-                          
-                         <a href="/admin/product/edit/<%= element._id%>"><button type="button" class="btn btn-warning btn-small">Edit </button></a>
-                          
-                         <% if(element.isBlock==true) { %>
-                          <a href="/admin/product/unblock/<%= element._id%>"><button type="button" class="btn btn-success btn-small ml-3">unblock </button></a>
-                           
-                          
-                          <% } else {%>
-                        
-                           <a href="/admin/product/block/<%= element._id%>" ><button type="button" class="btn btn-danger btn-small ml-3">Block </button></a>
-                             
-                            
-                           <% } %>
-                          
-                          <form action="/admin/product/delete/<%= element._id %>?_method=DELETE" method="POST" style="display:inline;">
-                            <button type="submit" class="btn btn-danger btn-small ml-3">Delete</button>
-                        </form>
-                        
-                            
-                          
-                        </div>
-                       </td>
-                </tr>
-             <% }); %>   
-              </tbody>
-            </table>
-     
+            <div class="btn btn-dark d-flex justify-content-end mb-4" data-bs-toggle="modal" data-bs-target="#addBrandModal">
+              Add Brand
             </div>
-
-       </div>
-       </div>
-       </div>
-
-      
-      
-        
+          
+            <!-- Add Brand Modal -->
+            <div class="modal fade" id="addBrandModal" tabindex="-1" aria-labelledby="addBrandModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="addBrandModalLabel">Add New Brand</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">Close</button>
+                  </div>
+                  <div class="modal-body">
+                    <form >
+                      <div class="mb-3">
+                        <label for="brandName" class="form-label">Brand Name</label>
+                        <input type="text" class="form-control" id="brandName" name="brandName" required>
+                      </div>
+                      <button type="button" onclick="addBrand(event)" class="btn btn-success">Submit</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          
+            <!-- Existing Brands Table -->
+            <div class="table-responsive">
+              <table class="table table-striped table-sm">
+                <thead>
+                  <tr class="">
+                    <th scope="col">Brand Name</th>
+                    <th scope="col " class="pl-5">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% brands.forEach(brand => { %>
+                    <tr class="align-middle">
+                      <td><%= brand.name %></td>
+                      <td class="text-end">
+                        <div class="d-flex flex-row justify-content-start gap-5">
+                          <% if(brand.isBlock==false){ %>
+                            <form action="/admin/brand-block/<%= brand._id %>" method="POST" style="display:inline;">
+                              <button type="submit" class="btn btn-danger btn-small">Block</button>
+                          </form>
+                          <% }else{ %>
+                            <form action="/admin/brand-unblock/<%= brand._id %>" method="POST" style="display:inline;">
+                              <button type="submit" class="btn btn-success btn-small">Unblock</button>
+                            </form>
+                            <% } %>
+                          <form action="/admin/brand/delete/<%= brand._id %>?_method=DELETE" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-dark btn-small ml-4">Delete</button>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+        </div>
       </div>
-      <!-- main-panel ends -->
     </div>
-    <!-- page-body-wrapper ends -->
   </div>
-  <!-- container-scroller -->
-  <!-- base:js -->
+ 
+
+
+  <script>
+function addBrand(event) {
+    event.preventDefault();
+    let brandName = document.getElementById("brandName").value.trim();  // Trim whitespace
+
+    // Check if the input is empty
+    if (!brandName) {
+        Swal.fire({
+            title: 'Validation Error!',
+            text: 'Brand name cannot be empty.',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+        });
+        return;  // Exit the function if the input is empty
+    }
+
+    fetch('/admin/brands', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ brandName })
+    })
+    .then((response) => response.json())  // Parse JSON response
+    .then((data) => {
+        if (data.success) {
+            Swal.fire({
+                title: 'Success!',
+                text: 'The brand has been added successfully.',
+                icon: 'success',
+                confirmButtonText: 'OK',
+                position: 'top',
+                toast: true,
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true
+            }).then(() => {
+                window.location.reload();  // Reload page after successful addition
+            });
+        } else {
+            Swal.fire({
+                title: 'Error!',
+                text: data.message,  // Display error message from backend
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+    })
+    .catch((error) => {
+        console.error("Error:", error);
+        Swal.fire({
+            title: 'Error!',
+            text: 'An unexpected error occurred. Please try again.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    });
+}
+
+
+</script>
   <script src="/vendors/base/vendor.bundle.base.js"></script>
   <!-- endinject -->
   <!-- inject:js -->
@@ -246,7 +203,8 @@
    <!-- End font-awesome -->
     <!-- flash  -->
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+<!-- SweetAlert2 JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>

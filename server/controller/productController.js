@@ -2,6 +2,7 @@ const user=require('../model/userSchema')
 const product=require('../model/productSchema')
 const fileUpload=require('../model/productSchema')
 const Category=require('../model/categorySchema')
+const Brand=require('../model/brandSchema')
 
 
 exports.getProduct=async (req,res)=>{
@@ -12,7 +13,8 @@ exports.getProduct=async (req,res)=>{
 exports.getaddProduct=async (req,res)=>{
         try {
             let category=await Category.find()
-            res.render('./admin/addProduct',{category})
+            let brands=await Brand.find()
+            res.render('./admin/addProduct',{category,brands})
         } catch (error) {
             
         }

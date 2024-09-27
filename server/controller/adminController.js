@@ -8,6 +8,7 @@ const User=require('../model/userSchema')
 const Coupon=require('../model/coupon')
 const mongoose=require("mongoose")
 const Wallet=require('../model/wallet')
+const Brand=require('../model/brandSchema')
  
  
 
@@ -131,15 +132,79 @@ exports.productUnblock=async(req,res)=>{
 
 exports.loadBrands=async(req,res)=>{
     try {
-        
-        res.render('./admin/brands')
+        let brands=await Brand.find()
+        res.render('./admin/brands',{brands})
         
     } catch (error) {
         console.log(error);
         
     }
 }
+exports.addBrands = async (req, res) => {
+    try {
+        const { brandName } = req.body;
+        
 
+        // Check if the brand already exists
+        let existingBrand = await Brand.findOne({ name: brandName });
+        if (existingBrand) {
+            return res.json({ success: false, message: "Brand name already exists." });
+        }
+
+        // If not, create a new brand
+        let newBrand = new Brand({
+            name: brandName,
+            isBlock: false
+        });
+        await newBrand.save();
+        res.json({ success: true, message: "Brand Added" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "An error occurred." });
+    }
+};
+
+exports.blockBrand=async(req,res)=>{
+    try {
+        let id=req.params.id
+console.log();
+
+        await Brand.findByIdAndUpdate(id,{
+            $set:{isBlock:true}
+        })
+        res.redirect('/admin/brands')
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+exports.unblockBrand=async(req,res)=>{
+    try {
+        let id=req.params.id
+
+        await Brand.findByIdAndUpdate(id,{
+            $set:{isBlock:false}
+        })
+        res.redirect('/admin/brands')
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+
+
+exports.deleteBrand=async(req,res)=>{
+    try {
+        let id=req.params.id
+        
+        await Brand.findByIdAndDelete(id)
+        res.redirect('/admin/brands')
+
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
 exports.logout=async(req,res)=>{
     req.session.destroy((err)=>{
     if(err)
@@ -412,7 +477,7 @@ exports.updateProductOffer = async (req, res) => {
 exports.deleteCategoryOffer=async(req,res)=>{
     try {
         let categoryId=req.params.id
-        console.log("cate",categoryId);
+
         await category.findByIdAndUpdate(categoryId,
             {
                 $set:
@@ -435,17 +500,17 @@ exports.loadSalesReport = async (req, res) => {
     try {
         let totalOrders = await Order.countDocuments({});
 
-        let orders = await Order.find({}).populate('products');
+        let orders = await Order.find({'products.status':"Delivered"}).populate('products');
         
         
 
         let totalAmount = orders.reduce((sum, order) => sum + order.totalAmount, 0);
 
-        let totalDiscount = orders.reduce((totalDiscountSum, order) => {
-            const orderDiscount = order.products.reduce((sum, product) => {
-                return sum + (product.price - product.discounted_price);
+        const totalDiscount = orders.reduce((sum, order) => {
+            const productDiscounts = order.products.reduce((productSum, product) => {
+                return productSum + (product.discounted_price || 0); 
             }, 0);
-            return totalDiscountSum + orderDiscount;
+            return sum + productDiscounts;
         }, 0);
 
         res.render("./admin/salesReport", {
@@ -458,3 +523,100 @@ exports.loadSalesReport = async (req, res) => {
         console.log(error);
     }
 };
+
+
+exports.postSalesReport = async (req, res) => {
+    const { filterType, startDate, endDate } = req.body;
+    let dateFilter = {};
+    
+    const now = new Date();
+
+    switch (filterType) {
+        case 'daily':
+            dateFilter = {
+                orderDate: {
+                    $gte: new Date(now.setHours(0, 0, 0, 0)),
+                    $lt: new Date(now.setHours(23, 59, 59, 999))
+                }
+            };
+            break;
+            case 'weekly':
+                const currentDate = new Date();   
+                const dayOfWeek = currentDate.getDay();
+                
+                const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;  
+                const firstDayOfWeek = new Date(currentDate);  
+                firstDayOfWeek.setDate(currentDate.getDate() - daysToSubtract); 
+                firstDayOfWeek.setHours(0, 0, 0, 0); 
+            
+                // Set the filter for the date range
+                dateFilter = {
+                    orderDate: {
+                        $gte: firstDayOfWeek, // Monday at 00:00:00.000
+                        $lt: new Date(currentDate.setHours(23, 59, 59, 999)) // End of the current day
+                    }
+                };
+                break;
+        case 'monthly':
+            dateFilter = {
+                orderDate: {
+                    $gte: new Date(now.getFullYear(), now.getMonth(), 1),
+                    $lt: new Date(now.getFullYear(), now.getMonth() + 1, 0)
+                }
+            };
+            break;
+        case 'yearly':
+            dateFilter = {
+                orderDate: {
+                    $gte: new Date(now.getFullYear(), 0, 1),
+                    $lt: new Date(now.getFullYear(), 11, 31)
+                }
+            };
+            break;
+        case 'custom':
+            if (startDate && endDate) {
+                dateFilter = {
+                    orderDate: {
+                        $gte: new Date(startDate),
+                        $lt: new Date(new Date(endDate).setHours(23, 59, 59, 999))
+                    }
+                };
+            }
+            break;
+        default:
+            dateFilter = {};
+            break;
+    }
+
+    try {
+        const orders = await Order.find({
+            products: { $elemMatch: { status: 'Delivered' } },
+            ...dateFilter  
+        }).lean();
+
+        const totalOrders = orders.length;
+        const totalAmount = orders.reduce((sum, order) => sum + order.totalAmount, 0);
+
+        const totalDiscount = orders.reduce((sum, order) => {
+            const productDiscounts = order.products.reduce((productSum, product) => {
+                return productSum + (product.discounted_price || 0); 
+            }, 0);
+            return sum + productDiscounts;
+        }, 0);
+        
+
+        res.json({
+            success: true,
+            orders,
+            totalOrders,
+            totalAmount,
+            totalDiscount,
+            filterType
+        });
+    } catch (error) {
+        console.error('Error fetching sales report:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch sales report' });
+    }
+};
+
+ 

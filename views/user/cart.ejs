@@ -76,7 +76,8 @@
                                 <!-- Total Price and Delete Button -->
                                 <div class="col-md-3 d-flex flex-column align-items-center justify-content-center">
                                     <h5 id="price_<%=element.product_id._id %>">₹<%= element.price%></h5>
-                                    <button class="btn btn-danger mt-2 delete-btn" onclick="deleteCart('<%=element.product_id._id %>')">Delete</button>
+                                    <button class="mt-2  delete-btn" onclick="deleteCart('<%= element.product_id._id %>')" style="background-color: transparent; border: 1px solid red; color: red; padding: 5px 10px; border-radius: 5px;">Remove</button>
+
                                 </div>
                             </div>
                         </div>

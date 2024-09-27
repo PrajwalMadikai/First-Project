@@ -16,116 +16,37 @@
   <!-- endinject -->
   <link rel="shortcut icon" href="../../images/favicon.png" />
 </head>
+<style>
+    html, body {
+    height: 100%;
+    margin: 0;
+}
 
-<body>
-  <div class="container-scroller">
-    <!-- partial:../../partials/_navbar.html -->
-    <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
-      <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-        <a class="navbar-brand brand-logo" href="index.html"><img src="images/logo.svg" alt="logo"/></a>
-        <a class="navbar-brand brand-logo-mini" href="index.html"><img src="images/logo-mini.svg" alt="logo"/></a>
-      </div>
-      <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
-        <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
-          <span class="icon-menu"></span>
-        </button>
-        <ul class="navbar-nav mr-lg-2">
-          <li class="nav-item nav-search d-none d-lg-block">
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="search">
-                  <i class="icon-search"></i>
-                </span>
-              </div>
-              <input type="text" class="form-control" placeholder="Search Projects.." aria-label="search" aria-describedby="search">
-            </div>
-          </li>
-        </ul>
-        <ul class="navbar-nav navbar-nav-right">
-            <li class="nav-item dropdown d-lg-flex d-none">
-              <a href="/admin/logout"><button type="button" class="btn btn-danger font-weight-bold" >Log out</button></a>
-            </li>
-          <li class="nav-item dropdown d-flex">
-            <a class="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center" id="messageDropdown" href="#" data-toggle="dropdown">
-              <i class="icon-air-play mx-0"></i>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="messageDropdown">
-              <p class="mb-0 font-weight-normal float-left dropdown-header">Messages</p>
-              <a class="dropdown-item preview-item">
-                <div class="preview-thumbnail">
-                    <img src="images/faces/face4.jpg" alt="image" class="profile-pic">
-                </div>
-                <div class="preview-item-content flex-grow">
-                  <h6 class="preview-subject ellipsis font-weight-normal">David Grey
-                  </h6>
-                  <p class="font-weight-light small-text text-muted mb-0">
-                    The meeting is cancelled
-                  </p>
-                </div>
-              </a>
-              <a class="dropdown-item preview-item">
-                <div class="preview-thumbnail">
-                    <img src="images/faces/face2.jpg" alt="image" class="profile-pic">
-                </div>
-                <div class="preview-item-content flex-grow">
-                  <h6 class="preview-subject ellipsis font-weight-normal">Tim Cook
-                  </h6>
-                  <p class="font-weight-light small-text text-muted mb-0">
-                    New product launch
-                  </p>
-                </div>
-              </a>
-              <a class="dropdown-item preview-item">
-                <div class="preview-thumbnail">
-                    <img src="images/faces/face3.jpg" alt="image" class="profile-pic">
-                </div>
-                <div class="preview-item-content flex-grow">
-                  <h6 class="preview-subject ellipsis font-weight-normal"> Johnson
-                  </h6>
-                  <p class="font-weight-light small-text text-muted mb-0">
-                    Upcoming board meeting
-                  </p>
-                </div>
-              </a>
-            </div>
-          </li>
-          <li class="nav-item dropdown d-flex mr-4 ">
-            <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center" id="notificationDropdown" href="#" data-toggle="dropdown">
-              <i class="icon-cog"></i>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
-              <p class="mb-0 font-weight-normal float-left dropdown-header">Settings</p>
-              <a class="dropdown-item preview-item">               
-                  <i class="icon-head"></i> Profile
-              </a>
-              <a class="dropdown-item preview-item">
-                  <i class="icon-inbox"></i> Logout
-              </a>
-            </div>
-          </li>
-          <li class="nav-item dropdown mr-4 d-lg-flex d-none">
-            <a class="nav-link count-indicatord-flex align-item s-center justify-content-center" href="#">
-              <i class="icon-grid"></i>
-            </a>
-          </li>
-        </ul>
-        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
-          <span class="icon-menu"></span>
-        </button>
-      </div>
-    </nav>
+.container-fluid {
+    display: flex;
+}
+
+.sidebar {
+    height: 100%; /* Make sidebar full height */
+    background-color: #000000; /* Change this to your desired background color */
+}
+
+.main-content {
+    flex-grow: 1; /* Allow main content to take remaining space */
+    padding: 20px; /* Add padding as needed */
+}
+</style>
+<body >
+  <div class="container-scroller ">
+   
     
 
     
-    <!-- partial -->
     <div class="container-fluid page-body-wrapper ">
-      <!-- partial:../../partials/_sidebar.html -->
       
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <div class="user-profile">
-          <!-- <div class="user-image">
-            <img src="../../images/faces/face28.png">
-          </div> -->
+           
           <div class="user-name adminName">
              Prajwal
           </div>
@@ -139,83 +60,84 @@
       <!-- partial -->
       <div class="main-panel">
         <div class="content-wrapper">
-            <div class="row d-flex justify-content-center">
-                <% if(message.success) { %>
-                    <div class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert">
-                        <div class="flex-grow-1">
-                            <strong><%= message.success %></strong>
+          <div class="row d-flex justify-content-center">
+            <% if(message.success) {%>
+              <div class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert">
+                <div class="flex-grow-1">
+                  <strong><%= message.success %></strong> 
+                </div>
+                <button type="button" class="btn-close ms-2 ml-2" data-bs-dismiss="alert" aria-label="Close" style="background-color: transparent; border: none;"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              
+             <% }else if(message.error) {%>
+              <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center" role="alert">
+                <div class="flex-grow-1">
+                  <strong><%= message.error %></strong> 
+                </div>
+                <button type="button" class="btn-close ms-2 ml-2" data-bs-dismiss="alert" aria-label="Close" style="background-color: transparent; border: none;"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <% } %> 
+          </div>
+          <div class="row">
+         <div class="btn btn-success d-flex justify-content-end  mb-4 " ><a  href="/admin/addProduct" style="text-decoration: none; color: inherit;">Add Product</a></div>
+                  
+         <div class="table-responsive">
+
+            <table class="table table-stripped table-sm">
+             <thead>
+               <tr>
+                 <th scope="col">Product Name</th>
+                 <th scope="col">Image</th>
+                 <th scope="col">Catrgory</th>
+                 <th scope="col">Brand</th>
+                 <th scope="col">Stock</th>
+                 <th scope="col">Price</th>
+                 <th scope="col">Status</th>
+               </tr>
+             </thead>
+             <tbody>
+             <% products.forEach(element=>{ %>
+                <tr class="align-middle">
+                    <td><%=element.title %></td>
+                    <td><img class="rounded-0" src="/public/product_img/<%= element.image.image1 %>" style="width: 60px; height: auto;" alt="" ></td>
+                    <td><%=element.category %></td>
+                    <td><%=element.brand %></td>
+                    <td><%=element.stock %></td>
+                    <td><%=element.price %></td>
+                    <td class="text-end">
+                        <div class="d-flex flex-row justify-content-start gap-2">
+                          
+                         <a href="/admin/product/edit/<%= element._id%>"><button type="button" class="btn btn-warning btn-small">Edit </button></a>
+                          
+                         <% if(element.isBlock==true) { %>
+                          <a href="/admin/product/unblock/<%= element._id%>"><button type="button" class="btn btn-success btn-small ml-3">unblock </button></a>
+                           
+                          
+                          <% } else {%>
+                        
+                           <a href="/admin/product/block/<%= element._id%>" ><button type="button" class="btn btn-danger btn-small ml-3">Block </button></a>
+                             
+                            
+                           <% } %>
+                          
+                          <form action="/admin/product/delete/<%= element._id %>?_method=DELETE" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-small ml-3">Delete</button>
+                        </form>
+                        
+                            
+                          
                         </div>
-                        <button type="button" class="btn-close ms-2 ml-2" data-bs-dismiss="alert" aria-label="Close" style="background-color: transparent; border: none;">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-                    </div>
-                <% } else if(message.error) { %>
-                    <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center" role="alert">
-                        <div class="flex-grow-1">
-                            <strong><%= message.error %></strong>
-                        </div>
-                        <button type="button" class="btn-close ms-2 ml-2" data-bs-dismiss="alert" aria-label="Close" style="background-color: transparent; border: none;">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-                    </div>
-                <% } %>
+                       </td>
+                </tr>
+             <% }); %>   
+              </tbody>
+            </table>
+     
             </div>
-    
-            <!-- Brand Section -->
-            <div class="row">
-                <div class="btn btn-primary d-flex justify-content-end mb-4" id="showBrandForm">
-                    <a href="#" style="text-decoration: none; color: inherit;">Add Brand</a>
-                </div>
-    
-                <!-- Add Brand Form (Hidden by default) -->
-                <div class="row" id="brandForm" style="display: none;">
-                    <div class="col-md-6 mx-auto">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Add New Brand</h5>
-                                <form action="/admin/brand/add" method="POST">
-                                    <div class="mb-3">
-                                        <label for="brandName" class="form-label">Brand Name</label>
-                                        <input type="text" class="form-control" id="brandName" name="brandName" required>
-                                    </div>
-                                    <button type="submit" class="btn btn-success">Submit</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                <!-- Existing Brands Table -->
-                <div class="table-responsive">
-                    <table class="table table-striped table-sm">
-                        <thead>
-                            <tr>
-                                <th scope="col">Brand Name</th>
-                                <th scope="col">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% brands.forEach(brand => { %>
-                                <tr class="align-middle">
-                                    <td><%= brand.name %></td>
-                                    <td class="text-end">
-                                        <div class="d-flex flex-row justify-content-start gap-2">
-                                            <a href="/admin/brand/edit/<%= brand._id %>">
-                                                <button type="button" class="btn btn-warning btn-small">Edit</button>
-                                            </a>
-                                            <form action="/admin/brand/delete/<%= brand._id %>?_method=DELETE" method="POST" style="display:inline;">
-                                                <button type="submit" class="btn btn-danger btn-small">Delete</button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <% }); %>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
+
+       </div>
+       </div>
+       </div>
 
       
       
@@ -227,14 +149,6 @@
   </div>
   <!-- container-scroller -->
   <!-- base:js -->
-
-  <script>
-    document.getElementById("showBrandForm").addEventListener("click", function(e) {
-        e.preventDefault();
-        const brandForm = document.getElementById("brandForm");
-        brandForm.style.display = brandForm.style.display === "none" ? "block" : "none";
-    });
-</script>
   <script src="/vendors/base/vendor.bundle.base.js"></script>
   <!-- endinject -->
   <!-- inject:js -->

@@ -36,7 +36,13 @@ router.delete('/product/delete/:id',isAdminAuth,productController.deleteProduct)
 router.get('/product/block/:id',isAdminAuth,adminController.productBlock)
 router.get('/product/unblock/:id',isAdminAuth,adminController.productUnblock)
 
+
+// <-----Brands------>
 router.get('/brands',isAdminAuth,adminController.loadBrands)
+router.post('/brands',isAdminAuth,adminController.addBrands)
+router.post('/brand-block/:id',isAdminAuth,adminController.blockBrand)
+router.post('/brand-unblock/:id',isAdminAuth,adminController.unblockBrand)
+router.delete('/brand/delete/:id',isAdminAuth,adminController.deleteBrand)
 
 // //category
 
@@ -70,6 +76,7 @@ router.post('/deleteCategoryOffer/:id',isAdminAuth,adminController.deleteCategor
 
 // sales report
 router.get('/sales-report',isAdminAuth,adminController.loadSalesReport)
+router.post('/sales-report',isAdminAuth,adminController.postSalesReport)
 
 
 // logout 

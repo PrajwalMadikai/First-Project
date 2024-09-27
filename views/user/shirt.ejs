@@ -19,93 +19,53 @@
             
             <!-- Sidebar -->
             <div class="col-lg-3 mb-4">
-              <div class="filter-sidebar p-3 border ">
-                <h5 class="font-weight-bold">FILTERS</h5>
-                <hr>
-            
-                <!-- Categories Section -->
-                <div class="mt-4">
+                <div class="filter-sidebar p-3 border">
+                    <div class="d-flex justify-content-between">
+                  <h5 class="font-weight-bold">FILTERS</h5>
+                  <button class="btn btn-dark" onclick="sortProducts()">Apply</button>
+                </div>
+                  <hr>
+              
+                  <!-- Categories Section -->
+                  <div class="mt-4">
                     <h6 class="font-weight-bold">CATEGORIES</h6>
-                    <% category.forEach((element)=>{ %>
+                    <% category.forEach((element) => { %>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="tshirts" value="<%= element._id %>">
-                        <label class="form-check-label" for="tshirts">
-                            <%= element.name %> <span class="text-muted">()</span>
-                        </label>
+                      <input class="form-check-input" type="checkbox" id="category" value="<%= element.name %>"  >
+                      <label class="form-check-label">
+                        <%= element.name %>
+                      </label>
                     </div>
-                    
                     <% }) %>
-                </div>
-            
-                <!-- Brand Section -->
-                <div class="mt-4">
-                    <h6 class="font-weight-bold d-flex justify-content-between align-items-center">
-                        BRAND
-                    </h6>
+                  </div>
+              
+                  <!-- Brand Section -->
+                  <div class="mt-4">
+                    <h6 class="font-weight-bold">BRAND</h6>
+                    <% brands.forEach((element) => { %>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="roadster">
-                        <label class="form-check-label" for="roadster">
-                            Roadster <span class="text-muted">(4703)</span>
-                        </label>
+                      <input class="form-check-input" type="checkbox" id="brand" value="<%= element.name %>"  >
+                      <label class="form-check-label">
+                        <%= element.name %>
+                      </label>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="macmerise">
-                        <label class="form-check-label" for="macmerise">
-                            macmerise <span class="text-muted">(4551)</span>
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="friskers">
-                        <label class="form-check-label" for="friskers">
-                            Friskers <span class="text-muted">(3362)</span>
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="tommy">
-                        <label class="form-check-label" for="tommy">
-                            Tommy Hilfiger <span class="text-muted">(3078)</span>
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="hrx">
-                        <label class="form-check-label" for="hrx">
-                            HRX by Hrithik Roshan <span class="text-muted">(2766)</span>
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="uspolo">
-                        <label class="form-check-label" for="uspolo">
-                            U.S. Polo Assn. <span class="text-muted">(2657)</span>
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="wrogn">
-                        <label class="form-check-label" for="wrogn">
-                            WROGN <span class="text-muted">(2216)</span>
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="greylongg">
-                        <label class="form-check-label" for="greylongg">
-                            Greylongg <span class="text-muted">(2169)</span>
-                        </label>
-                    </div>
-                </div>
-            
-                <!-- Price Section -->
-                <div class="mt-4">
+                    <% }) %>
+                  </div>
+              
+                  <!-- Price Section -->
+                  <div class="mt-4">
                     <h6 class="font-weight-bold">PRICE</h6>
                     <div class="range-slider">
-                        <input type="range" class="form-range" min="100" max="10100" id="price-range">
-                        <div class="d-flex justify-content-between">
-                            <span>₹100</span>
-                            <span>₹10,100+</span>
-                        </div>
+                      <input type="range" class="form-range" name="priceRange" min="100" max="10100" id="price-range" >
+                      <div class="d-flex justify-content-between">
+                        <span>₹100</span>
+                        <span>₹10,100+</span>
+                      </div>
                     </div>
+                  </div>
                 </div>
-            </div>
-            
-          </div>
+              </div>
+              
               
               
             <!--   -->
@@ -130,29 +90,28 @@
                      
 
 
-                <!-- Product Card 1 -->
-                <% product.forEach(element => { %>
-                    <div class="col-md-4 mb-4">
-                        <a href=/product/<%= element._id %> style="text-decoration: none; color: inherit;">
-                            <div class="card h-100 d-flex flex-column">
-                                <div class="image-container position-relative">
-                                    <img src="/public/product_img/<%= element.image.image1 %>" class="card-img-top product-image" alt="Product Image">
-                                    <div class="overlay d-flex justify-content-center align-items-center">
-                                    </div>
-                                </div>
-                                <div class="card-body d-flex flex-column justify-content-between">
-                                    <div>
-                                        <h5 class="card-title mb-0"><%= element.title %></h5>
-                                        <p class="card-text mb-0"> ₹<%= element.price %></p>
-                                        <div class="rating">
-                                            <span>&#9733;&#9733;&#9733;&#9733;&#9734;</span>
+                  <div class="product-container">
+                    <div class="row"> <!-- Add row container -->
+                        <% product.forEach(element => { %>
+                            <div class="col-md-4 mb-4"> <!-- Each product in a column -->
+                                <a href="/product/<%= element._id %>" style="text-decoration: none; color: inherit;">
+                                    <div class="card h-100 d-flex flex-column">
+                                        <div class="image-container position-relative">
+                                            <img src="/public/product_img/<%= element.image.image1 %>" class="card-img-top product-image" alt="Product Image">
+                                            <div class="overlay d-flex justify-content-center align-items-center"></div>
+                                        </div>
+                                        <div class="card-body d-flex flex-column justify-content-between">
+                                            <div>
+                                                <h5 class="card-title mb-0"><%= element.title %></h5>
+                                                <p class="card-text mb-0"> ₹<%= element.price %></p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </a>
                             </div>
-                        </a>
-                    </div>
-                <% }); %>
+                        <% }); %>
+                    </div> <!-- End row container -->
+                </div>
                 
                   
                   </div>
@@ -261,20 +220,85 @@
     </div>
  
  <script>
- function sortProducts() {
+function sortProducts() {
     const sortOption = document.getElementById('sorting-options').value;  
-    window.location.href = `/shirt?sort=${sortOption}`;
+    const categories = Array.from(document.querySelectorAll('input[type="checkbox"][id^="category"]:checked'))
+        .map(checkbox => checkbox.value).join(','); // Get selected categories
+    const brands = Array.from(document.querySelectorAll('input[type="checkbox"][id^="brand"]:checked'))
+        .map(checkbox => checkbox.value).join(','); // Get selected brands
+    window.location.href = `/shirt?sort=${sortOption}&categories=${categories}&brands=${brands}`;
 }
 
 function handleSearch() {
-        const query = document.getElementById('searchQuery').value;
-        const sortOption = document.getElementById('sorting-options').value;
-        window.location.href = `/shirt?sort=${sortOption}&query=${query}`;
-        return false;
-    }
+    const query = document.getElementById('searchQuery').value;
+    const sortOption = document.getElementById('sorting-options').value;
+    const categories = Array.from(document.querySelectorAll('input[type="checkbox"][id^="category"]:checked'))
+        .map(checkbox => checkbox.value).join(','); // Get selected categories
+    const brands = Array.from(document.querySelectorAll('input[type="checkbox"][id^="brand"]:checked'))
+        .map(checkbox => checkbox.value).join(','); // Get selected brands
+    window.location.href = `/shirt?sort=${sortOption}&categories=${categories}&brands=${brands}&query=${query}`;
+    return false;
+}
+
  
 
  
+
+ </script>
+
+ <script>
+//     function applyFilter() {
+//     // Get selected categories
+//     let selectedCategories = [];
+//     document.querySelectorAll('input[type="checkbox"][id^="category_"]:checked').forEach(checkbox => {
+//         selectedCategories.push(checkbox.value);
+//     });
+
+//     // Get selected brands
+//     let selectedBrands = [];
+//     document.querySelectorAll('input[type="checkbox"][id^="brand_"]:checked').forEach(checkbox => {
+//         selectedBrands.push(checkbox.value);
+//     });
+
+//     // Get selected price range
+//     let priceRange = document.getElementById('price-range').value;
+
+//     // Send AJAX request to filter products
+//     fetch(`/filter-products?categories=${selectedCategories.join(',')}&brands=${selectedBrands.join(',')}&priceRange=${priceRange}`)
+//         .then(response => response.json())
+//         .then(data => {
+//             // Update the product list with filtered data
+//             const productContainer = document.querySelector('.product-container');
+//             productContainer.innerHTML = ''; // Clear previous products
+
+//             data.products.forEach(product => {
+//                 const productHTML = `
+//                 <div class="row">
+//                     <div class="col-md-4 mb-4">
+//                         <a href="/product/${product._id}" style="text-decoration: none; color: inherit;">
+//                             <div class="card h-100 d-flex flex-column">
+//                                 <div class="image-container position-relative">
+//                                     <img src="/public/product_img/${product.image.image1}" class="card-img-top product-image" alt="Product Image">
+//                                     <div class="overlay d-flex justify-content-center align-items-center">
+//                                     </div>
+//                                 </div>
+//                                 <div class="card-body d-flex flex-column justify-content-between">
+//                                     <div>
+//                                         <h5 class="card-title mb-0">${product.title}</h5>
+//                                         <p class="card-text mb-0"> ₹${product.price}</p>
+//                                     </div>
+//                                 </div>
+//                             </div>
+//                         </a>
+//                     </div>
+//                     </div>
+//                 `;
+//                 productContainer.innerHTML += productHTML;
+//             });
+
+//         })
+//         .catch(error => console.log('Error fetching products:', error));
+// }
 
  </script>
 

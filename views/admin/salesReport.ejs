@@ -10,7 +10,7 @@
 }
 
 .sidebar {
-    height: 100vh; /* Make sidebar full height */
+    height: 100%; /* Make sidebar full height */
     background-color: #000000; /* Change this to your desired background color */
 }
 
@@ -18,6 +18,11 @@
     flex-grow: 1; /* Allow main content to take remaining space */
     padding: 20px; /* Add padding as needed */
 }
+ #filterType{
+    height: 35px;
+    padding-left: 15px;
+    border-radius: 5px;
+ }
  
 </style>
 <div class="container-fluid ">
@@ -52,7 +57,7 @@
 
             <!-- Buttons for downloading PDF and Excel -->
             <div class="d-flex justify-content-end gap-4 mb-3">
-                <button class="p-2 text-white border-0 mr-4" onclick="downloadSalesReport('pdf')" style="background: #212529;">Download PDF</button>
+                <button class="p-2 text-white border-0 mr-4" onclick="downloadSalesReport()" style="background: #212529;">Download PDF</button>
                 <button class="p-2 text-white border-0" onclick="downloadSalesReport('excel')" style="background: #212529;">Download Excel</button>
             </div>
 
@@ -66,21 +71,22 @@
             </div>
 
             <!-- Summary boxes -->
+            <div id="sales-report-section" class="mt-5">
             <div class="row justify-content-center gap-2 mt-3">
-                <div class="col-lg-4 bg-dark text-white text-center p-4">
+                <div class="col-lg-4 bg-dark text-white text-center p-4  ">
                     <h5>Total Orders</h5>
-                    <div><%= totalOrders %></div>
+                    <div class="total-orders"><%= totalOrders %></div>
                 </div>
-                <div class="col-lg-4 bg-dark text-white text-center p-4">
+                <div class="col-lg-4 bg-dark text-white text-center p-4 ">
                     <h5>Total Sales</h5>
-                    <div><%= totalAmount %></div>
+                    <div class="total-sales"><%= totalAmount %></div>
                 </div>
-                <div class="col-lg-4 bg-dark text-white text-center p-4">
+                <div class="col-lg-4 bg-dark text-white text-center p-4  ">
                     <h5>Total Discount</h5>
-                    <div><%= totalDiscount %></div>
+                    <div class="total-discount"><%= totalDiscount %></div>
                 </div>
             </div>
-
+             <!-- <div class="m-5"><strong>Filter By:</strong><p id="showFilter"></p></div> -->
             <!-- Table for sales report -->
             <div class="table-responsive border mt-5">
                 <table class="table table-striped table-lg">
@@ -106,70 +112,174 @@
                         <td><%= item.price %></td>
                         <td><%= item.quantity %></td>
                         <td><%= item.discounted_price %></td>
-                        <td><%= element.paymentOption %></td>
+                        <% if(element.paymentOption=='cod'){ %>
+                        <td>Cash on Delivery</td>
+                        <% }else if(element.paymentOption=='razor'){ %>
+                            <td>Razorpay</td>
+                        <% }else {%>
+                            <td>Wallet</td>
+                        <% } %>   
                         </tr>
                         <% }) %>
                         <% }) %>
                     </tbody>
                 </table>
             </div>
+
+           </div>
         </div>
     </div>
 </div>
 
 <script>
-    function handleFilterChange() {
-        const filterType = document.getElementById('filterType').value;
-        const customDateRange = document.getElementById('customDateRange');
+   function handleFilterChange() {
+    const filterType = document.getElementById('filterType').value;
+    const customDateRange = document.getElementById('customDateRange');
 
-        if (filterType === 'custom') {
-            customDateRange.style.display = 'block';
+    if (filterType === 'custom') {
+        customDateRange.style.display = 'block';
+    } else {
+        customDateRange.style.display = 'none';
+        // Optionally reset the date inputs when not in custom mode
+        document.getElementById('startDate').value = '';
+        document.getElementById('endDate').value = '';
+        // Trigger report generation on filter change
+        generateReport(filterType);
+    }
+}
+
+function generateCustomReport() {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+
+    // Ensure both dates are selected
+    if (!startDate || !endDate) {
+        if (!startDate) {
+            document.getElementById('start-date-err').classList.remove('d-none');
         } else {
-            customDateRange.style.display = 'none';
-            // Optionally reset the date inputs when not in custom mode
-            document.getElementById('startDate').value = '';
-            document.getElementById('endDate').value = '';
-            // Trigger report generation on filter change
-            generateReport(filterType);
+            document.getElementById('start-date-err').classList.add('d-none');
         }
+        if (!endDate) {
+            document.getElementById('end-date-err').innerText = 'Please select an end date';
+            document.getElementById('end-date-err').classList.remove('d-none');
+        } else {
+            document.getElementById('end-date-err').classList.add('d-none');
+        }
+        return;
     }
 
-    function generateCustomReport() {
-        const startDate = document.getElementById('startDate').value;
-        const endDate = document.getElementById('endDate').value;
+    // Trigger report generation for custom range
+    generateReport('custom', startDate, endDate);
+}
 
-        // Ensure both dates are selected
-        if (!startDate || !endDate) {
-            if (!startDate) {
-                document.getElementById('start-date-err').classList.remove('d-none');
-            } else {
-                document.getElementById('start-date-err').classList.add('d-none');
-            }
-            if (!endDate) {
-                document.getElementById('end-date-err').innerText = 'Please select an end date';
-                document.getElementById('end-date-err').classList.remove('d-none');
-            } else {
-                document.getElementById('end-date-err').classList.add('d-none');
-            }
+function generateReport(filterType, startDate = '', endDate = '') {
+    const reportData = {
+        filterType: filterType,
+        startDate: startDate,
+        endDate: endDate
+    };
+
+    // Make a POST request to your backend with the filter parameters
+    fetch('/admin/sales-report', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(reportData) // Send the data in the request body
+    })
+    .then(response => response.json())
+    .then(data => {
+        updateSalesReportTable(data.orders);
+            // Update the summary boxes
+            document.querySelector('.total-orders').innerText = data.totalOrders;
+            document.querySelector('.total-sales').innerText = data.totalAmount;
+            document.querySelector('.total-discount').innerText = data.totalDiscount;
+            // document.querySelector('#showFilter').innerText = data.filterType;
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function updateSalesReportTable(orders) {
+    const tbody = document.querySelector('table tbody');
+    tbody.innerHTML = ''; // Clear existing table data
+
+    orders.forEach(order => {
+        order.products.forEach(product => {
+            const row = `
+                 <tr class="text text-center"> 
+                <td>${new Date(order.orderDate).toLocaleDateString('en-GB')}</td>
+                <td>${product.name}</td>
+                <td><img src="/public/product_img/${product.image}" alt=""></td>
+                <td>${product.price}</td>
+                <td>${product.quantity}</td>
+                <td>${product.discounted_price}</td>
+                <td>
+                    ${order.paymentOption === 'cod' ? 'Cash on Delivery' : 
+                      order.paymentOption === 'razor' ? 'Razorpay' : 
+                      'Wallet'}
+                </td>   
+            </tr>
+            `;
+            tbody.insertAdjacentHTML('beforeend', row);
+        });
+    });
+}
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+
+
+<script>
+    async function downloadSalesReport(format) {
+        if (format === 'excel') {
+            
+            const content = document.querySelector('#sales-report-section');
+            const workbook = XLSX.utils.table_to_book(content, { sheet: "Sales Report" });
+            XLSX.writeFile(workbook, 'sales-report.xlsx');
+        }
+        const content = document.querySelector('#sales-report-section');
+
+        // Check if the content element exists
+        if (!content) {
+            console.error("Sales report section not found");
             return;
         }
 
-        // Trigger report generation for custom range
-        generateReport('custom', startDate, endDate);
-    }
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4'); // Portrait orientation, A4 size in mm
 
-    function generateReport(filterType, startDate = '', endDate = '') {
-        // Make an AJAX call to your backend with the filter parameters
-        // You can use fetch or XMLHttpRequest here
-        fetch(`/api/sales-report?filterType=${filterType}&startDate=${startDate}&endDate=${endDate}`)
-            .then(response => response.json())
-            .then(data => {
-                // Update your table with new data here
-                console.log(data); // for debugging
-            })
-            .catch(error => console.error('Error:', error));
+        // Use html2canvas to capture the element as a canvas
+        await html2canvas(content, { scale: 1 }).then(canvas => { // Scale set to 1 for smaller size
+            const imgData = canvas.toDataURL('image/png');
+
+            const imgWidth = 190; // Set desired width for the PDF content
+            const pageHeight = pdf.internal.pageSize.height;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            let heightLeft = imgHeight;
+
+            let position = 0;
+
+            // Add the image to the PDF
+            pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+
+            // Add new pages if needed
+            while (heightLeft >= 0) {
+                position = heightLeft - imgHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+            }
+
+            // Save the PDF
+            pdf.save('sales-report.pdf');
+        }).catch(error => {
+            console.error('Error capturing the element:', error);
+        });
     }
 </script>
-
 
 <%- include('../partials/adminFooter') %>
