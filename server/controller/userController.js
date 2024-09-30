@@ -50,27 +50,37 @@ exports.signPost=async(req,res)=>{
     // Generate the referral code
     const namePrefix = firstName.slice(0, 3).toUpperCase(); // First 3 letters of the first name
     const randomId = crypto.randomBytes(4).toString('hex'); // Generate a random 4-byte hex string
-    newUser.refferal_code = `${namePrefix}-${randomId}`; // Combine them to form the referral code
+    let ref= `${namePrefix}-${randomId}`; // Combine them to form the referral code
+    newUser.refferal_code=ref
 
     console.log('refferal:',newUser.refferal_code);
     
-     let walletUser=await user.findOne({refferal_code:refferal})
+     let walletUser=await Wallet.findOne({referral_code:refferal})
+     
      if(walletUser)
      {
       
-        await Wallet.findOneAndUpdate(
-            { referral_code: refferal },
-            {
-                $set: {
-                    'wallet_history.date': Date.now(),
-                    'wallet_history.amount': 500,
-                    'wallet_history.transactionType': "Referral Reward",
-                },
-                $inc: { balance: 500 }
+      let newWallet= await Wallet.findOneAndUpdate(
+            { referral_code: refferal },  
+            { 
+              $inc: { balance: 500 }, 
+              $push: { 
+                wallet_history: { 
+                  amount: 500, 
+                  date: new Date(), 
+                  transactionType: 'Refferal Reward '   
+                } 
+              }
             }
-        );
-        
+          );
+          
     }
+    
+    let wallet=new Wallet({
+        userId:newUser._id,
+        referral_code:ref
+    })
+    await Wallet.create(wallet)
 
     const otp=`${Math.floor(1000+Math.random()*9000)}`;
 
@@ -93,7 +103,7 @@ exports.signPost=async(req,res)=>{
 
        await userOtpVerification.create(newOtp)
 
-    //    await userOtpVerification.updateOne({ email: newUser.email }, { $set: { otp } });
+       await userOtpVerification.updateOne({ email: newUser.email }, { $set: { otp } });
 
        await transporter.sendMail(mailOptions)
         
@@ -329,11 +339,7 @@ exports.loginPost=async(req,res)=>{
         req.session.userInfo=findUser
         req.session.userId=findUser._id
 
-        let wallet=new Wallet({
-            userId:findUser._id,
-            referral_code:findUser.refferal_code
-        })
-        await Wallet.create(wallet)
+   
          
         console.log('User Email sign:', req.session.userEmail);
         console.log('Is Block sign:', req.session.isBlock);
@@ -341,7 +347,6 @@ exports.loginPost=async(req,res)=>{
         let isMatch=await bcrypt.compare(req.body.password,findUser.password)
         console.log("is match",isMatch);
         
-         
         const token=jwt.sign(
             {_id:findUser._id,isBlock:findUser.isBlock},
             process.env.JWT_TOKEN,
@@ -382,18 +387,21 @@ exports.loginPost=async(req,res)=>{
     }
  }
 
+
  exports.shirtGet = async (req, res) => {
     try {
         let user = await User.findOne({ email: req.session.user });
         let category = await categorySchema.find({});
         let brands = await Brand.find({});
 
+        // Get sorting, search, category, brand, and price range parameters from the query
         const sort = req.query.sort || '';
         const searchQuery = req.query.query || '';
+        const categories = req.query.categories ? req.query.categories.split(',') : [];
+        const brandz = req.query.brands ? req.query.brands.split(',') : [];
+        const priceRanges = req.query.priceRanges ? req.query.priceRanges.split(',') : []; // New
 
-        const categories = req.query.categories ? req.query.categories.split(',') : []; // Split categories into an array
-        const brandz = req.query.brands ? req.query.brands.split(',') : []; // Split brands into an array
-
+        // Sorting options based on query parameter
         let sortOption = {};
         if (sort === 'priceLowHigh') {
             sortOption = { price: 1 };
@@ -405,32 +413,77 @@ exports.loginPost=async(req,res)=>{
             sortOption = { title: -1 };
         }
 
-        // Build the filter conditions
+        // Pagination parameters
+        const page = parseInt(req.query.page) || 1;
+        const limit = 6;
+        const skip = (page - 1) * limit;
+
+        // Filter conditions for categories, brands, search, and price ranges
         let filterConditions = {
-            isBlock: false,
-            title: { $regex: searchQuery, $options: 'i' }
+            isBlock: false
         };
 
-        // Add category filter if provided
+        // Apply search filter if searchQuery is not empty
+        if (searchQuery) {
+            filterConditions.title = { $regex: searchQuery, $options: 'i' };
+        }
+
+        // Apply categories filter if categories are selected
         if (categories.length > 0) {
-            filterConditions.category = { $in: categories }; // Adjust based on your schema
+            filterConditions.category = { $in: categories };
         }
 
-        // Add brand filter if provided
+        // Apply brands filter if brands are selected
         if (brandz.length > 0) {
-            filterConditions.brand = { $in: brandz }; // Adjust based on your schema
+            filterConditions.brand = { $in: brandz };
         }
 
-        // Find products with the built filter conditions
-        const product = await productSchema.find(filterConditions).sort(sortOption);
+        // Apply price range filter
+        if (priceRanges.length > 0) {
+            const priceConditions = priceRanges.map(range => {
+                if (range === '5000+') {
+                    return { price: { $gte: 5000 } };
+                } else {
+                    const [min, max] = range.split('-').map(Number);
+                    return { price: { $gte: min, $lt: max } };
+                }
+            });
+            filterConditions.$or = priceConditions; // Combine with OR
+        }
 
-        res.render('./user/shirt', { product, sort, user, searchQuery, category, brands });
+        // Get the total count of matching products (for pagination)
+        const totalProducts = await productSchema.countDocuments(filterConditions);
+
+        // Fetch products with sorting, filtering, and pagination
+        const product = await productSchema.find(filterConditions)
+            .sort(sortOption)
+            .skip(skip)
+            .limit(limit);
+
+        const totalPages = Math.ceil(totalProducts / limit);
+
+        // Render the product page with all necessary variables
+        res.render('./user/shirt', {
+            product,
+            sort,
+            user,
+            searchQuery,
+            category,
+            brands,
+            selectedCategories: categories,
+            selectedBrands: brandz,
+            selectedPriceRanges: priceRanges, // For keeping track of selected price ranges
+            currentPage: page,
+            totalPages
+        });
 
     } catch (error) {
         console.log(error);
-        res.status(500).send('Server error'); // Send a response in case of an error
+        res.status(500).send('Server error');
     }
 };
+
+
 
 
 

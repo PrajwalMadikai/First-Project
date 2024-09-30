@@ -47,7 +47,7 @@
 
 </style>
 <!-- Shopping Cart Section Begin -->
-<section class="shopping-cart spad">
+<section class="shopping-cart spad mb-4">
         <% if (cart) { %>
             <div class="container">
                 <div class="row">
@@ -64,8 +64,9 @@
                                 <!-- Product Details -->
                                 <div class="col-md-6">
                                     <div class="card-body">
-                                        <h5 class="card-title"><%= element.product_id.title %></h5>
-                                        <p class="card-text">Price: ₹<span id="itemPrice"><%= element.product_id.price %></span></p>
+                                        <h5 class="card-title mt-2"><%= element.product_id.title %></h5>
+                                        <p class="card-text mb-1">Price: ₹<span id="itemPrice"><%= element.product_id.price %></span></p>
+                                        <p class="card-text">Size:<%=element.size  %></p>
                                         <div class="quantity-selector my-3">
                                             <div class="quantity-btn" id="decrease-btn" onclick="decrease('<%=element.product_id.stock %>','<%=element.product_id._id %>','<%= element.product_id.price%>' )">-</div>
                                             <input type="number" class="quantity-input" name="quantity" id="quantity_<%=element.product_id._id  %>" value="<%=element.quantity %>" readonly>
@@ -89,31 +90,49 @@
                     <div class="col-lg-4">
                         <div class="card mt-3">
                             <div class="card-body">
-                                
+                    
                                 <h6 class="text-center mt-4">Cart total</h6>
                                 <ul class="list-group">
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         Total MRP
-                                        <h5 id="totalPrice">₹<%= cart.total_price %> </h5>
+                                        <h5 id="totalPrice">₹<%= subtotal%></h5>
                                     </li>
+
+                                    <% if (appliedCoupon) { %>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        Delivary Charge
+                                        Discount (<%= appliedCoupon[0].coupon_code %>)
+                                        <h5>- ₹<%= discountAmount %></h5> <!-- Use discountAmount -->
+                                    </li>
+                                    <% } %>
+
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Delivery Charge
                                         <span style="color: green;">Free</span>
                                     </li>
+
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Grand Total
+                                        <h5>₹<%= totalCartPrice %></h5>
+                                    </li>
                                 </ul>
+
+                    
                                 <a href="/checkout" class="btn btn-primary btn-block mt-4">Proceed to checkout</a>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            
-         <% } else { %> 
-             <div class="container">
-              <div class="text d-flex justify-content-center align-items-center fw-bold"> your cart is empty</div> 
-            </div>
-        <% } %>
+                    </div>
+                    </div>
+                    
+                    <% } else { %> 
+                        <div class="container">
+                            <div class="text d-flex justify-content-center align-items-center fw-bold">Your cart is empty</div>
+                        </div>
+                    <% } %>
+                    
     </section>
+<%- include("../partials/mainFooter") %>
+
     <script>
        function deleteCart(id){
         Swal.fire({

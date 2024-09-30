@@ -41,6 +41,7 @@ body {
 }
   
 </style>
+<link rel="stylesheet" href="/public/css/pagination.css">
 <body>
   <div class="container-scroller">
      
@@ -69,57 +70,77 @@ body {
       <!-- partial -->
       <div class="main-panel">
         <div class="content-wrapper">
-          <div class="row">
-            
-
-       <div class="table-responsive">
-
-       <table class="table table-stripped table-sm">
-        <thead>
-          <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Email</th>
-            <th scope="col">Phone</th>
-            <th scope="col" class="pl-5">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% customers.forEach(element => { %>
-          <tr class="align-middle">
-         
-           <td> <%= element.firstName %> </td>
-           <td> <%= element.email %> </td>
-           <td> <%= element.phone %> </td>
-           <td class="text-end">
-            <div class="d-flex flex-row justify-content-start gap-2">
-              <% if(element.isBlock==true) { %>
-             <a href="/admin/user/unblock/<%= element._id%>"><button type="button" class="btn btn-success btn-small">unblock </button></a>
-              
-             
-             <% } else {%>
-           
-              <a href="/admin/user/block/<%= element._id%>" ><button type="button" class="btn btn-danger btn-small">Block </button></a>
-                
-               
-            
-              <form action="/admin/user/delete/<%= element._id %>?_method=DELETE" method="POST" style="display:inline;">
-                <button type="submit" class="btn btn-danger btn-small ml-3">Delete</button>
-            </form>
-            
-                
-              
+            <div class="row">
+              <div class="table-responsive border mt-5">
+                <table class="table table-striped table-lg">
+                    <thead>
+                        <tr class="text-center">
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Phone</th>
+                            <th scope="col" class="pl-5">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% customers.forEach(element => { %>
+                            <tr class="text-center align-middle">
+                                <td> <%= element.firstName %> </td>
+                                <td> <%= element.email %> </td>
+                                <td> <%= element.phone %> </td>
+                                <td class="text-end">
+                                    <div class="d-flex flex-row justify-content-center gap-2">
+                                        <% if(element.isBlock) { %>
+                                            <a href="/admin/user/unblock/<%= element._id %>">
+                                                <button type="button" class="btn btn-success btn-small">Unblock</button>
+                                            </a>
+                                        <% } else { %>
+                                            <a href="/admin/user/block/<%= element._id %>">
+                                                <button type="button" class="btn btn-danger btn-small">Block</button>
+                                            </a>
+                                            <form action="/admin/user/delete/<%= element._id %>?_method=DELETE" method="POST" style="display:inline;">
+                                                <button type="submit" class="btn btn-danger btn-small ml-3">Delete</button>
+                                            </form>
+                                        <% } %>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
             </div>
-           </td>
-          </tr>     
-          <% } %>
-
-         <% }); %>
-        </tbody>
-       </table>
-
-       </div>
-       </div>
-       </div>
+            
+            </div>
+            <div class="d-flex justify-content-center mt-4">
+                <ul class="pagination">
+                    <% if (currentPage > 1) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-label="Previous" class="btn btn-dark">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    <% } %>
+    
+                    <% for (let i = 1; i <= totalPages; i++) { %>
+                        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                            <a class="page-link" href="?page=<%= i %>" class="btn btn-dark">
+                                <%= i %>
+                            </a>
+                        </li>
+                    <% } %>
+    
+                    <% if (currentPage < totalPages) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<%= currentPage + 1 %>" aria-label="Next" class="btn btn-dark">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    
        </div>
 
       

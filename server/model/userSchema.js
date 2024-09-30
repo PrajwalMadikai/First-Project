@@ -12,11 +12,8 @@ const trendView= new schema({
         required:false
     },
     phone:{
-        type:String,
-        required:false,
-        unique:true,
-        sparse:true,
-        default:null
+        type:String
+        
     },
     googleId:{
        type:String,

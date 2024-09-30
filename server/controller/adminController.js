@@ -12,10 +12,16 @@ const Brand=require('../model/brandSchema')
  
  
 
-exports.getUser=async(req,res)=>{
-    const customers = await user.aggregate([{$sort:{createdAt:1}}])
-    res.render('./admin/users',{customers})
-}
+exports.getUser = async (req, res) => {
+    const currentPage = parseInt(req.query.page) || 1;  
+    const itemsPerPage = 3;  
+
+    const totalCustomers = await User.countDocuments();  
+    const customers = await User.find().sort({ createdAt: 1 }).skip((currentPage - 1) * itemsPerPage).limit(itemsPerPage); 
+
+    const totalPages = Math.ceil(totalCustomers / itemsPerPage);  
+    res.render('./admin/users', { customers, currentPage, totalPages });
+};
 
 exports.block=async(req,res)=>{  
     try {
@@ -217,8 +223,15 @@ res.redirect('/admin/login')
 
 exports.loadOrder=async(req,res)=>{
     try {
-        let orders=await Order.find({})
-        res.render('./admin/orderList',{orders})
+        const currentPage = parseInt(req.query.page) || 1;  
+        const itemsPerPage = 6;  
+        let totalOrders=await Order.countDocuments()
+
+        let orders=await Order.find({}).skip((currentPage - 1) * itemsPerPage).limit(itemsPerPage);
+
+        const totalPages = Math.ceil(totalOrders / itemsPerPage);
+
+        res.render('./admin/orderList',{orders,currentPage,totalPages})
     } catch (error) {
         console.log(error);
         
@@ -272,7 +285,11 @@ exports.approveReturn=async(req,res)=>{
 
         // Get the price of the product being returned
         const product = order.products.find(product => product._id.equals(id));
-        const productPrice = product.price;  // Assuming price is a field in the product object
+        const productPrice = product.price*product.quantity;
+        if(order.discounted_price)
+        {
+            productPrice-=order.discounted_price
+        }
         
   
          const wallet = await Wallet.findOne({ userId: user._id });
@@ -335,12 +352,20 @@ exports.addCoupon=async(req,res)=>{
 
 exports.offerLoad=async(req,res)=>{
     try {
+        const currentPage = parseInt(req.query.page) || 1;  
+        const itemsPerPage = 4;  
+
+        
         let products=await fileUpload.find()
-        let offerProductsList=await fileUpload.find({coupon_valid:true})
+        let offerProductsList=await fileUpload.find({coupon_valid:true}).skip((currentPage - 1) * itemsPerPage).limit(itemsPerPage);
+        const totalProductsCount = await fileUpload.countDocuments({ coupon_valid: true });
+        
+        const totalProductPages = Math.ceil(totalProductsCount / itemsPerPage);  
+
         let categories=await category.find()
         let offerCategoryList=await category.find({coupon_valid:true})
         let users=await user.find()
-        res.render('./admin/offers',{products,offerProductsList,categories,offerCategoryList,user:users})
+        res.render('./admin/offers',{products,offerProductsList,categories,offerCategoryList,user:users,currentPage,totalProductPages})
     } catch (error) {
         console.log(error);
         
@@ -495,34 +520,39 @@ exports.deleteCategoryOffer=async(req,res)=>{
         
     }
 }
-
 exports.loadSalesReport = async (req, res) => {
     try {
-        let totalOrders = await Order.countDocuments({});
+        let totalOrders = await Order.countDocuments({ products: { $elemMatch: { status: 'Delivered' } }});
 
-        let orders = await Order.find({'products.status':"Delivered"}).populate('products');
+        let orders = await Order.find({ products: { $elemMatch: { status: 'Delivered' } }}).populate('products');
+
+        let totalAmount = 0;
         
-        
+        orders.forEach(order => {
+            order.products.forEach(product => {
+                if (product.status === "Delivered") {
+                    totalAmount += parseFloat(product.price) * parseInt(product.quantity);
+                }
+            });
+        });
 
-        let totalAmount = orders.reduce((sum, order) => sum + order.totalAmount, 0);
-
-        const totalDiscount = orders.reduce((sum, order) => {
-            const productDiscounts = order.products.reduce((productSum, product) => {
-                return productSum + (product.discounted_price || 0); 
-            }, 0);
-            return sum + productDiscounts;
+        let totalDiscount = orders.reduce((sum, order) => {
+            const orderDiscount = order.discounted_price || 0;   
+            return sum + orderDiscount;
         }, 0);
 
         res.render("./admin/salesReport", {
             orders,
             totalOrders,
             totalAmount,
-            totalDiscount,   
+            totalDiscount,
         });  
     } catch (error) {
         console.log(error);
+        res.status(500).send("An error occurred while loading the sales report.");
     }
 };
+
 
 
 exports.postSalesReport = async (req, res) => {
@@ -595,13 +625,19 @@ exports.postSalesReport = async (req, res) => {
         }).lean();
 
         const totalOrders = orders.length;
-        const totalAmount = orders.reduce((sum, order) => sum + order.totalAmount, 0);
+
+        let totalAmount = 0;
+        
+        orders.forEach(order => {
+            order.products.forEach(product => {
+                if (product.status === "Delivered") {
+                    totalAmount += parseFloat(product.price) * parseInt(product.quantity);
+                }
+            });
+        });
 
         const totalDiscount = orders.reduce((sum, order) => {
-            const productDiscounts = order.products.reduce((productSum, product) => {
-                return productSum + (product.discounted_price || 0); 
-            }, 0);
-            return sum + productDiscounts;
+            return sum + (order.discounted_price || 0);   
         }, 0);
         
 

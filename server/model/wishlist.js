@@ -6,6 +6,8 @@ const whistlistSchema=new schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'users'
     },
+    items:[
+    {
     productId:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'product'
@@ -15,7 +17,12 @@ const whistlistSchema=new schema({
     },
     price:{
         type:Number
+    },
+    size:{
+        type:String
     }
+    }
+    ]
 })
 
 module.exports=mongoose.model('whistlist',whistlistSchema)

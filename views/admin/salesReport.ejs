@@ -26,9 +26,10 @@
  
 </style>
 <div class="container-fluid ">
-    <div class="row flex-grow-1">
+    <%-include('../partials/adminTopBar')  %>
+    <div class="row flex-grow-1 mt-5">
         <!-- Sidebar on the left side -->
-        <nav class="col-md-2 sidebar sidebar-offcanvas " id="sidebar">
+        <nav class="col-md-2 sidebar sidebar-offcanvas " id="sidebar" >
             <div class="user-profile">
                  
                 <div class="user-name adminName">
@@ -98,7 +99,6 @@
                             <th scope="col">Image</th>
                             <th scope="col">Total</th>
                             <th scope="col">Quantity</th>
-                            <th scope="col">Discount</th>
                             <th scope="col">Payment Method</th>
                         </tr>
                     </thead>
@@ -109,9 +109,8 @@
                         <td><%= new Date(element.orderDate).toLocaleDateString('en-GB') %></td>
                         <td><%= item.name %></td>
                         <td><img src="/public/product_img/<%=item.image %>" alt=""></td>
-                        <td><%= item.price %></td>
+                        <td><%= element.totalAmount%></td>
                         <td><%= item.quantity %></td>
-                        <td><%= item.discounted_price %></td>
                         <% if(element.paymentOption=='cod'){ %>
                         <td>Cash on Delivery</td>
                         <% }else if(element.paymentOption=='razor'){ %>
@@ -212,7 +211,6 @@ function updateSalesReportTable(orders) {
                 <td><img src="/public/product_img/${product.image}" alt=""></td>
                 <td>${product.price}</td>
                 <td>${product.quantity}</td>
-                <td>${product.discounted_price}</td>
                 <td>
                     ${order.paymentOption === 'cod' ? 'Cash on Delivery' : 
                       order.paymentOption === 'razor' ? 'Razorpay' : 

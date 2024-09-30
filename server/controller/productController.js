@@ -6,8 +6,13 @@ const Brand=require('../model/brandSchema')
 
 
 exports.getProduct=async (req,res)=>{
-    let product=await fileUpload.find({})
-    res.render('./admin/displayProduct',{products:product})
+    const currentPage = parseInt(req.query.page) || 1;  
+    const itemsPerPage = 6;  
+    let totalProducts=await fileUpload.countDocuments()
+
+    let product=await fileUpload.find({}).skip((currentPage - 1) * itemsPerPage).limit(itemsPerPage); 
+    const totalPages = Math.ceil(totalProducts / itemsPerPage);  
+    res.render('./admin/displayProduct',{products:product,currentPage, totalPages})
 }
  
 exports.getaddProduct=async (req,res)=>{

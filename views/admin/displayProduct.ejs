@@ -35,11 +35,13 @@
     flex-grow: 1; /* Allow main content to take remaining space */
     padding: 20px; /* Add padding as needed */
 }
+
 </style>
+<link rel="stylesheet" href="/public/css/pagination.css">
 <body >
   <div class="container-scroller ">
    
-    
+    <%-include('../partials/adminTopBar')  %>
 
     
     <div class="container-fluid page-body-wrapper ">
@@ -136,6 +138,35 @@
             </div>
 
        </div>
+
+       <div class="d-flex justify-content-center mt-4" style="margin-right: 150px;">
+        <ul class="pagination">
+            <% if (currentPage > 1) { %>
+                <li class="page-item">
+                    <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-label="Previous" class="btn btn-dark">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            <% } %>
+
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                    <a class="page-link" href="?page=<%= i %>" class="btn btn-dark">
+                        <%= i %>
+                    </a>
+                </li>
+            <% } %>
+
+            <% if (currentPage < totalPages) { %>
+                <li class="page-item">
+                    <a class="page-link" href="?page=<%= currentPage + 1 %>" aria-label="Next" class="btn btn-dark">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            <% } %>
+        </ul>
+    </div>
+
        </div>
        </div>
 

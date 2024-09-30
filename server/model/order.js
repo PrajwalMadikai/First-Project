@@ -32,6 +32,9 @@ const order=new schema({
     },
     coupon_name:{
         type:String
+    }, 
+    discounted_price:{
+        type:Number
     },
     products:[
         {
@@ -55,15 +58,16 @@ const order=new schema({
                 type:String,
                 default:"Pending"
             },
+            size:{
+               type:String
+            },
             request:{
                 type:Boolean
             },
             returnReason:{
                 type:String
-            },
-            discounted_price:{
-                type:Number
             }
+            
         }
     ],
     address:[

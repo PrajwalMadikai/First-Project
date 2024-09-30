@@ -1,4 +1,5 @@
-const mongoose=require('mongoose')
+const mongoose=require('mongoose');
+const coupon = require('./coupon');
 const schema=mongoose.Schema;
 const Cart=new schema({
     user_id:{
@@ -22,11 +23,23 @@ const Cart=new schema({
         },
         final_price:{
             type:Number
+        },
+        size:{
+            type:String
         }
     }
     ],
     total_price:{
         type:Number
+    },
+    coupon_name:{
+        type:String
+    },
+    coupon_discount:{
+        type:Number
+    },
+    isCoupon:{
+        type:Boolean
     },
     createdAt:{
         type:Date,

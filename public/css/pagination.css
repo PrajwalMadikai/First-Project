@@ -1,0 +1,55 @@
+.order-card {
+    transition: all 0.3s ease-in-out;
+    padding: 20px;
+    background-color: #f9f9f9;
+    transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.order-card:hover {
+    box-shadow: 0 8px 20px rgba(32, 1, 17, 0.2);
+    transform: scale(1.02);
+    background-color: #eaeaea;
+}
+
+/* Flexbox styling for horizontal alignment */
+.d-flex {
+    display: flex;
+}
+
+.justify-content-between {
+    justify-content: space-between;
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+.flex-item {
+    flex: 1;
+    padding: 0 10px;
+    text-align: center;
+}
+.pagination .page-item .page-link {
+    background-color: black; /* Background color */
+    color: white; /* Text color */
+    border: none; /* No border */
+    
+   
+}
+
+.pagination .page-item .page-link:hover {
+    background-color: #444; /* Darker shade on hover */
+    color: white; /* Keep text white on hover */
+}
+.pagination .page-item .page-link {
+    height: 38px;  
+    display: flex;  
+    align-items: center;  
+    justify-content: center; 
+}
+.pagination .page-item .page-link {
+    display: flex;
+    align-items: center; 
+    justify-content: center;  
+    padding: 0.5rem 1rem;  
+}

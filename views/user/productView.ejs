@@ -50,22 +50,54 @@
             transition: transform 0.2s ease;
             width: 100%; /* Adjust as needed */
         }
+/* Prevent horizontal scrolling */
+body, html {
+    overflow-x: hidden; /* Hides horizontal scroll */
+}
 
+.container {
+    max-width: 100%; /* Ensure container doesn't exceed viewport width */
+    padding-right: 15px; /* Adjust padding to ensure fit */
+    padding-left: 15px; /* Same on left */
+}
+
+.row {
+    margin-right: 0; /* Override negative margin */
+    margin-left: 0; /* Override negative margin */
+}
+    .size-input {
+        display: none; /* Hide the default radio button */
+    }
+
+    .size-option {
+       
+        cursor: pointer;
+    }
+
+    .size-input:checked + .size-option {
+        background-color: #EBD96B; /* Active background color */
+        color: white; /* Active text color */
+        border-color: #EBD96B; /* Active border color */
+    }
 </style>
+
+
+ 
 
 
  <!-- Breadcrumb -->
     <div class="container ">
         <div class="row">
-            <nav aria-label="breadcrumb" class=" pb-3 mt-0">
-                <div class="container">
+            <div class="container-fluid"  >
+                <nav aria-label="breadcrumb" class="pb-3 mt-0">
                     <ol class="breadcrumb mb-0">
                         <li class="breadcrumb-item"><a href="/home">Home</a></li>
-                        <li class="breadcrumb-item"><a href="/shirt">Shirt</a></li>
+                        <li class="breadcrumb-item"><a href="/shirt">Shop</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Product Details</li>
                     </ol>
-                </div>
-            </nav>
+                </nav>
+            </div>
+            
             <!-- Product Images -->
             <div class="col-md-6">
                 <div class="row">
@@ -102,7 +134,9 @@
                  <div class="d-flex align-items-center">
                 <p class="product-price mb-0 mr-2" id="main-price" style="color: black ;">₹<%= productData.price %></p>
                 <p class="product-price mb-0 text-decoration-line-through border-2" id="old-price" style="color:gray ; font-size: 14px;">₹<%= productData.oldPrice %></p>
+                <% if(productData.discount){ %>
                 <p class="product-price mb-0 text border-2 ml-3"  style="color:green; font-size: 15px; font-weight: bold;"><%= productData.discount %>%</p>
+                <% } %>
                 </div>
                 <p class="product-rating mb-0">
                     <i class="bi bi-star-fill"></i>
@@ -130,20 +164,21 @@
                             <!-- Size S -->
                             <input type="radio" class="size-input" id="sizeS" name="dressSize" value="S">
                             <label for="sizeS" class="size-option">S</label>
-                
+                    
                             <!-- Size M -->
                             <input type="radio" class="size-input" id="sizeM" name="dressSize" value="M">
                             <label for="sizeM" class="size-option">M</label>
-                
+                    
                             <!-- Size L -->
                             <input type="radio" class="size-input" id="sizeL" name="dressSize" value="L">
                             <label for="sizeL" class="size-option">L</label>
-                
+                    
                             <!-- Size XL -->
                             <input type="radio" class="size-input" id="sizeXL" name="dressSize" value="XL">
                             <label for="sizeXL" class="size-option">XL</label>
                         </div>
                     </div>
+                    
                  
                 
 
@@ -257,91 +292,7 @@
         </div>
       </section>
 
-      <footer>
-        <!-- Footer Start-->
-        <div class="footer-area footer-padding">
-            <div class="container">
-                <div class="row d-flex justify-content-between">
-                    <div class="col-xl-3 col-lg-3 col-md-5 col-sm-6">
-                        <div class="single-footer-caption mb-50">
-                            <div class="single-footer-caption mb-30">
-                                <!-- logo -->
-                                <div class="footer-logo">
-                                    <a href="index.html"><img src="/publicassets/img/logo/logo2_footer.png" alt=""></a>
-                                </div>
-                                <div class="footer-tittle">
-                                    <div class="footer-pera">
-                                        <p>Asorem ipsum adipolor sdit amet, consectetur adipisicing elitcf sed do eiusmod tem.</p>
-                                </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-2 col-lg-3 col-md-3 col-sm-5">
-                        <div class="single-footer-caption mb-50">
-                            <div class="footer-tittle">
-                                <h4>Quick Links</h4>
-                                <ul>
-                                    <li><a href="#">About</a></li>
-                                    <li><a href="#"> Offers & Discounts</a></li>
-                                    <li><a href="#"> Get Coupon</a></li>
-                                    <li><a href="#">  Contact Us</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-7">
-                        <div class="single-footer-caption mb-50">
-                            <div class="footer-tittle">
-                                <h4>New Products</h4>
-                                <ul>
-                                    <li><a href="#">Woman Cloth</a></li>
-                                    <li><a href="#">Fashion Accessories</a></li>
-                                    <li><a href="#"> Man Accessories</a></li>
-                                    <li><a href="#"> Rubber made Toys</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-3 col-md-5 col-sm-7">
-                        <div class="single-footer-caption mb-50">
-                            <div class="footer-tittle">
-                                <h4>Support</h4>
-                                <ul>
-                                    <li><a href="#">Frequently Asked Questions</a></li>
-                                    <li><a href="#">Terms & Conditions</a></li>
-                                    <li><a href="#">Privacy Policy</a></li>
-                                    <li><a href="#">Report a Payment Issue</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Footer bottom -->
-                <div class="row align-items-center">
-                    <div class="col-xl-7 col-lg-8 col-md-7">
-                        <div class="footer-copy-right">
-                            <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-  Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-  <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>                  
-                        </div>
-                    </div>
-                    <div class="col-xl-5 col-lg-4 col-md-5">
-                        <div class="footer-copy-right f-right">
-                            <!-- social -->
-                            <div class="footer-social">
-                                <a href="#"><i class="fab fa-twitter"></i></a>
-                                <a href="https://www.facebook.com/sai4ull"><i class="fab fa-facebook-f"></i></a>
-                                <a href="#"><i class="fab fa-behance"></i></a>
-                                <a href="#"><i class="fas fa-globe"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Footer End-->
-    </footer>
+      <%- include("../partials/mainFooter") %>
     <!--? Search model Begin -->
     <div class="search-model-box">
         <div class="h-100 d-flex align-items-center justify-content-center">
@@ -379,11 +330,26 @@
     function addToCart(){
         const productId='<%= productData._id %>'
         const quantity=document.getElementById('quantity').value
+        const sizeElement = document.querySelector('input[name="dressSize"]:checked');
+        let size;
+
+        if (!sizeElement) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning',
+                text: 'Please select a size to continue.'  
+            });
+            return;
+        } else {
+            size = sizeElement.value;   
+        }
+
+        
 
         fetch(`/cart/${productId}`,{
-            method:'post',
-            headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({quantity:quantity})
+        method:'post',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({quantity:quantity,size})
         }).then(res=>{
         if(res.ok){
             Swal.fire({
@@ -409,7 +375,7 @@
         }
 
 async function addToWhistlist(productId) {
-    let response = await fetch(`/whistlist/${productId}`, {
+    let response = await fetch(`/wishlist/${productId}`, {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId })

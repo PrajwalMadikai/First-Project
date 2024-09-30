@@ -146,18 +146,21 @@ html {
     padding: 10px;
     border-radius: 5px;
 }
-
+.blackBtn{
+    background-color: #000;
+}
     </style>
 </head>
-<div class="container">
+<div class="container mb-4">
     <form   id="orderForm">
         <div class="row">
             <div class="col-md-7">
                 <div class="billing-details">
                     <div class="d-flex justify-content-between">
                         <h4>Select Delivery Address</h4>
-                        <a href="/address?profile=false"></a>
-                        <button class="btn btn-dark mb-3" id="addAddressBtn" onclick="getAddress()">Add Address</button>
+                         
+                        <button class="btn btn-dark mb-3 border-0" id="addAddressBtn" data-bs-toggle="modal" data-bs-target="#addAddressModal">Add Address</button>
+                         
                     </div>
                      
                     <!-- Address Cards (Initially displayed) -->
@@ -174,7 +177,7 @@ html {
                           <% if (addresses.length > 0 && addresses[0].address && addresses[0].address.length > 0) { %>
                             <div class="card mb-3" id="addressCard_<%= addresses[0].address[0]._id %>">
                               <div class="card-body">
-                                <div class="form-check">
+                                <div class="form-check border-bottom border-2 mb-2">
                                   <input class="form-check-input" type="radio" name="addressId" id="address<%= addresses[0].address[0]._id %>" value="<%= addresses[0].address[0]._id %>" checked>
                                   <label class="form-check-label" for="address<%= addresses[0].address[0]._id %>">
                                     <h5>Default Address</h5>
@@ -185,11 +188,14 @@ html {
                                     </p>
                                   </label>
                                 </div>
+                              
+                                <div class="d-flex justify-content-between ml-3 mr-3">
                                 <a href="/updateAddress/<%= addresses[0].address[0]._id %>">
-                                  <button type="button" class="btn btn-primary btn-sm">Edit</button>
+                                  <button type="button" class=" blackBtn btn-sm"><i class="fa-solid fa-file-pen"></i></button>
                                 </a>
-                                <button type="button" class="btn btn-danger btn-sm" onclick="deleteAddress('<%= addresses[0].address[0]._id %>')">Delete</button>
-                              </div>
+                                <button type="button" class="blackBtn btn-sm" onclick="deleteAddress('<%= addresses[0].address[0]._id %>')"><i class="fa-solid fa-trash"></i></button>
+                               </div>
+                            </div>
                             </div>
                           <% } %>
                         
@@ -200,7 +206,7 @@ html {
                                 <% if (address._id !== addresses[0].address[0]._id) { %>
                                   <div class="card mb-3" id="addressCard_<%= address._id %>">
                                     <div class="card-body">
-                                      <div class="form-check">
+                                      <div class="form-check border-bottom border-2 mb-2">
                                         <input class="form-check-input" type="radio" name="addressId" id="address<%= address._id %>" value="<%= address._id %>">
                                         <label class="form-check-label" for="address<%= address._id %>">
                                           <h5>Other Address</h5>
@@ -211,8 +217,10 @@ html {
                                           </p>
                                         </label>
                                       </div>
-                                      <button type="button" class="btn btn-primary btn-sm" onclick="editAddress('<%= address._id %>')">Edit</button>
-                                      <button type="button" class="btn btn-danger btn-sm" onclick="deleteAddress('<%= address._id %>')">Delete</button>
+                                      <div class="d-flex justify-content-between ml-3 mr-3">
+                                      <button type="button" class="blackBtn  btn-sm" onclick="editAddress('<%= address._id %>')"><i class="fa-solid fa-file-pen"></i></button>
+                                      <button type="button" class=" blackBtn btn-sm" onclick="deleteAddress('<%= address._id %>')"><i class="fa-solid fa-trash"></i></button>
+                                     </div>
                                     </div>
                                   </div>
                                 <% } %>
@@ -226,7 +234,6 @@ html {
                       
 
                     <!-- Hidden Cart ID -->
-                    <input type="hidden" name="cartId" value="<%= cart._id %>">
                 </div>
             </div>
 
@@ -234,39 +241,38 @@ html {
                 <div class="order-summary">
                     <h4>Order Summary</h4>
 
-                    <% if (cart && cart.length > 0) { %>
-                    <% let subtotal = 0; %>
-                    <% cart.forEach(element => { %>
-                    <% element.items.forEach(item => { %>
-                    <div class="product-item">
-                        <div class="d-flex align-items-center">
-                            <div>
-                                <img src="/public/product_img/<%= item.product_id.image.image1 %>" alt="<%= item.product_id.title %>">
-                                <span><%= item.product_id.title %></span><br>
+                    <% if (cart && cart.items.length > 0) { %>
+                        <% let subtotal = 0; %>
+                        <% cart.items.forEach(item => { %>
+                            <div class="product-item">
+                                <div class="d-flex align-items-center">
+                                    <div>
+                                        <img src="/public/product_img/<%= item.product_id.image.image1 %>" alt="<%= item.product_id.title %>">
+                                        <span><%= item.product_id.title %></span><br>
+                                    </div>
+                                </div>
+                                <span>₹<%= item.final_price !== undefined ? item.final_price : item.product_id.price %></span>
                             </div>
+                            <% subtotal += Number(item.final_price !== undefined ? item.final_price : item.product_id.price) * item.quantity; %>
+                        <% }); %>
+                        <hr>
+                        <div class="product-item">
+                            <span>Subtotal:</span>
+                            <span>₹<%= subtotal %></span>
                         </div>
-                        <span>₹<%= item.price%></span>
-                    </div>
-                    <% subtotal += Number(item.price) %>
-                    <% }); %>
-                    <% }); %>
-                    <hr>
-                    <div class="product-item">
-                        <span>Subtotal:</span>
-                        <span>₹<%= subtotal %></span>
-                    </div>
-                    <div class="product-item">
-                        <span>Shipping:</span>
-                        <span>Free</span>
-                    </div>
-                    <div class="product-item total">
-                        <span>Total:</span>
-                        <span id="total_price">₹<%= subtotal %></span>
-                    </div>
+                        <div class="product-item">
+                            <span>Shipping:</span>
+                            <span>Free</span>
+                        </div>
+                        <div class="product-item total">
+                            <span>Total:</span>
+                            <span id="total_price">₹<%= cart.total_price %></span> <!-- Show the discounted total -->
+                        </div>
+                    
                     <% } else { %>
-                    <p>Your cart is empty.</p>
+                        <p>Your cart is empty.</p>
                     <% } %>
-
+                    
                     <div class="payment-methods">
                         <h5>Payment Method</h5>
                         <div class="form-check">
@@ -274,7 +280,7 @@ html {
                             <label for="razor" class="form-check-label">Razorpay<i class="bi bi-credit-card"></i></label>
                         </div>
                         <div class="form-check">
-                            <input type="radio" id="Wallet" name="paymentType" value="Wallet" class="form-check-input">
+                            <input type="radio" id="Wallet" name="paymentType" value="wallet" class="form-check-input">
                             <label for="Wallet" class="form-check-label">Wallet<i class="bi bi-credit-card"></i></label>
                         </div>
                         <div class="form-check">
@@ -283,18 +289,21 @@ html {
                         </div>
                     </div>
 
-                    <input type="hidden" id="couponsData" value='<%= JSON.stringify(coupons) %>'>
                     <div class="coupon-section">
-                        <!-- Applied Coupon Section (Initially hidden) -->
-                        <div id="appliedCouponSection" class="d-none border border-2 border-dashed p-3 mb-4">
+                        <% if(cart.isCoupon){ %>
+                        <div id="appliedCouponSection"   class="border border-2 border-dashed p-3 mb-4">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <strong>You Save: ₹<span id="appliedCouponDiscount"></span></strong><br>
-                                    <span>Coupon applied: <span id="appliedCouponCode"></span></span>
+                                    <strong>You Save: <span id="appliedCouponDiscount">₹<%=cart.coupon_discount  %></span></strong><br>
+                                    <span>Coupon applied: <span id="appliedCouponCode"><%= cart.coupon_name %></span></span>
                                 </div>
-                                <button class="btn btn-outline-danger btn-sm" id="removeCouponBtn">Remove</button>
+                                <button class="btn btn-outline-danger btn-sm" id="removeCouponBtn" onclick="removeCoupon()">Remove</button>
                             </div>
                         </div>
+                        <% } %>
+
+                        
+                        
                     
                         <!-- Coupon Input Field -->
                         <div class="form-group mt-3">
@@ -309,29 +318,45 @@ html {
                     
                    <!-- Applicable Coupons Section -->
                    <h6>Applicable Coupons</h6>
-                   <form id="couponForm">
-                       <div id="couponsList" class="coupon-box" style="max-height: 200px;overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
-                           <% if (coupons.length > 0) { %>
-                               <% coupons.forEach((coupon, index) => { %>
-                                   <div class="form-check mb-3 d-flex align-items-center" style="background-color: #f9f9f9; margin-left: 10px; border-radius: 5px; padding: 10px; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.05);">
-                                       <!-- Radio Button outside and left-aligned -->
-                                       <div style="margin-right: 15px;">
-                                           <input class="form-check-input" type="radio" name="<%= coupon._id %>" id="coupon<%= index %>"  value="<%= coupon.coupon_code %>" onclick="setCouponCode('<%= coupon.coupon_code %>')">
-                                       </div>
-                                       <!-- Coupon Information inside the box -->
-                                       <label class="form-check-label w-100" for="coupon<%= index %>">
-                                           <strong><%= coupon.coupon_code %></strong><br>
-                                           <span><%= coupon.discount %>% Discount</span><br>
-                                           <small class="text-muted">Min. Spend: ₹<%= coupon.minimum_purchase_amount %></small>
-                                           <small class="text-muted"> | Max. Discount: ₹<%= coupon.maximum_coupon_amount %></small><br>
-                                       </label>
-                                   </div>
-                               <% }) %>
-                           <% } else { %>
-                               <p>No applicable coupons available for this cart.</p>
-                           <% } %>
-                       </div>
-                   </form>
+                   <form id="couponForm"  >
+                       <% if(cart.isCoupon==false){ %>
+                    <div id="couponsList" class="coupon-box" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+                        <% if (coupons.length > 0) { %>
+                            <% coupons.forEach((coupon, index) => { %>
+                                <div class="form-check mb-3 d-flex align-items-center" style="background-color: #f9f9f9; margin-left: 10px; border-radius: 5px; padding: 10px; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.05);">
+                                    <!-- Radio Button outside and left-aligned -->
+                                    <div style="margin-right: 15px;">
+                                        <input 
+                                            class="form-check-input" 
+                                            type="radio" 
+                                            name="coupon" 
+                                            id="coupon<%= index %>"  
+                                            value="<%= coupon.coupon_code %>" 
+                                            onclick="setCouponCode('<%= coupon.coupon_code %>')"
+                                            
+                                        >
+                                    </div>
+                                    <!-- Coupon Information inside the box -->
+                                    <label class="form-check-label w-100" for="coupon<%= index %>">
+                                        <strong><%= coupon.coupon_code %></strong><br>
+                                        <span><%= coupon.discount %>% Discount</span><br>
+                                        <small class="text-muted">Min. Spend: ₹<%= coupon.minimum_purchase_amount %></small>
+                                        <small class="text-muted"> | Max. Discount: ₹<%= coupon.maximum_coupon_amount %></small><br>
+                                    </label>
+                                </div>
+                            <% }) %>
+                            
+                        <% } else { %>
+                            <p>No applicable coupons available for this cart.</p>
+                        <% } %>
+                    </div>
+                    <% }else{ %>
+                        <p class="text-success">Already applied a Coupon</p>
+                        <% } %>
+                </form>
+                
+                
+                
                    
             </div>
 
@@ -349,8 +374,68 @@ html {
             </div>
         </form>
         </div>
+        <%- include("../partials/mainFooter") %>
+ <!-- Add Address Modal -->
+<div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAddressModalLabel">Enter Address Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Address Form Inside Modal -->
+                <form id="addressForm">
+                    <!-- Name -->
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="name" name="name"   placeholder="Enter your name">
+                    </div>
 
- 
+                    <!-- House Name -->
+                    <div class="mb-3">
+                        <label for="houseName" class="form-label">House Name</label>
+                        <input type="text" class="form-control" id="houseName" name="houseName"   placeholder="Enter your house name">
+                    </div>
+
+                    <!-- Phone Number -->
+                    <div class="mb-3">
+                        <label for="phoneNumber" class="form-label">Phone Number</label>
+                        <input type="text" class="form-control" id="phoneNumber" name="phoneNumber"   placeholder="Enter your phone number">
+                    </div>
+
+                    <!-- City and State -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" class="form-control" id="city" name="city"   placeholder="Enter your city">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="state" class="form-label">State</label>
+                            <input type="text" class="form-control" id="state" name="state"   placeholder="Enter your state">
+                        </div>
+                    </div>
+
+                    <!-- District and Pin Code -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="district" class="form-label">District</label>
+                            <input type="text" class="form-control" id="district" name="district"   placeholder="Enter your district">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="pinCode" class="form-label">Pin Code</label>
+                            <input type="text" class="form-control" id="pinCode" name="pinCode"    placeholder="Enter your pin code">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <!-- Submit Button -->
+                <button type="button" class="btn btn-primary" id="saveAddressBtn" onclick="addAddress()" >Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     // Function to set the coupon code in the input field when a radio button is clicked
     function setCouponCode(couponCode) {
@@ -366,8 +451,14 @@ html {
 <script>
 
 async function coupon() {
-    
-    const couponID = document.getElementById('couponCode').value;
+    const couponID = document.querySelector('input[name="coupon"]:checked')?.value;
+
+    if (!couponID) {
+        document.getElementById("couponFeedback").innerText = "Please select a coupon.";
+        return; // Return if no coupon is selected
+    }
+
+    console.log("Coupon ID:", couponID); // Log the coupon ID
 
     try {
         let response = await fetch(`/apply-coupon`, {
@@ -376,62 +467,80 @@ async function coupon() {
             body: JSON.stringify({ couponID })
         });
 
+        console.log("Response Status:", response.status); // Log response status
+
+        // Ensure the response is parsed correctly
+        const data = await response.json();
+        console.log("Response Data:", data); // Log response data
+
         if (response.ok) {
-            const data = await response.json();
-            document.getElementById("total_price").innerText = "₹"+data.newTotalPrice;
-            document.getElementById("couponFeedback").innerText = "Coupon applied successfully!";
-            document.getElementById("appliedCouponSection").classList.remove('d-none');
-            document.getElementById("appliedCouponDiscount").innerHTML=data.discountAmount
-            document.getElementById("appliedCouponCode").innerHTML=data.coupon_name
-            document.getElementById("total_price").innerHTML="₹"+data.order_amount
+            window.location.reload()
+            document.getElementById("couponFeedback").innerText = data.message; // Show success message
 
-            disableForm()
+            document.getElementById("total_price").innerHTML = "₹" + data.order_amount; // Update total price
 
+            const formElements = document.getElementById('couponForm').elements;
+            for (let element of formElements) {
+                element.disabled = true;
+            }
         } else {
-            const errorData = await response.json();
-            document.getElementById("couponFeedback").innerText = errorData.message || "Error applying coupon.";
+            console.error("Error response data:", data); // Log the error response data
+            document.getElementById("couponFeedback").innerText = data.message || "Error applying coupon.";
         }
     } catch (error) {
-        console.error("Error:", error);
+        console.error("Network error:", error); // Log the error
         document.getElementById("couponFeedback").innerText = "Network error.";
     }
 }
 
-// Function to disable form elements and apply a CSS class
-function disableForm() {
-    const form = document.getElementById("couponForm");
-    const inputs = form.getElementsByTagName("input");
 
- 
-        inputs.disabled = true;
- 
+async function removeCoupon() {
+    let response=fetch('/remove-coupon',{
+        method:"POST",
+        headers:{"Content-Type":'application/json'}
 
-    // Add the "disabled-form" class to the form for styling
-    form.classList.add('disabled-form');
-}
-
-// Function to enable form when the input is empty
-function enableForm() {
-    const form = document.getElementById("couponForm");
-    const inputs = form.getElementsByTagName("input");
-
-    // Enable all input elements
-   
-        inputs.disabled = false;
-   
-    // Remove the "disabled-form" class to re-enable form styling
-    form.classList.remove('disabled-form');
-}
-
-// Function to check the input and enable/disable the form
-function checkCouponInput() {
-    const couponInput = document.getElementById("couponCode");
-
-    // Check if input is empty, enable the form if it is
-    if (!couponInput.value) {
-        enableForm();
+    })
+    if(response.ok)
+    {
+        document.getElementById("couponFeedback").innerText="Coupon removed!!"
     }
 }
+
+// Function to disable form elements and apply a CSS class
+// function disableForm() {
+//     const form = document.getElementById("couponForm");
+//     const inputs = form.getElementsByTagName("input");
+
+ 
+//         inputs.disabled = true;
+ 
+
+//     // Add the "disabled-form" class to the form for styling
+//     form.classList.add('disabled-form');
+// }
+
+// // Function to enable form when the input is empty
+// function enableForm() {
+//     const form = document.getElementById("couponForm");
+//     const inputs = form.getElementsByTagName("input");
+
+//     // Enable all input elements
+   
+//         inputs.disabled = false;
+   
+//     // Remove the "disabled-form" class to re-enable form styling
+//     form.classList.remove('disabled-form');
+// }
+
+// // Function to check the input and enable/disable the form
+// function checkCouponInput() {
+//     const couponInput = document.getElementById("couponCode");
+
+//     // Check if input is empty, enable the form if it is
+//     if (!couponInput.value) {
+//         enableForm();
+//     }
+// }
 
 // Attach event listener to the coupon input field
 document.getElementById("couponCode").addEventListener("input", checkCouponInput);
@@ -512,6 +621,23 @@ async function checkout(event) {
         };
         let rzp=new Razorpay(options);
         rzp.open()
+    }else if(data.wallet==true){
+            Swal.fire({
+            icon: 'success',
+            title: 'Order Placed!',
+            text: 'Your order has been successfully placed.',
+            confirmButtonText: 'OK'
+            }).then(()=>{
+                window.location.href = "/orders";
+            })
+    }else if(data.wallet==false)
+    {
+        Swal.fire({
+            icon: 'error',
+            title: 'Insufficient Balance',
+            text: 'You do not have enough balance to complete this transaction.',
+            confirmButtonText: 'Ok'
+        })
     }
                     
 }
@@ -557,124 +683,66 @@ async function deleteAddress(id) {
 }
 
 
-        $(document).ready(function () {
-            $('#savedAddresses').change(function () {
-                if ($(this).val() === 'new') {
-                    $('#newAddressForm').addClass('show');
-                } else {
-                    $('#newAddressForm').removeClass('show');
-                }
+         
+
+             
+
+async function addAddress() {
+    let name = document.getElementById('name').value;
+    let houseName = document.getElementById('houseName').value;
+    let state = document.getElementById('state').value;
+    let city = document.getElementById('city').value;
+    let phoneNumber = document.getElementById('phoneNumber').value;
+    let district = document.getElementById('district').value;
+    let pinCode = document.getElementById('pinCode').value;
+
+    try {
+        let response = await fetch('/address', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name,
+                houseName,
+                state,
+                city,
+                phoneNumber,
+                district,
+                pinCode
+            }) 
+        });
+
+        if (response.ok) {
+            // Show SweetAlert success notification
+            Swal.fire({
+                title: 'Success!',
+                text: 'Address added successfully.',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                // Redirect after user clicks "OK"
+                window.location.href = '/checkout';
             });
-        })
-
-            $('#saveAddressBtn').click(function () {
-                // Validate form fields
-                const name = $('#name').val().trim();
-                const houseName = $('#houseName').val().trim();
-                const city = $('#city').val().trim();
-                const phone = $('#phoneNumber').val().trim();
-                // const emailAddress = $('#emailAddress').val().trim();
-
-                if (!name) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Missing Information',
-                        text: 'Please enter your full name.',
-                        confirmButtonText: 'OK'
-                    });
-                    return;
-                }
-
-                if (!houseName) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Missing Information',
-                        text: 'Please enter your street address.',
-                        confirmButtonText: 'OK'
-                    });
-                    return;
-                }
-
-                if (!city) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Missing Information',
-                        text: 'Please enter your city.',
-                        confirmButtonText: 'OK'
-                    });
-                    return;
-                }
-
-                if (!phone) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Missing Information',
-                        text: 'Please enter your phone number.',
-                        confirmButtonText: 'OK'
-                    });
-                    return;
-                }
-
-               
-                const formData = {
-                    name,
-                    houseName,
-                    state: $('#state').val().trim(),
-                    district: $('#district').val().trim(),
-                    pin: $('#pinCode').val().trim(),
-                    city,
-                    phone,
-                     
-                };
-
-                // Send AJAX request to save address
-                // $.ajax({
-                //     url: '/address',  // Ensure this route is correctly set up on your server
-                //     method: 'POST',
-                //     data: formData,
-                //     success: function (response) {
-                //         Swal.fire({
-                //             icon: 'success',
-                //             title: 'Address Saved',
-                //             text: 'Your address has been saved successfully.',
-                //             confirmButtonText: 'OK'
-                //         }).then(() => {
-                //             // Optionally, you can refresh the address list or perform other actions
-                //             $('#billing-form')[0].reset();
-                //             $('#newAddressForm').removeClass('show');
-                //             $('#savedAddresses').val('');
-                //             // Optionally, reload the addresses dropdown if needed
-                //             // location.reload();
-                //         }).then((res)=>{
-                //             window.location.href ='/checkout'
-                //         });
-                //     },
-                //     error: function (error) {
-                //         Swal.fire({
-                //             icon: 'error',
-                //             title: 'Error',
-                //             text: 'There was an error saving your address. Please try again later.',
-                //             confirmButtonText: 'OK'
-                //         });
-                //     }
-                // });
-            });
-
-        function getAddress(){
-            fetch("/address",{
-                method:"GET",
-                headers:{"Content-Type":"application/json"},
-               
-            }).then(response => response.json())
-            .then(data => {
-                // Do something with the response
-                console.log('Success:', data);
-                // If needed, handle the response, for example redirect or update UI
-            })
-            .catch((error) => {
-                console.error('Error:', error);
+        } else {
+            // Show SweetAlert error notification if the response is not OK
+            Swal.fire({
+                title: 'Error!',
+                text: 'Failed to add address. Please try again.',
+                icon: 'error',
+                confirmButtonText: 'OK'
             });
         }
+    } catch (error) {
+        // Handle any unexpected errors
+        console.error('Error:', error);
+        Swal.fire({
+            title: 'Error!',
+            text: 'Something went wrong. Please try again later.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    }
+}
+
 
 
 

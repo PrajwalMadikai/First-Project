@@ -81,7 +81,7 @@ router.get('/address',isAuthenticate.isLogin,profileController.loadAddress)
 router.post('/address',isAuthenticate.isLogin,profileController.postAddress)
 router.get('/editAddress/:id',isAuthenticate.isLogin,profileController.getEditAddress)
 router.post('/editAddress/:id',isAuthenticate.isLogin,profileController.postEditAddress)
-router.get('/deleteAddress/:id',isAuthenticate.isLogin,profileController.deleteAddress)
+router.post('/deleteAddress/:id',isAuthenticate.isLogin,profileController.deleteAddress)
 //     <-- checkout page -->
 router.get('/checkout',isAuthenticate.isLogin,orderController.renderCheckout)
 router.post('/placeOrder',isAuthenticate.isLogin,orderController.placeOrder)
@@ -92,15 +92,16 @@ router.post('/return/:id',isAuthenticate.isLogin,orderController.returnProduct)
 router.post('/cancelOrder/:id',isAuthenticate.isLogin,orderController.cancelProduct)
 //    <---  coupons  -->
 router.post('/apply-coupon',isAuthenticate.isLogin,orderController.couponApply)
+router.post('/remove-coupon',isAuthenticate.isLogin,orderController.removeCoupon)
 
 //   <-- Wallet -->
 router.post('/wallet-amount',isAuthenticate.isLogin,walletController.addAmount)
 router.post('/wallet-veryfypayment',isAuthenticate.isLogin,walletController.verifyPaymentPOST)
 
 // <-- Whistlist -->
-router.get('/whistlist',isAuthenticate.isLogin,whistlistController.loadWhistlist)
-router.post('/whistlist/:id',isAuthenticate.isLogin,whistlistController.addWhistlist)
-router.post('/whistlist-delete/:id',isAuthenticate.isLogin,whistlistController.deleteWhistlist)
+router.get('/wishlist',isAuthenticate.isLogin,whistlistController.loadWhistlist)
+router.post('/wishlist/:id',isAuthenticate.isLogin,whistlistController.addWhistlist)
+router.post('/wishlist-delete/:id',isAuthenticate.isLogin,whistlistController.deleteWhistlist)
 
 
  

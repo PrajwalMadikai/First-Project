@@ -1,6 +1,5 @@
 const User=require('../model/userSchema')
 const Address=require('../model/address')
-const { json } = require('express')
 const Order=require('../model/order')
 const Wallet=require('../model/wallet')
 
@@ -9,17 +8,11 @@ exports.getProfile=async(req,res)=>{
     try {
         let user=await User.findOne({email: req.session.userAuth})
         const info = await Address.find({ userId: user._id })
-        const wallet=await Wallet.find({userId:user._id})
-        let orders = await Order.find(
-            { userId: user._id, products: { $elemMatch: { status: "Returned" } } },
-            { "products.$": 1 }  // This will return only the matched product(s)
-        );
+        const wallet=await Wallet.findOne({userId:user._id})
         
-        // Map the returned orders to extract the returned products
-        let returnedProducts = orders.map(order => order.products[0]);  // Extract only the products
-
+        
          
-        res.render('./user/profile', { user,info,wallet,orders:returnedProducts});
+        res.render('./user/profile', { user,info,wallet,walletHistory:wallet.wallet_history});
         
     } catch (error) {
         console.log(error);
@@ -165,6 +158,7 @@ exports.getProfile=async(req,res)=>{
  exports.deleteAddress=async(req,res)=>{
     try {
         let id=req.params.id
+        
         let user=await User.findOne({email:req.session.userAuth})
         await Address.findOneAndUpdate(
             { userId: user._id },

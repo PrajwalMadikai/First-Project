@@ -1,53 +1,80 @@
-const Whistlist=require('../model/whistlist')
+const Whistlist=require('../model/wishlist')
 const Product=require('../model/productSchema')
 const User=require('../model/userSchema')
 
-exports.loadWhistlist=async(req,res)=>{
+exports.loadWhistlist = async (req, res) => {
     try {
-        let user=await User.findOne({email:req.session.userAuth})
-        let whistlist=await Whistlist.find({userId:user._id}).populate('productId')
-        res.render('./user/whistlist',{whistlist,user})
+        let user = await User.findOne({ email: req.session.userAuth });
+ 
+        let wishlist = await Whistlist.findOne({ userId: user._id }).populate('items.productId');
 
+        if (!wishlist) {
+            return res.render('./user/wishlist', { wishlist: [], user }); // Render with an empty wishlist
+        }
+
+        res.render('./user/wishlist', { wishlist: wishlist.items, user });
     } catch (error) {
-        console.log(error);
-        
+        console.error(error);
+        res.status(500).send('Internal Server Error');
     }
-}
+};
 
-exports.addWhistlist=async(req,res)=>{
-    try{
-        const {productId}=req.body
-        console.log('product id:',productId);
 
-        let user=await User.findOne({email:req.session.userAuth})
-        let product=await Product.findOne({_id:productId})
-        let whistlist=await Whistlist.findOne({userId:user._id,productId:product._id})
-        console.log("whistlist:",whistlist);
-        
+ 
 
-        if(whistlist)
-        {
-            res.json({success:true,message:"Product Already in the Whistlist",oldItem:true})
+exports.addWhistlist = async (req, res) => {
+    try {
+        const { productId } = req.body;
+        console.log('Product ID:', productId);
 
-        }else{
+        // Find the user
+        let user = await User.findOne({ email: req.session.userAuth });
+        // Find the product
+        let product = await Product.findById(productId);
 
-        let whistlistItem=new Whistlist({
-            userId:user._id,
-            productId:product._id,
-            product_name:product.title,
-            price:product.price
-        })
+        // Check if product exists
+        if (!product) {
+            return res.status(404).json({ success: false, message: "Product not found" });
+        }
 
-        await whistlistItem.save()
+        // Find the existing wishlist for the user
+        let wishlist = await Whistlist.findOne({ userId: user._id });
 
-        res.json({success:true,message:"Product added to Whistlist",newItem:true})
-    }
-        
+        // Check if wishlist exists
+        if (!wishlist) {
+            // Create a new wishlist
+            wishlist = new Whistlist({
+                userId: user._id,
+                items: [{
+                    productId: product._id,
+                    product_name: product.title,
+                    price: product.price,
+                }]
+            });
+            await wishlist.save();
+            return res.json({ success: true, message: "Product added to Wishlist", newItem: true });
+        }
+
+        // Check if the product is already in the wishlist
+        const existingItem = wishlist.items.find(item => item.productId.toString() === product._id.toString());
+
+        if (existingItem) {
+            return res.json({ success: true, message: "Product already in the Wishlist", oldItem: true });
+        } else {
+            // Add the new item to the existing wishlist
+            wishlist.items.push({
+                productId: product._id,
+                product_name: product.title,
+                price: product.price,
+            });
+            await wishlist.save();
+            return res.json({ success: true, message: "Product added to Wishlist", newItem: true });
+        }
     } catch (error) {
-        console.log(error);
-        
+        console.error(error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
     }
-}
+};
 
 exports.deleteWhistlist=async(req,res)=>{
     try {

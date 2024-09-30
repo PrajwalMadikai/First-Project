@@ -32,6 +32,30 @@
     padding: 0 10px;
     text-align: center;
 }
+.pagination .page-item .page-link {
+    background-color: black; /* Background color */
+    color: white; /* Text color */
+    border: none; /* No border */
+    
+   
+}
+
+.pagination .page-item .page-link:hover {
+    background-color: #444; /* Darker shade on hover */
+    color: white; /* Keep text white on hover */
+}
+.pagination .page-item .page-link {
+    height: 38px;  
+    display: flex;  
+    align-items: center;  
+    justify-content: center; 
+}
+.pagination .page-item .page-link {
+    display: flex;
+    align-items: center; 
+    justify-content: center;  
+    padding: 0.5rem 1rem;  
+}
 
 
     </style>
@@ -78,7 +102,7 @@
                                     <p class="mb-0"><%= order.orderNumber %></p>  
                                 </div>
                                 <div class="flex-item">
-                                    <p class="mb-0">₹<%= product.price %></p>  
+                                    <p class="mb-0">₹<%= order.totalAmount %></p>  
                                 </div>
                                 <div class="flex-item">
                                     <p class="mb-0"><%= order.paymentOption %></p>  
@@ -100,8 +124,37 @@
                 </div>
             </div>
         </div>
+
         <% }) %>
     <% }) %>
-</div>
+    <div class="pagination d-flex justify-content-center mt-4">
+        <ul class="pagination">
+            <% if (currentPage > 1) { %>
+                <li class="page-item">
+                    <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-label="Previous" class="btn btn-dark">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            <% } %>
+    
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                    <a class="page-link" href="?page=<%= i %> " class="btn btn-dark">
+                        <%= i %>
+                    </a>
+                </li>
+            <% } %>
+    
+            <% if (currentPage < totalPages) { %>
+                <li class="page-item">
+                    <a class="page-link" href="?page=<%= currentPage + 1 %> " aria-label="Next" class="btn btn-dark">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            <% } %>
+        </ul>
+    </div>
+    
 
+</div>
 <%- include("../partials/homeFooter") %>

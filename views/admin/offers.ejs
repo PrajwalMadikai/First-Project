@@ -122,9 +122,10 @@
 }
 
 </style>
+<link rel="stylesheet" href="/public/css/pagination.css">
 
 <div class="container-fluid pt-4">
-
+    <%-include("../partials/adminTopBar")  %>
     <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <div class="user-profile">
             <!-- <div class="user-image">
@@ -137,10 +138,73 @@
                 Admin
             </div>
           </div>
-          <%- include('../partials/adminSidebar') %>
+          <ul class="nav a">
+            <li class="nav-item">
+              <a class="nav-link" href="../../index.html">
+                <i class="icon-box menu-icon"></i>
+                <span class="menu-title">Dashboard</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/user">
+                <i class="fa-solid fa-user mr-4"></i>
+                <span class="menu-title">Users</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/sales-report">
+                <i class="fa-solid fa-bookmark mr-4"></i>
+                <span class="menu-title">Sales Report</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/product">
+                  <i class="fa-solid fa-cube mr-4"></i>
+                <span class="menu-title">Products</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/orderList">
+                <i class="fa-regular fa-square-check mr-4"></i>
+                <span class="menu-title">Orders</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/category">
+                  <i class="fa-solid fa-shirt mr-4"></i>
+                <span class="menu-title">Categories</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/brands">
+                  <i class="fa-solid fa-bars mr-4"></i>
+                <span class="menu-title">Brands</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/coupon">
+                  <i class="fa-solid fa-paper-plane mr-4"></i>
+                <span class="menu-title">Coupon code</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/offerManagment">
+                  <i class="fa-solid fa-credit-card mr-4"></i>
+                <span class="menu-title">Offers</span>
+              </a>
+            </li>
+            
+            <li class="nav-item">
+              <a class="nav-link" href="../../index.html">
+                  <i class="fa-solid fa-right-from-bracket mr-4"></i>
+                <span class="menu-title">Logout</span>
+              </a>
+            </li>
+            
+          </ul>
     </nav>
 
-    <div class="mb-3">Offer Management</div>
+    <div class="mb-3 mt-5">Offer Management</div>
     <!-- Navigation for offer types -->
     <ul class="nav nav-tabs mb-4" id="offerTabs">
         <li class="nav-item me-5">
@@ -243,23 +307,49 @@
                     <tbody>
                         <% offerProductsList.forEach(offerProduct => { %>
                         <tr id="product-<%= offerProduct._id %>" class="align-middle">
-                          
                             <td><%= offerProduct.title %></td>
                             <td><img src="/public/product_img/<%= offerProduct.image.image1 %>" alt="" style="width: 50px; height: 50px;"></td>
-                            <td class="text text-center"><%= offerProduct.discount %>%</td>
+                            <td class="text-center"><%= offerProduct.discount %>%</td>
                             <td><%= new Date(offerProduct.expireAt).toLocaleString('en-US', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }) %></td>
                             <td class="<%= offerProduct.coupon_valid ? 'text-success' : 'text-danger' %>"><%= offerProduct.coupon_valid ? 'active' : 'expired' %></td>
                             <td class="text-end">
-                                <button class="border-0 btn " style="background-color: black;color:white" onclick="deleteProductOffer('<%= offerProduct._id %>')">Delete</button>
-                                <button class="border-0 btn btn-success" onclick="editProductOffer('<%= offerProduct._id %>', '<%= offerProduct.title%>', '<%= offerProduct.discount %>', '<%= offerProduct.expireAt %>')">Edit</button>
-
-
+                                <button class="border-0 btn" style="background-color: black; color: white;" onclick="deleteProductOffer('<%= offerProduct._id %>')">Delete</button>
+                                <button class="border-0 btn btn-success" onclick="editProductOffer('<%= offerProduct._id %>', '<%= offerProduct.title %>', '<%= offerProduct.discount %>', '<%= offerProduct.expireAt %>')">Edit</button>
                             </td>
                         </tr>
                         <% }) %>
                     </tbody>
                 </table>
             </div>
+            
+            <div class="d-flex justify-content-center mt-4 " style="margin-right: 240px;">
+                <ul class="pagination">
+                    <% if (currentPage > 1) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-label="Previous" class="btn btn-dark">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    <% } %>
+            
+                    <% for (let i = 1; i <= totalProductPages; i++) { %>
+                        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                            <a class="page-link" href="?page=<%= i %>" class="btn btn-dark">
+                                <%= i %>
+                            </a>
+                        </li>
+                    <% } %>
+            
+                    <% if (currentPage < totalProductPages) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<%= currentPage + 1 %>" aria-label="Next" class="btn btn-dark">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    <% } %>
+                </ul>
+            </div>
+            
         </div>
     
         <!-- Category Offers Section -->
