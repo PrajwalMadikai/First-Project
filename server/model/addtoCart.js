@@ -23,10 +23,7 @@ const Cart=new schema({
         },
         final_price:{
             type:Number
-        },
-        size:{
-            type:String
-        }
+        } 
     }
     ],
     total_price:{

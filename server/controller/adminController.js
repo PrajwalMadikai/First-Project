@@ -376,26 +376,20 @@ exports.productOffer = async (req, res) => {
     try {
         const { productId, discountPercentage, expirAt } = req.body;
 
-        // Validate discountPercentage
-        if (isNaN(discountPercentage) || discountPercentage === '') {
-            return res.status(400).json({ success: false, message: "Invalid discount percentage" });
-        }
-
         const product = await fileUpload.findById(productId);
-        if (!product) {
-            return res.status(404).json({ success: false, message: "Product not found" });
-        }
+        
 
-        const categories = await category.find({ name: product.category });
-        const categoryDiscount = categories.length > 0 ? categories[0].discount : 0;
+        const categories = await category.findOne({ name: product.category });
+        const categoryDiscount = categories.discount; // Ensure it's a number or default to 0
 
-        // Ensure categoryDiscount is a valid number
-        if (isNaN(categoryDiscount)) {
-            return res.status(400).json({ success: false, message: "Invalid category discount" });
-        }
+        // Ensure discountPercentage is a number
+        const discount = Number(discountPercentage)  
 
-        const effectiveDiscountPercentage = Number(discountPercentage) > Number(categoryDiscount) ? Number(discountPercentage) : Number(categoryDiscount);
+        // Compare discountPercentage and categoryDiscount
+        const effectiveDiscountPercentage = discount > categoryDiscount ? discount : categoryDiscount;
+        console.log("highest:", effectiveDiscountPercentage);
 
+         
         const discountAmount = (product.price * effectiveDiscountPercentage) / 100;
         const newPrice = product.price - discountAmount;
 
@@ -415,6 +409,7 @@ exports.productOffer = async (req, res) => {
         res.status(500).json({ success: false, message: "Error applying product offer" });
     }
 };
+
 
 
 exports.categoryOffer = async (req, res) => {

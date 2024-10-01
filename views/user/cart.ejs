@@ -47,7 +47,7 @@
 
 </style>
 <!-- Shopping Cart Section Begin -->
-<section class="shopping-cart spad mb-4">
+<section class="shopping-cart spad mb-5 mt-4">
         <% if (cart) { %>
             <div class="container">
                 <div class="row">
@@ -66,7 +66,6 @@
                                     <div class="card-body">
                                         <h5 class="card-title mt-2"><%= element.product_id.title %></h5>
                                         <p class="card-text mb-1">Price: ₹<span id="itemPrice"><%= element.product_id.price %></span></p>
-                                        <p class="card-text">Size:<%=element.size  %></p>
                                         <div class="quantity-selector my-3">
                                             <div class="quantity-btn" id="decrease-btn" onclick="decrease('<%=element.product_id.stock %>','<%=element.product_id._id %>','<%= element.product_id.price%>' )">-</div>
                                             <input type="number" class="quantity-input" name="quantity" id="quantity_<%=element.product_id._id  %>" value="<%=element.quantity %>" readonly>

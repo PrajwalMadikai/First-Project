@@ -50,84 +50,97 @@
 
 <body>
   <div class="container mt-4">
-    <div class="text-center mb-4">
-      <button class="btn btn-secondary">Invoice Download</button>
+    <!-- Delivery Address Section -->
+    <div class=" mb-4 container"> 
+      <h5 class="font-weight-bold mb-2 text-danger">Delivery Address</h5>
+      <div id="currAddress" class="col-lg-5 mb-2 px-4 py-4 saved-address ">
+        <div class="d-flex justify-content-between mb-3">
+          <span class="font-weight-bold text-uppercase"><%= user.firstName %></span>
+        </div>
+        <div><%= order.address[0].house %></div>
+        <div><%= order.address[0].city %></div>
+        <div><%= order.address[0].district %>-<%=order.address[0].pin%></div>
+        <div class="mt-2">Mobile: <span class="font-weight-bold"><%= order.address[0].phone %></span></div>
+        <div><%= user.email || '' %></div>
+        <hr>
+      </div>
     </div>
-
-    <!-- Display delivery address -->
-    <div class="card pl-4 pt-4 mb-4">
-      <h5>Delivered Address</h5>
-      <p class="mb-0"><%= order.address[0].house %></p>
-      <p class="mb-0"><%= order.address[0].city %></p>
-      <p class="mb-0"><%= order.address[0].district %></p>
-      <p class="mb-0"><%= order.address[0].state %> - <%=  order.address[0].pin %></p>
-      <p class="mb-2"><%= order.address[0].phone %></p>
-    </div>
- 
-
-    <!-- Display product and order summary in two equal-height columns -->
-    <div class="row mb-4 equal-height-row">
-      <div class="col-md-8 d-flex">
-        <!-- Display products in the order -->
-        <div class="card p-4 card-equal w-100">
-          <div class="order-item d-flex">
+  
+    <!-- Order Items Section -->
+    <h5 class="font-weight-bold mb-1 text-danger container">Order Detail</h5>
+    <% order.products.forEach((product)=>{ %>
+    <div class="box-shadow col-lg-12 d-flex container p-0 my-4">
+      <div class="row align-items-center">
+        <div class="col-lg-4 p-0">
+          <img class="img" src="/public/product_img/<%= product.image %>" alt="" style="height: 400px;width: 950px;">
+        </div>
+        <div class="col-lg-8">
+          <h5 class="mt-3 text-center font-weight-bold   mb-5" style="color: black;"><%= product.name %></h5>
+          <div class="d-flex justify-content-between font-weight-bold my-4">
+            <div>Amount</div>
+            <div>Quantity</div>
+            <div>Total</div>
+            <div>Order Status</div>
+          </div>
+          <div class="d-flex justify-content-between font-weight-bold">
             <div>
-              <img src="/public/product_img/<%= product.image %>" alt="<%= product.name %>">
+              <span class="mr-2">₹<%= product.price %></span>
+              <span class="text text-danger"  style="text-decoration: line-through;">₹<%= product.productId.price %></span>
             </div>
-            <div class="ml-3">
-              <p class="textColor"><strong><%= product.name %></strong></p>
-              <p class="textColor">Quantity: <%= product.quantity %></p>
-              <p class="textColor">Price: ₹<%= product.price %></p>
-              <p class="textColor">Size:<%= product.size %></p>
+            <div><%= product.quantity %></div>
+            <div>₹<%= product.price %></div>
+            <div class="badge 
+              <% if (product.status === 'Delivered') { %> 
+              badge-success 
+              <% } else if (product.status === 'Canceled') { %> 
+              badge-danger 
+              <% } else if (product.status === 'Pending') { %> 
+              badge-warning
+              <% } else { %> 
+              badge-primary 
+              <% } %>">
+              <%= product.status %>
             </div>
-            <!-- Center the order status in the right space -->
-            <div class="ml-auto d-flex align-items-center">
-              <div class="text-center">
-                <% if(product.status=='Cancelled'){ %>
-                <p class="badge  p-2" style="color: red ; font-size: medium;"><%= product.status %></p>
-                <% }else if(product.status=='Delivered'){ %>
-                <p class="badge  p-2" style="color: green; font-size: medium;"><%= product.status %></p>  
-                <% }else if(product.status=='Requested') {%>
-                <p class="badge  p-2" style="color: rgb(255, 0, 0); font-size: medium;"><%= product.status %></p>  
-                 <% } %> 
-              </div>
-
-              <div class="text-center d-flex justify-content-start align-items-center mb-3">
-                <% if(product.status=='Delivered'){ %>
+          </div>
+          <hr>
+          <div class="font-weight-bold">
+            <div class="mt-3 mb-2">Payment Status:</div>
+            <% if (product.status === 'Delivered') { %>
               <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#returnModal">Return</button>
-                <% }else if(product.status=='Pending'){ %>
-                  <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">Cancel</button>
-                <% } %> 
-              </div>
-            </div>
+            <% } else if (product.status === 'Pending') { %>
+              <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">Cancel</button>
+            <% } %>
           </div>
         </div>
       </div>
-    
-      <!-- Order summary details on the right -->
-      <div class="col-md-4 d-flex">
-        <div class="card p-4 card-equal w-100 order-summary">
-          <h5>Order Summary</h5>
-          <p class="textColor" style="font-weight: 800;">
-            Applied Coupon: <%= order.coupon_name  %><br>
-            Delivery Charge: Free<br>
-            Total Amount: ₹<%= order.totalAmount %><br>
-            <% if( order.paymentOption=="cod" ){ %>
-            Payment Method: Cash On Delivery<br>
-            <% }else if(order.paymentOption=='razor'){ %>
-              Payment Method: Razorpay<br>
-              <% }else{ %>
-                Payment Method: Wallet<br>
-                <% } %>
-          </p>
+    </div>
+    <% })%>
+  
+    <!-- Total Amount Section -->
+    <div class="d-flex justify-content-end container">
+      <div class="checkout__order mb-4"> 
+        <h4 class="order__title">Your Order</h4>
+        <ul class="checkout__total__all border-top-0">
+          <li>Total MRP <span class="order_summary">₹ <%= order.totalAmount + order.discounted_price %></span></li>
+          <li>Discount on MRP <span class="text-success">₹ <%= order.discounted_price %></span></li>
+          <li>Coupon Discount <span class="text-success">₹ <%= order.discounted_price %></span></li>
+          <li>Total Amount <span>₹ <%= order.totalAmount %></span></li>
+        </ul>
+  
+        <div class="mt-3 mb-2">Payment Status:</div>
+        <div class="mt-3"> 
+          <button class="btn-primary text-white border-0 mr-2">
+            <i class="fas fa-money-check"></i> Online
+          </button>
+        </div>
+        <div class="mt-3">
+          <a href="/download-invoice/<%= product._id %>" class="btn btn-dark">Invoice Download</a>
         </div>
       </div>
     </div>
-    
-
   </div>
+  
   <%- include("../partials/mainFooter") %>
-<!-- Cancel Modal -->
 
 <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -152,7 +165,6 @@
 </div>
 
 
-<!-- Return Modal -->
 <div class="modal fade" id="returnModal" tabindex="-1" aria-labelledby="returnModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
@@ -223,8 +235,8 @@ document.getElementById('cancelForm').addEventListener('submit', async function(
 
     let reason = document.getElementById('cancelReason').value;
     let quantity = '<%= product.quantity %>';
-    let productId = '<%= product.productId %>'; // Get the product ID from your template (EJS)
-    console.log("Product ID: ", productId);
+    let productId = '<%= product._id %>';  
+     
 
     try {
         let response = await fetch(`/cancelOrder/${productId}`, {

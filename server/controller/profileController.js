@@ -9,7 +9,17 @@ exports.getProfile=async(req,res)=>{
         let user=await User.findOne({email: req.session.userAuth})
         const info = await Address.find({ userId: user._id })
         const wallet=await Wallet.findOne({userId:user._id})
-        
+        if(!wallet)
+        {
+            let newWallet=new Wallet({
+                userId:user._id,
+                balance:0,
+                wallet_history:{
+                    amount:0
+                }
+            })
+            await Wallet.create(newWallet)
+        }
         
          
         res.render('./user/profile', { user,info,wallet,walletHistory:wallet.wallet_history});

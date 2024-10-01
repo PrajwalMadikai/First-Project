@@ -1,1 +1,78 @@
+<div class="container mt-4">
+    <div class="text-center mb-4">
+      <a href="/download-invoice/<%= product._id %>" class="btn btn-dark">Invoice Download</a>
+    </div>
+
+    <!-- Display delivery address -->
+    <div class="card pl-4 pt-4 mb-4">
+      <h5>Delivered Address</h5>
+      <p class="mb-0"><%= order.address[0].house %></p>
+      <p class="mb-0"><%= order.address[0].city %></p>
+      <p class="mb-0"><%= order.address[0].district %></p>
+      <p class="mb-0"><%= order.address[0].state %> - <%=  order.address[0].pin %></p>
+      <p class="mb-2"><%= order.address[0].phone %></p>
+    </div>
  
+
+    <!-- Display product and order summary in two equal-height columns -->
+    <div class="row mb-4 equal-height-row">
+      <div class="col-md-8 d-flex">
+        <!-- Display products in the order -->
+        <div class="card p-4 card-equal w-100">
+          <div class="order-item d-flex">
+            <div>
+              <img src="/public/product_img/<%= product.image %>" alt="<%= product.name %>">
+            </div>
+            <div class="ml-3">
+              <p class="textColor"><strong><%= product.name %></strong></p>
+              <p class="textColor">Quantity: <%= product.quantity %></p>
+              <p class="textColor">Price: ₹<%= product.price %></p>
+            </div>
+            <!-- Center the order status in the right space -->
+            <div class="ml-auto d-flex align-items-center">
+              <div class="text-center">
+                <% if(product.status=='Cancelled'){ %>
+                <p class="badge  p-2" style="color: red ; font-size: medium;"><%= product.status %></p>
+                <% }else if(product.status=='Delivered'){ %>
+                <p class="badge  p-2" style="color: green; font-size: medium;"><%= product.status %></p>  
+                <% }else if(product.status=='Requested'){%>
+                <p class="badge  p-2" style="color: rgb(255, 0, 0); font-size: medium;"><%= product.status %></p>  
+                 <% }else{ %>
+                  <p class="badge  p-2" style="color: rgb(0, 132, 255); font-size: medium;"><%= product.status %></p>  
+                  <% } %> 
+              </div>
+
+              <div class="text-center d-flex justify-content-start align-items-center mb-3">
+                <% if(product.status=='Delivered'){ %>
+              <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#returnModal">Return</button>
+                <% }else if(product.status=='Pending'){ %>
+                  <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">Cancel</button>
+                <% } %> 
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <!-- Order summary details on the right -->
+      <div class="col-md-4 d-flex">
+        <div class="card p-4 card-equal w-100 order-summary">
+          <h5>Order Summary</h5>
+          <p class="textColor" style="font-weight: 800;">
+            Applied Coupon: <%= order.coupon_name  %><br>
+            Delivery Charge: Free<br>
+            Total Amount: ₹<%= order.totalAmount %><br>
+            <% if( order.paymentOption=="cod" ){ %>
+            Payment Method: Cash On Delivery<br>
+            <% }else if(order.paymentOption=='razor'){ %>
+              Payment Method: Razorpay<br>
+              <% }else{ %>
+                Payment Method: Wallet<br>
+                <% } %>
+          </p>
+        </div>
+      </div>
+    </div>
+    
+
+  </div>

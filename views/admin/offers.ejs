@@ -306,7 +306,7 @@
                     </thead>
                     <tbody>
                         <% offerProductsList.forEach(offerProduct => { %>
-                        <tr id="product-<%= offerProduct._id %>" class="align-middle">
+                        <tr id="product-<% offerProduct._id %>" class="align-middle">
                             <td><%= offerProduct.title %></td>
                             <td><img src="/public/product_img/<%= offerProduct.image.image1 %>" alt="" style="width: 50px; height: 50px;"></td>
                             <td class="text-center"><%= offerProduct.discount %>%</td>
@@ -780,8 +780,10 @@ categoryOfferForm.addEventListener('submit', event =>{
             icon: 'success',
             text: result.message,
             confirmButtonText: 'OK'
-            });
-            window.location.reload()
+            }).then(()=>{
+                window.location.reload()
+            })
+            
         }else{
             Swal.fire({
                 icon: 'error',

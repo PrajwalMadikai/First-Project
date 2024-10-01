@@ -13,7 +13,6 @@ const productController=require('../controller/productController')
 const whistlistController=require('../controller/whistlistController')
 const walletController=require('../controller/walletController')
 const isValid=require('../middleware/isBlock');
-const order = require('../model/order');
 
 router.get('/signup',controller.signGet)
 router.post('/signup',controller.signPost)
@@ -36,8 +35,14 @@ router.get('/auth/google',passport.authenticate('google',{scope:['profile','emai
 router.get('/auth/google/callback',passport.authenticate("google",{failureRedirect:'/signup'}),
 async (req, res) => {
     try {
-        req.session.user=req.user._id
-        // Check if user is blocked
+        // req.session.user=req.user._id 
+        req.session.userAuth=req.user.email
+        req.session.user = req.user.email;
+        req.session.isBlock = req.user.isBlock;
+        req.session.userInfo = req.user;
+        req.session.userId = req.user._id;
+        
+
         if (req.session.user.isBlock === false) {
             res.redirect('/');
         } else {
@@ -98,6 +103,8 @@ router.post('/remove-coupon',isAuthenticate.isLogin,orderController.removeCoupon
 router.post('/wallet-amount',isAuthenticate.isLogin,walletController.addAmount)
 router.post('/wallet-veryfypayment',isAuthenticate.isLogin,walletController.verifyPaymentPOST)
 
+//  <----Invoice---->
+router.get('/download-invoice/:id',isAuthenticate.isLogin,orderController.getInvoice)
 // <-- Whistlist -->
 router.get('/wishlist',isAuthenticate.isLogin,whistlistController.loadWhistlist)
 router.post('/wishlist/:id',isAuthenticate.isLogin,whistlistController.addWhistlist)

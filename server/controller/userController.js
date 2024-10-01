@@ -68,7 +68,7 @@ exports.signPost=async(req,res)=>{
                 wallet_history: { 
                   amount: 500, 
                   date: new Date(), 
-                  transactionType: 'Refferal Reward '   
+                  transactionType: 'Refferal Reward'   
                 } 
               }
             }

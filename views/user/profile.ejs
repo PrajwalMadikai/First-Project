@@ -1,5 +1,6 @@
 <%- include("../partials/homeHeader") %>
 <%- include("../partials/mainHeader") %>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
 integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 <style>
@@ -223,7 +224,11 @@ body {
                             <h6><%= item.transactionType %></h6>
                             <p><%= item.date %></p>
                         </div>
+                        <% if(item.transactionType=="Credit" ||item.transactionType=="Refferal Reward" ){ %>
                         <p class="text-success">+ ₹<%= item.amount %></p>
+                        <% }else{ %>
+                            <p class="text-danger">- ₹<%= item.amount %></p>    
+                        <% } %>
                     </div>
                 <% }) %>
 
@@ -263,10 +268,6 @@ body {
                 <div class="mb-3">
                     <label for="editName">Name</label>
                     <input type="text" id="editName" name="firstName" class="form-control" value="<%= user.firstName %>">
-                </div>
-                <div class="mb-3">
-                    <label for="editEmail">Email Address</label>
-                    <input type="email" id="editEmail" name="email" class="form-control" value="<%= user.email %>">
                 </div>
                 <div class="mb-3">
                     <label for="editPhone">Contact</label>
@@ -356,7 +357,7 @@ body {
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form id="addFundsForm" action="/wallet-amount" method="POST">
+          <form id="addFundsForm"  >
             <div class="mb-3">
               <label for="amount" class="form-label">Enter Amount</label>
               <input type="number" class="form-control" id="amount" name="amount" placeholder="Enter amount" required>
@@ -365,37 +366,17 @@ body {
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary" form="addFundsForm">Submit</button>
+          <button type="button" class="btn btn-primary"   onclick="addAmount()">Submit</button>
         </div>
       </div>
     </div>
   </div>
-  <!-- Modal for Adding Funds -->
-<div class="modal fade" id="addFundsModal" tabindex="-1" aria-labelledby="addFundsModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addFundsModalLabel">Add Funds to Wallet</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="addFundsForm">
-                    <div class="mb-3">
-                        <label for="amount" class="form-label">Amount (₹)</label>
-                        <input type="number" class="form-control" id="amount" required placeholder="Enter amount">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="confirmAddFundsBtn">Add Funds</button>
-            </div>
-        </div>
-    </div>
-</div>
+  
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+
 <script>
-document.getElementById('confirmAddFundsBtn').addEventListener('click', async function () {
+async function addAmount() {
     const amount = document.getElementById('amount').value;
 
     if (amount <= 0 || isNaN(amount)) {
@@ -412,79 +393,62 @@ document.getElementById('confirmAddFundsBtn').addEventListener('click', async fu
             body: JSON.stringify({ amount: amount })
         });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.log('Error creating order:', errorData);
-            swal("Error", "Failed to create order. Please try again.", "error");
-            return;
-        }
+       
 
-        const orderData = await response.json();
-        console.log("Order Data received from backend:", orderData); // Log the order data received
+        const data = await response.json();
 
-        // Make sure Razorpay order ID and key are valid
-        if (!orderData.id || !orderData.key) {
-            swal("Error", "Failed to retrieve Razorpay order details.", "error");
-            return;
-        }
+        console.log('Razorpay response:', data);
 
-        const options = {
-            key: orderData.key, // Razorpay Key ID
-            amount: orderData.amount, // Amount in paise
-            currency: 'INR',
-            name: 'Your Wallet',
-            order_id: orderData.id, // Razorpay Order ID
-            description: 'Adding funds to your wallet',
-            handler: async function (response) {
-                console.log("Razorpay payment response:", response); // Log the payment response
-
-                const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = response;
-                const res = await fetch('/wallet-veryfypayment', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        razorpayOrderId: razorpay_order_id,
-                        razorpayPaymentId: razorpay_payment_id,
-                        razorpaySignature: razorpay_signature,
-                        amount: orderData.amount
-                    })
-                });
-
-                const data = await res.json();
-                if (data.success) {
-                    await swal("Success", "Funds added successfully!", "success");
-                    location.reload();
-                } else {
-                    swal("Error", "Payment verification failed. Please try again.", "error");
+        if (data.success) {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addFundsModal')); 
+            modal.hide(); 
+            let options = {
+                key: data.key, // Your Razorpay key
+                amount: data.amount, // Amount in paise
+                currency: data.currency,
+                name: "trendView",
+                description: "Test Transaction",
+                order_id: data.id, // Order ID from backend
+                handler: function (response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Payment Success!',
+                        text: 'Your payment was successful!',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        window.location.href = "/profile"; // Redirect on success
+                    });
+                },
+                prefill: {
+                    name: "Your Name",
+                    email: "Your Email",
+                    contact: "Your Phone Number"
+                },
+                theme: {
+                    color: "#3399cc"
                 }
-            },
-            prefill: {
-                name: 'Prajwal P',
-                email: 'prajwalmadikai@gmail.com',
-                contact: '9207401977'
-            },
-            theme: {
-                color: '#007bff'
-            }
-        };
+            };
 
-        console.log("Razorpay options:", options); // Log the options before opening Razorpay
-        const razorpay = new Razorpay(options);
-        razorpay.open(); // Open the Razorpay window
+            // Debug the options to check correctness
+            console.log('Razorpay options:', options);
+
+            let rzp = new Razorpay(options);
+            rzp.open(); // Open the Razorpay interface
+        } else {
+            swal("Error", "Failed to create Razorpay order. Please try again.", "error");
+        }
 
     } catch (error) {
         console.error('Error adding funds:', error);
         swal("Error", "An error occurred while adding funds. Please try again.", "error");
     }
-});
+}
+
 
 </script>
 
 
 <!-- Include Razorpay SDK -->
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>  
 <script>
 document.getElementById('editProfileBtn').addEventListener('click', function() {
     // Hide any other visible forms

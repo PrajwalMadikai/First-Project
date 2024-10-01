@@ -49,22 +49,22 @@ const order=new schema({
                 type:String
             },
             quantity:{
-                type:String
+                type:Number
             },
             price:{
-                type:String
+                type:Number
             },
             status:{
                 type:String,
                 default:"Pending"
             },
-            size:{
-               type:String
-            },
             request:{
                 type:Boolean
             },
             returnReason:{
+                type:String
+            },
+            paymentStatus:{
                 type:String
             }
             

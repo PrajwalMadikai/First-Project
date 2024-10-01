@@ -16,7 +16,6 @@ const imageUpload=new schema({
     },
     category:{
         type:String,
-    
     },
     brand:{
         type:String

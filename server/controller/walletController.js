@@ -12,23 +12,40 @@ exports.addAmount = async (req, res) => {
     try {
         const { amount } = req.body;
         const user = await User.findOne({ email: req.session.userAuth });
+        let wallet = await Wallet.findOneAndUpdate(
+            { userId: user._id },
+            {
+                $push: {
+                    wallet_history: {
+                        date: Date.now(),
+                        amount: amount,
+                        transactionType: "Credit"
+                    }
+                },
+               
+                    $inc:{balance:amount}
+                 
+            },
+            { new: true, upsert: true }  // Return the updated document
+        );
+        
+        const lastHistoryEntry = wallet.wallet_history[wallet.wallet_history.length - 1];
+        const receiptId = lastHistoryEntry._id.toString()
+        
 
-        const orderOptions = {
-            amount: amount * 100, // Amount in paise
-            currency: 'INR',
-            receipt: `receipt_${Date.now()}`,
-            payment_capture: 1 // Auto capture payment
-        };
+        const razorpayOrder = await razorpay.orders.create({
+            amount: amount * 100 ,  
+            receipt: receiptId,
+            currency: 'INR'
+        });
 
-        const razorpayOrder = await razorpay.orders.create(orderOptions);
-        console.log("Razorpay order created:", razorpayOrder); // Log the order details
-
-        // Send Razorpay order details to the frontend
         res.json({
             success: true,
-            key: process.env.razorpay_keyId, // Razorpay Key
-            amount: razorpayOrder.amount, // Amount in paise
-            id: razorpayOrder.id // Razorpay Order ID
+            key:razorpay.key_id,  
+            amount: razorpayOrder.amount,  
+            id: razorpayOrder.id,
+            currency: razorpayOrder.currency,
+            razorpayOrderId: razorpayOrder.id
         });
     } catch (error) {
         console.error('Error creating Razorpay order:', error);
