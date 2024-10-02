@@ -588,6 +588,7 @@ async function checkout(event) {
                     confirmButtonText: 'OK'
                 }).then(() => {
                     window.location.href = "/orders";
+<<<<<<< HEAD
                 });
             } else if (data.razor === true) {
                 // Razorpay Payment
@@ -696,6 +697,68 @@ async function checkout(event) {
                 });
             }
         }
+=======
+                })
+             }else if(data.cod==false){
+                
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: 'Items priced above ₹1000 cannot use Cash on Delivery.',
+                    confirmButtonText: 'OK'
+                    });
+
+
+             }else if(data.razor==true){
+                    let options={
+                        key:data.key,
+                        amount:data.amount,
+                        currency:data.currency,
+                        name:"trendView",
+                        description: "Test Transaction",
+                        order_id: data.razorpayOrderId, 
+                        handler:function (response) {
+                     Swal.fire({
+                     icon: 'success',
+                     title: 'Payment Success!',
+                     text: 'Your payment was successful!',
+                     confirmButtonText: 'OK'
+                      }).then(()=>{
+                          window.location.href = "/orders";
+                      })
+          },
+          "prefill": {
+            "name": "Your Name",
+            "email": "Your Email",
+            "contact": "Your Phone Number"
+          },
+          "theme": {
+            "color": "#3399cc"
+          }
+        };
+        let rzp=new Razorpay(options);
+        rzp.open()
+    }else if(data.wallet==true){
+            Swal.fire({
+            icon: 'success',
+            title: 'Order Placed!',
+            text: 'Your order has been successfully placed.',
+            confirmButtonText: 'OK'
+            }).then(()=>{
+                window.location.href = "/orders";
+            })
+    }else if(data.wallet==false)
+    {
+        Swal.fire({
+            icon: 'error',
+            title: 'Insufficient Balance',
+            text: 'You do not have enough balance to complete this transaction.',
+            confirmButtonText: 'Ok'
+        })
+    }
+                    
+}
+>>>>>>> sub_branch
     } catch (error) {
         console.error('Error:', error);
     }

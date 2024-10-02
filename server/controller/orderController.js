@@ -179,9 +179,39 @@ exports.placeOrder = async (req, res) => {
                 receipt: order._id.toString(),
                 currency: 'INR'
             });
+<<<<<<< HEAD
                // Save razorpayOrderId to the order object before saving it
                 order.products.forEach(product => {
                     product.razorpayOrderId = razorpayOrder.id;
+=======
+
+            // Handle Cash on Delivery (COD)
+            if (paymentType === 'cod') {
+
+                if(totalPrice >1000)
+                {
+                    return res.status(200).json({ message: 'Order placed successfully', cod: false });
+                }
+
+                await order.save();
+                await updateProductStock(products, checkProducts);
+                cart.items = [];
+                cart.total_price=0
+                cart.coupon_name=''
+                cart.coupon_discount=''
+                cart.isCoupon=false
+                await cart.save(); 
+
+                return res.status(200).json({ message: 'Order placed successfully', cod: true });
+            }
+
+            // Handle Razorpay Payment
+            if (paymentType === 'razor') {
+                const razorpayOrder = await razorpay.orders.create({
+                    amount: Number(order.totalAmount * 100), // Amount is in paise
+                    receipt: order._id.toString(),
+                    currency: 'INR'
+>>>>>>> sub_branch
                 });
                 await updateProductStock(products, cart.items.map(item => item.product_id));
             await order.save();
