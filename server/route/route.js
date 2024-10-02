@@ -72,9 +72,9 @@ router.get('/product/:id',controller.viewProduct)
 
 // <-- cart -->
 router.get("/cart-items",isAuthenticate.isLogin,cartController.getCart)
-router.post('/cart/:id',isAuthenticate.isLogin,isValid,cartController.addCart) 
-router.post('/updateCart/:id',isAuthenticate.isLogin,isValid,cartController.updateCart) 
-router.get('/deleteCart/:id',isAuthenticate.isLogin,isValid,cartController.deleteCart) 
+router.post('/cart/:id',isAuthenticate.isLogin,cartController.addCart) 
+router.post('/updateCart/:id',isAuthenticate.isLogin,cartController.updateCart) 
+router.get('/deleteCart/:id',isAuthenticate.isLogin,cartController.deleteCart) 
 //     <-- profile -->
 router.get('/profile',isAuthenticate.isLogin,profileController.getProfile)
 router.post('/edit-profile',isAuthenticate.isLogin,profileController.editProfile)
@@ -90,6 +90,8 @@ router.post('/deleteAddress/:id',isAuthenticate.isLogin,profileController.delete
 //     <-- checkout page -->
 router.get('/checkout',isAuthenticate.isLogin,orderController.renderCheckout)
 router.post('/placeOrder',isAuthenticate.isLogin,orderController.placeOrder)
+router.post('/verifyPayment',isAuthenticate.isLogin,orderController.verifyPayment)
+router.post('/re-payment',isAuthenticate.isLogin,orderController.Repay)
 
 router.get('/orders',isAuthenticate.isLogin,orderController.orderHistory)
 router.get('/orderDetail/:id',isAuthenticate.isLogin,orderController.getOrderDetail)
@@ -115,7 +117,7 @@ router.post('/wishlist-delete/:id',isAuthenticate.isLogin,whistlistController.de
  
 
 
-router.get('/logout',isAuthenticate.isLogin,isValid,controller.logout) 
+router.get('/logout',isAuthenticate.isLogin,controller.logout) 
 
  
  

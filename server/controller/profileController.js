@@ -2,7 +2,7 @@ const User=require('../model/userSchema')
 const Address=require('../model/address')
 const Order=require('../model/order')
 const Wallet=require('../model/wallet')
-
+const crypto = require('crypto');
 
 exports.getProfile=async(req,res)=>{
     try {
@@ -20,6 +20,12 @@ exports.getProfile=async(req,res)=>{
             })
             await Wallet.create(newWallet)
         }
+        if(!user.refferal_code){
+            const namePrefix = user.firstName.slice(0, 3).toUpperCase(); // First 3 letters of the first name
+            const randomId = crypto.randomBytes(4).toString('hex'); // Generate a random 4-byte hex string
+            let ref= `${namePrefix}-${randomId}`; // Combine them to form the referral code
+            user.refferal_code=ref
+        }
         
          
         res.render('./user/profile', { user,info,wallet,walletHistory:wallet.wallet_history});
@@ -34,8 +40,9 @@ exports.getProfile=async(req,res)=>{
  exports.editProfile=async(req,res)=>{
     try {
         const {firstName,email,phone}=req.body
+        let user=await User.findOne({email: req.session.userAuth})
         await User.updateOne(
-            { email: email },
+            { _id:user._id },
             {
                 $set: {
                     firstName: firstName,

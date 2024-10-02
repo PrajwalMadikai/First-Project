@@ -124,6 +124,7 @@ body, html {
 
             <!-- Product Details -->
             <div class="container col-md-6">
+                <% user %>
                 
                 <h1 class="product-title mb-0 " style="color: gray; font-size: large;"><%= productData.brand %></h1>
                 <div class="d-flex justify-content-start">
@@ -326,8 +327,7 @@ body, html {
     function addToCart(){
         const productId='<%= productData._id %>'
         const quantity=document.getElementById('quantity').value
-        
-
+  
         
 
         fetch(`/cart/${productId}`,{

@@ -284,8 +284,8 @@ exports.approveReturn=async(req,res)=>{
         )
 
         // Get the price of the product being returned
-        const product = order.products.find(product => product._id.equals(id));
-        const productPrice = product.price*product.quantity;
+        let product = order.products.find(product => product._id.equals(id));
+        let productPrice = product.price*product.quantity;
         if(order.discounted_price)
         {
             productPrice-=order.discounted_price

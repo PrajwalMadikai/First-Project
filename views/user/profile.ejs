@@ -271,9 +271,9 @@ body {
                 </div>
                 <div class="mb-3">
                     <label for="editPhone">Contact</label>
-                    <input type="tel" id="editPhone" name="phone" class="form-control" value="<%= user.phone %>">
+                    <input type="tel" id="editPhone" name="phone" class="form-control" pattern="^[6-9]\d{9}$" title="Please enter a 10-digit phone number" value="<%= user.phone %>">
                 </div>
-                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <button type="submit" class="btn btn-primary">Save</button>
                 <button type="button" class="btn btn-secondary" id="cancelEditBtn">Cancel</button>
             </form>
         </div>
@@ -376,6 +376,17 @@ body {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
 
 <script>
+// document.getElementById('editProfile').addEventListener('submit', function(event) {
+//     const phoneInput = document.getElementById('editPhone').value;
+//     const phonePattern = /^[0-9]{10}$/; // 10-digit number
+//     new Set(mobile).size === 1
+//     if (!phonePattern.test(phoneInput)) {
+//         alert('Please enter a valid 10-digit phone number.');
+//         event.preventDefault(); // Prevent form submission
+//     }
+// });
+
+
 async function addAmount() {
     const amount = document.getElementById('amount').value;
 

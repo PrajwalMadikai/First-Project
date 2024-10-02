@@ -66,6 +66,9 @@ const order=new schema({
             },
             paymentStatus:{
                 type:String
+            },
+            razorpayOrderId: {  
+                type: String
             }
             
         }

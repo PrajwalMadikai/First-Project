@@ -86,23 +86,30 @@ exports.getCart = async (req, res) => {
         let user = await User.findOne({ email: req.session.user });
         let cart = await Cart.findOne({ user_id: user._id }).populate('items.product_id');
 
-        if (!cart || cart.items.length === 0) {
+        if (!cart) {
+            let newCart = new Cart({
+                user_id: user._id,
+            });
+            await Cart.create(newCart);
+            cart = newCart;  // Set cart to the newly created cart
+        }
+
+        if (cart.items.length === 0) {
             cart.total_price = 0;
         }
 
-        // Initialize subtotal
         let subtotal = 0;
+        let totalCartPrice = 0; // Initialize totalCartPrice
 
         // Calculate subtotal (sum of product price * quantity for each item)
         if (cart && cart.items.length > 0) {
             cart.items.forEach(item => {
-                const itemPrice = item.product_id.price; // Assuming price is stored in the product_id object
-                subtotal += itemPrice * item.quantity;   // Add product price * quantity to subtotal
+                const itemPrice = item.product_id.price;
+                subtotal += itemPrice * item.quantity;
             });
         }
 
-        // Set totalCartPrice as the subtotal initially
-        let totalCartPrice = subtotal;
+        totalCartPrice = subtotal;
 
         // Check if any coupon is applied from session
         let appliedCoupon = null;
@@ -125,6 +132,7 @@ exports.getCart = async (req, res) => {
         }
 
         cart.total_price = subtotal; // Correctly set the cart total
+
         // Render the cart with calculated values
         res.render('./user/cart', {
             user,
@@ -139,6 +147,7 @@ exports.getCart = async (req, res) => {
         res.status(500).send("An error occurred while retrieving the cart.");
     }
 };
+
 
 
 exports.updateCart=async(req,res)=>{
