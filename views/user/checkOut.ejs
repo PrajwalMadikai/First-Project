@@ -592,7 +592,17 @@ async function checkout(event) {
                 }).then(()=>{
                     window.location.href = "/orders";
                 })
-             } else if(data.razor==true){
+             }else if(data.cod==false){
+                
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: 'Items priced above ₹1000 cannot use Cash on Delivery.',
+                    confirmButtonText: 'OK'
+                    });
+
+
+             }else if(data.razor==true){
                     let options={
                         key:data.key,
                         amount:data.amount,

@@ -10,7 +10,6 @@ exports.addCart = async (req, res) => {
   try {
       const id =new  mongoose.Types.ObjectId(req.params.id); // Product ID
       const quantity = req.body.quantity; // Quantity from the request body
-     const size=req.body.size;
       // Fetch the product and user details
       const newProduct = await Product.findOne({ _id: id });
       const newUser = await User.findOne({ email: req.session.userAuth });
@@ -38,7 +37,6 @@ exports.addCart = async (req, res) => {
                   stock: newProduct.stock,
                   quantity: quantityValue,
                   price: cartPrice,
-                  size:size,
                   createdAt: Date.now(),
               });
               cartItem.total_price += cartPrice;
@@ -52,7 +50,6 @@ exports.addCart = async (req, res) => {
                   stock: newProduct.stock,
                   quantity: quantityValue,
                   price: cartPrice,
-                  size:size,
                   createdAt: Date.now(),
               }],
               total_price: cartPrice,

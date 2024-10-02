@@ -158,26 +158,22 @@ body, html {
                 <input type="text" class="quantity-input" name="quantity" id="quantity" value=1 readonly>
                 <div class="quantity-btn" id="increase-btn" onclick="increase()">+</div>
             </div>
-                    <h2 class="text mb-2 fs-6" >Select Dress Size</h2>
+                    <!-- <h2 class="text mb-2 fs-6" >Select Dress Size</h2>
                     <div class="d-flex justify-content-start">
                         <div class="btn-group gap-2" role="group" aria-label="Dress Size">
-                            <!-- Size S -->
                             <input type="radio" class="size-input" id="sizeS" name="dressSize" value="S">
                             <label for="sizeS" class="size-option">S</label>
                     
-                            <!-- Size M -->
                             <input type="radio" class="size-input" id="sizeM" name="dressSize" value="M">
                             <label for="sizeM" class="size-option">M</label>
                     
-                            <!-- Size L -->
                             <input type="radio" class="size-input" id="sizeL" name="dressSize" value="L">
                             <label for="sizeL" class="size-option">L</label>
                     
-                            <!-- Size XL -->
                             <input type="radio" class="size-input" id="sizeXL" name="dressSize" value="XL">
                             <label for="sizeXL" class="size-option">XL</label>
                         </div>
-                    </div>
+                    </div> -->
                     
                  
                 
@@ -331,25 +327,13 @@ body, html {
         const productId='<%= productData._id %>'
         const quantity=document.getElementById('quantity').value
         const sizeElement = document.querySelector('input[name="dressSize"]:checked');
-        let size;
-
-        if (!sizeElement) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Warning',
-                text: 'Please select a size to continue.'  
-            });
-            return;
-        } else {
-            size = sizeElement.value;   
-        }
 
         
 
         fetch(`/cart/${productId}`,{
         method:'post',
         headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({quantity:quantity,size})
+        body:JSON.stringify({quantity:quantity})
         }).then(res=>{
         if(res.ok){
             Swal.fire({
