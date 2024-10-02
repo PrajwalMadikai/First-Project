@@ -337,12 +337,7 @@ body, html {
     function addToCart(){
         const productId='<%= productData._id %>'
         const quantity=document.getElementById('quantity').value
-<<<<<<< HEAD
   
-=======
-        const sizeElement = document.querySelector('input[name="dressSize"]:checked');
-
->>>>>>> sub_branch
         
 
         fetch(`/cart/${productId}`,{
