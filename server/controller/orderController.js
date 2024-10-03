@@ -172,7 +172,10 @@ exports.placeOrder = async (req, res) => {
 
             if (paymentType === 'cod') {
 
-                 
+                if(totalPrice >1000)
+                {
+                    return res.status(200).json({ message: 'Order placed successfully', cod: false });
+                }
 
                 await order.save();
                 await updateProductStock(products, checkProducts);
