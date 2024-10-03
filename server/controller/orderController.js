@@ -170,13 +170,9 @@ exports.placeOrder = async (req, res) => {
                 }]
             });
 
-            // Handle Cash on Delivery (COD)
             if (paymentType === 'cod') {
 
-                if(totalPrice >1000)
-                {
-                    return res.status(200).json({ message: 'Order placed successfully', cod: false });
-                }
+                 
 
                 await order.save();
                 await updateProductStock(products, checkProducts);
@@ -190,10 +186,9 @@ exports.placeOrder = async (req, res) => {
                 return res.status(200).json({ message: 'Order placed successfully', cod: true });
             }
 
-            // Handle Razorpay Payment
             if (paymentType === 'razor') {
                 const razorpayOrder = await razorpay.orders.create({
-                    amount: Number(order.totalAmount * 100), // Amount is in paise
+                    amount: Number(order.totalAmount * 100),  
                     receipt: order._id.toString(),
                     currency: 'INR'
                 });
