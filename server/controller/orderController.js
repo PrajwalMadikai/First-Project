@@ -166,31 +166,30 @@ exports.placeOrder = async (req, res) => {
             }]
         });
 
-        // Save order and handle different payment types
-        if (paymentType === 'cod') {
-            // Cash on Delivery (COD) flow
-            order.products.forEach(p => p.paymentStatus = "Pending");
-            await order.save();
-            await updateProductStock(products, cart.items.map(item => item.product_id));
-            cart.items = [];
-            cart.total_price = 0;
-            cart.coupon_name = '';
-            cart.coupon_discount = '';
-            cart.isCoupon = false;
-            await cart.save();
-            return res.status(200).json({ message: 'Order placed successfully', cod: true });
-        }
+            if (paymentType === 'cod') {
 
-        if (paymentType === 'razor') {
-            // Razorpay payment
-            const razorpayOrder = await razorpay.orders.create({
-                amount: Number(order.totalAmount * 100),
-                receipt: order._id.toString(),
-                currency: 'INR'
-            });
-               // Save razorpayOrderId to the order object before saving it
-                order.products.forEach(product => {
-                    product.razorpayOrderId = razorpayOrder.id;
+                if(totalPrice >1000)
+                {
+                    return res.status(200).json({ message: 'Order placed successfully', cod: false });
+                }
+
+                await order.save();
+                await updateProductStock(products, checkProducts);
+                cart.items = [];
+                cart.total_price=0
+                cart.coupon_name=''
+                cart.coupon_discount=''
+                cart.isCoupon=false
+                await cart.save(); 
+
+                return res.status(200).json({ message: 'Order placed successfully', cod: true });
+            }
+
+            if (paymentType === 'razor') {
+                const razorpayOrder = await razorpay.orders.create({
+                    amount: Number(order.totalAmount * 100),  
+                    receipt: order._id.toString(),
+                    currency: 'INR'
                 });
                 await updateProductStock(products, cart.items.map(item => item.product_id));
             await order.save();
