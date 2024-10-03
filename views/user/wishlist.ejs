@@ -1,47 +1,62 @@
 <%- include("../partials/homeHeader") %>
 <%- include("../partials/mainHeader") %>
+<style>
+.card {
+    border: 1px solid #ddd; /* Light gray border */
+    margin: 0; /* Remove any default margin */
+    width: 300px;
+}
+
+.card-body {
+    padding: 0; /* Remove padding around the card body */
+}
+
+.card img {
+    border-radius: 5px; /* Rounded corners for images */
+}
+
+.btn-dark {
+    background-color: black; /* Bootstrap dark button */
+    color: white; /* White text color */
+    width: 100%; /* Make the button full width */
+    margin-top: 10px; /* Space between the price and button */
+}
+
+
+</style>
 <div class="container">
-    <div class="row">
-        <!-- Cart Items Section -->
-        <div class="col-lg-8">
-            
-            <% wishlist.forEach((item, index) => { %>
-                <div class="card mb-3" id="cart-item-<%= item._id %>">
-                    <div class="row no-gutters">
+    <h2 class="my-4">My Wishlist <span id="wishlistCount">(1 item)</span></h2>
+    
+    <div class="row mb-2">
+        <% wishlist.forEach((item, index) => { %>
+            <div class="col-md-3 mb-4"> <!-- Adjust column size for 4 items in a row -->
+                <div class="card border shadow-sm rounded">
+                    <div class="card-body text-center p-0"> <!-- Remove padding for body -->
                         <!-- Product Image -->
-                        <div class="col-md-3 d-flex align-items-center justify-content-center">
-                            <img src="/public/product_img/<%= item.productId.image.image1 %>" alt="Product Image" class="img-fluid" style="width: 80px; height: 80px; object-fit: cover;">
-                        </div>
-                        <!-- Product Details -->
-                        <div class="col-md-6">
-                            <div class="card-body">
-                                <h5 class="card-title"><%= item.product_name %></h5>
-                                <p class="card-text">Price: ₹<span id="itemPrice"><%= item.price %></span></p>
-                            </div>
-                        </div>
-            
-                        <!-- Add to Cart Button -->
-                        <div class="col-md-3 d-flex flex-column align-items-center justify-content-center">
-                            <button class="btn btn-dark" onclick="addToCart('<%= item.productId._id %>' )">ADD TO CART</button>
-                        </div>
+                        <img src="/public/product_img/<%= item.productId.image.image1 %>" alt="Product Image" class="img-fluid" style="height: 250px; object-fit: fill; border-radius: 5px; width: 100%;">
+                        <h5 class="card-title mt-2"><%= item.product_name %></h5>
+                        <p class="card-text">Price: ₹<span id="itemPrice" class="text-success"><%= item.price %></span>
+                      
+                        </p>
+                        <button class="btn btn-dark" onclick="addToCart('<%= item.productId._id %>')">ADD TO BAG</button>
                     </div>
                 </div>
-            <% }); %>
-            
-            
-           
-        </div>
+            </div>
+        <% }); %>
+    </div>
 </div>
+
+
 <script>
-function addToCart(productId) {
-  let size='S'
-    fetch(`/cart/${productId}`, {
+async function addToCart(productId) {
+   let response=await fetch(`/cart/${productId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantity:1,size })
+        body: JSON.stringify({ quantity:1 })
     })
-    .then(res => {
-        if (res.ok) {
+    let res=await response.json()
+    if(res.success)
+    {
             Swal.fire({
                 title: 'Success!',
                 text: 'The item has been added to your cart and removed from the wishlist.',
@@ -55,13 +70,32 @@ function addToCart(productId) {
             }).then(()=>{
                 window.location.reload()
             })
-        } else {
-            console.log("Something went wrong");
+        } else if(res.stock==true) {
+            Swal.fire({
+                title: 'Out of Stock!',
+                text: 'The item you selected is currently out of stock.',
+                icon: 'warning',
+                confirmButtonText: 'OK',
+                position: 'top',
+                toast: true,
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true
+            });
+        }else{
+            Swal.fire({
+                title: 'Warning!',
+                text: 'Something went wrong.',
+                icon: 'warning',
+                confirmButtonText: 'OK',
+                position: 'top',
+                toast: true,
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true
+            });
         }
-    })
-    .catch(err => {
-        console.error('Error:', err);
-    });
+    
 }
 
 async function deleteWhistlist(productId) {

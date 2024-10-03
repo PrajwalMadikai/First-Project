@@ -26,6 +26,9 @@ const Cart=new schema({
         } 
     }
     ],
+    delivery_charge:{
+        type:Number
+    },
     total_price:{
         type:Number
     },

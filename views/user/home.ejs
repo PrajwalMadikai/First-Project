@@ -284,25 +284,34 @@
                 </div>
                 <div class="row mt-4">
                     <% product.forEach((element)=>{ %>
-                    <div class="col-md-3 mb-5">
-                        <div class="card product-card text-start ">
-                            <div class="position-relative">
-                                <input type="hidden" name="productId" id="productId" value="<%=element._id  %>">
-                                <% if(element.discount){%>
-                                    <span class="discount-badge" style="background-color: rgb(121, 234, 41);"><%= element.discount %>%</span>
-                                     <% } %>
-                                 
-                                <img src="/public/product_img/<%= element.image.image1 %>" alt="Product 1">
-                                <button class="add-to-cart" >Add to Cart</button>
+                        <div class="col-md-3 mb-5">
+                            <div class="card product-card text-start">
+                                <div class="position-relative">
+                                    <input type="hidden" name="productId" id="productId" value="<%= element._id %>">
+                                    <% if(element.discount){ %>
+                                        <span class="discount-badge" style="background-color: rgb(121, 234, 41);"><%= element.discount %>%</span>
+                                    <% } %>
+                                    
+                                    <img src="/public/product_img/<%= element.image.image1 %>" alt="Product 1">
+                                    <button class="add-to-cart">Add to Cart</button>
+                                </div>
+                                <h4 class="product-name pl-2 pt-3 mb-0 mt-0"><%= element.title %></h4>
+                                
+                                <!-- Price and wishlist button aligned -->
+                                <div class="d-flex justify-content-between align-items-center pl-2 pr-2 mb-0">
+                                    <div>
+                                        <strong class="pr-2 text-black">₹<%= element.price %></strong>
+                                        <del class="fs-6">₹<%= element.oldPrice %></del>
+                                    </div>
+                                    <!-- Wishlist button -->
+                                    <button class="btn btn-outline-danger btn-sm wishlist-button">
+                                        <i class="fas fa-heart">button</i> <!-- FontAwesome icon for heart -->
+                                    </button>
+                                </div>
                             </div>
-                            <h4 class="product-name pl-2 pt-3 mb-0 mt-0"><%= element.title %></h4>
-                             
-                            
-                            <p class="pl-2 mb-0"> <strong class="pr-2 text-black"> ₹<%= element.price %></strong><del class="fs-6"> ₹<%= element.oldPrice %></del></p>
                         </div>
-                    </div>
-                  <% }) %>
-                     
+                    <% }) %>
+                    
                 </div>
                 <div class="text-center mt-4 mb-4">
                     <button class="btn btn-dark">View All Products</button>

@@ -8,8 +8,8 @@ const Wishlist = require('../model/wishlist');
 
 exports.addCart = async (req, res) => {
   try {
-      const id =new  mongoose.Types.ObjectId(req.params.id); // Product ID
-      const quantity = req.body.quantity; // Quantity from the request body
+      const id =new  mongoose.Types.ObjectId(req.params.id); 
+      const quantity = req.body.quantity; 
     
       // Fetch the product and user details
       const newProduct = await Product.findOne({ _id: id });
@@ -19,7 +19,11 @@ exports.addCart = async (req, res) => {
 
       // Find the user's cart
       let cartItem = await Cart.findOne({ user_id: newUser._id });
-
+      
+      if(newProduct.stock==0)
+      {
+       return res.status(200).json({message:"out of stock",stock:true})
+      }
       // Handle cart logic
       if (cartItem) {
           const itemIndex = cartItem.items.findIndex(

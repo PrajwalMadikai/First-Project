@@ -63,6 +63,14 @@ exports.renderCheckout = async (req, res) => {
                 req.session.couponApplied = false; 
             }
         }
+        if(totalCartPrice<=5000)
+        {
+            cart.delivery_charge=50
+        }else{
+            cart.delivery_charge=90
+        }
+        cart.total_price+=cart.delivery_charge
+       await cart.save();
 
         res.render('./user/checkOut', {
             cart,
@@ -147,6 +155,7 @@ exports.placeOrder = async (req, res) => {
             products: products,
             coupon_name: appliedCoupon,
             discounted_price: cart.coupon_discount,
+            delivery_charges:cart.delivery_charge,
             address: [{
                 house: location.houseName,
                 city: location.city,
@@ -534,6 +543,7 @@ exports.couponApply = async (req, res) => {
         }
 
         totalCartPrice -= discountAmount;
+        totalCartPrice-=cart.delivery_charge
 
         cart.total_price = totalCartPrice;
         cart.coupon_name = coupon.coupon_code;

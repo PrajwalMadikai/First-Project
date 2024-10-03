@@ -36,6 +36,9 @@ const order=new schema({
     discounted_price:{
         type:Number
     },
+    delivery_charges:{
+        type:Number
+    },
     products:[
         {
             productId:{

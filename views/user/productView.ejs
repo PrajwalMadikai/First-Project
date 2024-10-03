@@ -159,34 +159,7 @@ body, html {
                 <input type="text" class="quantity-input" name="quantity" id="quantity" value=1 readonly>
                 <div class="quantity-btn" id="increase-btn" onclick="increase()">+</div>
             </div>
-<<<<<<< HEAD
-                    <!-- <h2 class="text mb-2 fs-6" >Select Dress Size</h2> -->
-                    <!-- <div class="d-flex justify-content-start">
-=======
-                    <!-- <h2 class="text mb-2 fs-6" >Select Dress Size</h2>
-                    <div class="d-flex justify-content-start">
->>>>>>> sub_branch
-                        <div class="btn-group gap-2" role="group" aria-label="Dress Size">
-                            <input type="radio" class="size-input" id="sizeS" name="dressSize" value="S">
-                            <label for="sizeS" class="size-option">S</label>
-                    
-                            <input type="radio" class="size-input" id="sizeM" name="dressSize" value="M">
-                            <label for="sizeM" class="size-option">M</label>
-                    
-                            <input type="radio" class="size-input" id="sizeL" name="dressSize" value="L">
-                            <label for="sizeL" class="size-option">L</label>
-                    
-                            <input type="radio" class="size-input" id="sizeXL" name="dressSize" value="XL">
-                            <label for="sizeXL" class="size-option">XL</label>
-                        </div>
-<<<<<<< HEAD
-                    </div>
-                     -->
-=======
-                    </div> -->
-                    
->>>>>>> sub_branch
-                 
+                     
                 
 
                 <!-- Buy Now -->
@@ -195,7 +168,7 @@ body, html {
                    
                     <button class="btn  ml-0 ml-md-3 ml-4" id="addtocart" onclick="addToCart()"><i class="fa-solid fa-cart-shopping mr-3"></i>Add to Cart</button>
                 </div>
-  <!-- </form> -->
+ 
                 <!-- Product details -->
  
                 <div class="container mt-4">
@@ -333,40 +306,77 @@ body, html {
             quantityInput.value = currentValue - 1;
         }
         }
+        async function addToCart() {
+    const productId = '<%= productData._id %>';
+    const quantity = document.getElementById('quantity').value;
 
-    function addToCart(){
-        const productId='<%= productData._id %>'
-        const quantity=document.getElementById('quantity').value
-  
+    try {
+        let response = await fetch(`/cart/${productId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quantity: quantity })
+        });
+
         
 
-        fetch(`/cart/${productId}`,{
-        method:'post',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({quantity:quantity})
-        }).then(res=>{
-        if(res.ok){
+        let res = await response.json();
+
+        if (res.success) {
             Swal.fire({
-                    title: 'Success!',
-                    text: 'The item has been added to your cart.',
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                    position: 'top',
-                    toast: true,
-                    showConfirmButton: false,
-                    timer: 2000,
-                    timerProgressBar: true
-        })
-        
+                title: 'Success!',
+                text: 'The item has been added to your cart.',
+                icon: 'success',
+                confirmButtonText: 'OK',
+                position: 'top',
+                toast: true,
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true
+            });
+        } else if (res.stock === true) {
+            Swal.fire({
+                title: 'Out of Stock!',
+                text: 'The item you selected is currently out of stock.',
+                icon: 'warning',
+                confirmButtonText: 'OK',
+                position: 'top',
+                toast: true,
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true
+            });
+        } else {
+            Swal.fire({
+                title: 'Warning!',
+                text: 'Something went wrong.',
+                icon: 'warning',
+                confirmButtonText: 'OK',
+                position: 'top',
+                toast: true,
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true
+            });
         }
-        else{
-            console.log("something went wrong")
-        }
-        })
-        .catch(err=>{
-        console.error('Error:',err)
-        })
-        }
+    } catch (error) {
+        // Log the error to the console
+        console.error('Error adding to cart:', error);
+
+        // Show an error message to the user
+        Swal.fire({
+            title: 'Error!',
+            text: 'An unexpected error occurred. Please try again later.',
+            icon: 'error',
+            confirmButtonText: 'OK',
+            position: 'top',
+            toast: true,
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true
+        });
+    }
+}
+
 
 async function addToWhistlist(productId) {
     let response = await fetch(`/wishlist/${productId}`, {
@@ -378,7 +388,6 @@ async function addToWhistlist(productId) {
     if (response.ok) {
         let data = await response.json();
         if (data.newItem === true) {
-            // SweetAlert for success - new item added to the wishlist
             Swal.fire({
                 icon: 'success',
                 title: 'Added to Wishlist',
@@ -387,7 +396,6 @@ async function addToWhistlist(productId) {
                 timer: 1500
             });
         } else {
-            // SweetAlert for info - item already in the wishlist
             Swal.fire({
                 icon: 'info',
                 title: 'Already in Wishlist',
