@@ -258,7 +258,17 @@ exports.cancelOrder = async (req, res) => {
 exports.deliveredOrder=async(req,res)=>{
     try {
         const id=new mongoose.Types.ObjectId(req.params.id)
-
+        const isCod=req.query.cod
+        console.log(isCod);
+        
+        if(isCod)
+        {
+            await Order.updateOne(
+                { 'products._id': id },  
+                { $set: { 'products.$.status': "Delivered" ,'products.$.paymentStatus':"Success"} }  
+            );
+        }
+        
         await Order.updateOne(
             { 'products._id': id },  
             { $set: { 'products.$.status': "Delivered" } }  

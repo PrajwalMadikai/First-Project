@@ -62,17 +62,14 @@ exports.addCart = async (req, res) => {
           });
       }
 
-      // Save the cart item
       await cartItem.save();
-      console.log("Added to Cart!!");
      
       let wishlist=await Wishlist.findOne({userId:newUser._id,'items.productId':id})
       if(wishlist){
       await Wishlist.updateOne(
-        { userId: newUser._id },  // Use userId as defined in the schema
-        { $pull: { items: { productId: newProduct._id } } }  // This removes the item with matching productId
+        { userId: newUser._id },  
+        { $pull: { items: { productId: newProduct._id } } }   
     );
-    console.log("Item removed from wishlist!");
       }
       
 

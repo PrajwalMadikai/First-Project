@@ -7,12 +7,13 @@ exports.loadWhistlist = async (req, res) => {
         let user = await User.findOne({ email: req.session.userAuth });
  
         let wishlist = await Whistlist.findOne({ userId: user._id }).populate('items.productId');
+        let count=await Whistlist.countDocuments()
 
         if (!wishlist) {
             return res.render('./user/wishlist', { wishlist: [], user }); // Render with an empty wishlist
         }
 
-        res.render('./user/wishlist', { wishlist: wishlist.items, user });
+        res.render('./user/wishlist', { wishlist: wishlist.items, user ,count});
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');
@@ -79,9 +80,11 @@ exports.addWhistlist = async (req, res) => {
 exports.deleteWhistlist=async(req,res)=>{
     try {
          const {productId}=req.body
-         console.log("backend:",productId);
          
-         await Whistlist.findByIdAndDelete({productId:productId})
+         await Whistlist.updateOne(
+            { 'items._id': productId }, // Find the wishlist where the item.productId matches
+            { $pull: { items: { _id: productId } } } // Remove the item from the items array
+          );
 
          res.json({success:true,message:"deleted"})
 

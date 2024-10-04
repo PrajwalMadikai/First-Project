@@ -72,9 +72,9 @@ exports.renderCheckout = async (req, res) => {
             addresses,
             coupons,
             appliedCoupon,
-            totalCartPrice: totalCartPrice.toFixed(2), // Ensure 2 decimal places
-            subtotal: subtotal.toFixed(2), // Ensure 2 decimal places
-            discountAmount: discountAmount.toFixed(2) // Ensure 2 decimal places for discount amount
+            totalCartPrice: totalCartPrice, 
+            subtotal: subtotal,  
+            discountAmount: discountAmount  
         });
     } catch (error) {
         console.log("Error rendering checkout:", error);
@@ -136,7 +136,7 @@ exports.placeOrder = async (req, res) => {
                 name: item.product_id.title,
                 quantity: item.quantity,
                 price: Math.round(discountedPrice),
-                
+               
             });
         }
 
@@ -168,9 +168,12 @@ exports.placeOrder = async (req, res) => {
                     
                     return res.status(200).json({ message: 'Order placed successfully', cod: false });
                 }
+                order.products.forEach(product => {
+                    product.paymentStatus = "Pending";
+                });
 
                 await order.save();
-                await updateProductStock(products, checkProducts);
+                await updateProductStock(products,cart.items.map(item => item.product_id));
                 cart.items = [];
                 cart.total_price=0
                 cart.coupon_name=''
@@ -187,7 +190,7 @@ exports.placeOrder = async (req, res) => {
                     receipt: order._id.toString(),
                     currency: 'INR'
                 });
-                await updateProductStock(products, cart.items.map(item => item.product_id));
+                await updateProductStock(products,cart.items.map(item => item.product_id));
             await order.save();
             cart.items = [];
             cart.total_price = 0;
@@ -251,16 +254,15 @@ exports.verifyPayment = async (req, res) => {
             if (order) {
                 order.products.forEach(p => {
                     if (p.razorpayOrderId === razorpayOrderId) {
-                        p.paymentStatus = 'Failed';
+                        p.paymentStatus = 'Failed'; // Set status to Failed
                     }
                 });
-                await order.save();
+                await order.save(); // Ensure save is awaited
             }
-
             return res.status(400).json({ success: false, message: "Payment failed or canceled" });
         }
 
-        // Verify payment success
+        // Proceed with normal verification logic
         const generatedSignature = crypto.createHmac('sha256', razorpay.key_secret)
             .update(razorpayOrderId + "|" + razorpayPaymentId)
             .digest('hex');
@@ -274,17 +276,15 @@ exports.verifyPayment = async (req, res) => {
                 }
             });
             await order.save();
-
             res.status(200).json({ success: true, message: "Payment verified successfully" });
         } else {
-            console.log('payment failed successfully')
+            console.log('payment verification failed');
             order.products.forEach(p => {
                 if (p.razorpayOrderId === razorpayOrderId) {
                     p.paymentStatus = 'Failed';
                 }
             });
             await order.save();
-
             res.status(400).json({ success: false, message: "Payment verification failed" });
         }
     } catch (error) {
@@ -577,9 +577,8 @@ exports.getInvoice = async (req, res) => {
     try {
         const id = req.params.id;
         const user = await User.findOne({ email: req.session.userAuth });
-        const order = await Order.findOne({ userId: user._id, 'products._id': id });
-        const product = order.products.find(p => p._id.toString() === id);
-        let address=order.address[0]
+        const order = await Order.findOne({ userId: user._id, _id: id });
+        let address = order.address[0];
 
         const htmlContent = `
             <html>
@@ -612,23 +611,28 @@ exports.getInvoice = async (req, res) => {
                             <th>Product Name</th>
                             <th>Quantity</th>
                             <th>Price</th>
-                            <th>Discount</th>
+                            ${order.discounted_price ? "<th>Discount</th>" : ""}
                             <th>Total</th>
                         </tr>
-                        <tr>
-                            <td>${order.orderNumber}</td>
-                            <td>${product.name}</td>
-                            <td>${product.quantity}</td>
-                            <td>₹${product.price}</td>
-                            <td>${order.discounted_price ?"₹"+order.discounted_price:"No Discount Applied"}</td>
-                            <td>₹${product.price - order.discounted_price}</td>
-                        </tr>
+                        ${order.products.map(product => `
+                            <tr>
+                                <td>${order.orderNumber}</td>
+                                <td>${product.name}</td>
+                                <td>${product.quantity}</td>
+                                <td>₹${product.price}</td>
+                                ${order.discounted_price ? `<td>₹${order.discounted_price}</td>` : ""}
+                                <td>₹${(product.price - (order.discounted_price || 0)) * product.quantity}</td>
+                            </tr>
+                        `).join('')}
                     </table>
                 </div>
 
                 <div class="totals">
-                    <p>Total Amount: ₹${order.totalAmount}<br>
-                    Discount Amount: ${order.discounted_price ?'₹'+order.discounted_price:"No Discount Applied"}</p>
+                    <p>Total Amount: ₹${order.totalAmount - order.delivery_charges}<br>
+                    ${order.discounted_price ? `Discount Amount: ₹${order.discounted_price} <br>` : ""} 
+                    Delivery Charge: ₹${order.delivery_charges}<br>
+                    Paid Amount : ₹${order.totalAmount}
+                    </p>
                 </div>
             </body>
             </html>
@@ -649,7 +653,6 @@ exports.getInvoice = async (req, res) => {
             if (err) {
                 console.error('Download error:', err);
             }
-            
         });
 
     } catch (error) {

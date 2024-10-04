@@ -117,15 +117,11 @@
                                     <p class="mb-0"><%= order.paymentOption %></p>  
                                 </div>
                                 <div class="flex-item">
-                                    <% if (order.products.length > 0) { %>
-                                        <% if (order.products[0].paymentStatus == 'Failed') { %>
-                                            <p class="mb-0 text text-danger"><%= order.products[0].paymentStatus %></p>  
+                                        <% if (order.products[0].paymentStatus == 'Failed' ||order.products[0].paymentStatus==undefined) { %>
+                                            <p class="mb-0 text text-danger">Failed</p>  
                                         <% } else { %>
                                             <p class="mb-0 text text-success"><%= order.products[0].paymentStatus %></p>  
                                         <% } %>
-                                    <% } else { %>
-                                        <p class="mb-0 text text-warning">No products found</p>
-                                    <% } %>
                                 </div>
                                 
                                 

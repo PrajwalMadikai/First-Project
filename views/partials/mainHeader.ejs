@@ -1,4 +1,6 @@
 <header>
+    
+    
     <!-- Header Start -->
     <div class="header-area maincolor">
         <div class="main-header header-sticky">
@@ -35,12 +37,23 @@
                                 <button class=" searchBtn" type="submit">Search</button>
                             </form> -->
     
-                            <!-- Wishlist Icon -->
-                            <a href="/wishlist" class="    me-3">
-                                <img src="/public/icons/heart.png" alt="" style="height: 20px;">
+                            
+                            <a href="/wishlist" class="position-relative me-4" style="transition: all 0.3s ease;">
+                                <img src="/public/icons/heart.png" alt="Wishlist" style="height: 20px;">
+                                <% if (wishlistCount > 0) { %> 
+                                    <span class="badge   translate-middle rounded-circle bg-danger" style="font-size: 12px; padding: 0.3em 0.6em;position: absolute; top: 0px; left: 20px; color: white;">
+                                        <%= wishlistCount %>
+                                    </span>
+                                <% } %>
                             </a>
+                            
                             <a href="/cart-items" class="    me-3">
                                 <img src="/public/icons/shopping-cart.png" alt="" style="height: 20px;">
+                                <% if (cartCount > 0) { %> 
+                                    <span class="badge   translate-middle rounded-circle bg-danger" style="font-size: 12px; padding: 0.3em 0.6em;position: absolute; top: 59px;right: 260px; color: white;">
+                                        <%= cartCount %>
+                                    </span>
+                                    <% } %>
                             </a>
                             
 

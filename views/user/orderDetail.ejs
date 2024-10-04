@@ -74,11 +74,17 @@
       </div>
     </div>
     
-  
-    <!-- Order Items Section -->
-    <h5 class="font-weight-bold mb-1 text-danger container">Order Detail</h5>
+   <div class="d-flex justify-content-between mt-2">
+    <h5 class="font-weight-bold  text-danger container">Order Detail</h5>
+      <!-- Invoice Download Button -->
+      <div>
+        <a href="/download-invoice/<%= order._id %>">
+          <button class="inBtn">Invoice Download</button>
+        </a>
+      </div>
+    </div>
     <% order.products.forEach((product) => { %>
-      <div class="box-shadow col-lg-12 d-flex container pr-4 my-4 border shadow-md rounded-lg">
+      <div class="box-shadow col-lg-12 d-flex container pr-4 my-4 border border-1 shadow-md rounded-lg">
         <div class="row align-items-center">
           <div class="col-lg-4 p-0">
             <img class="img" src="/public/product_img/<%= product.image %>" alt="" style="height: 400px;width: 950px;">
@@ -132,12 +138,7 @@
                     <% } %>
                   </span>
                 </div>
-                <!-- Invoice Download Button -->
-                <div>
-                  <a href="/download-invoice/<%= product._id %>">
-                    <button class="inBtn">Invoice Download</button>
-                  </a>
-                </div>
+                 
               </div>
             
               <% if (product.status === 'Delivered') { %>

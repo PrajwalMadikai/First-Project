@@ -90,14 +90,19 @@
 
                           <td>₹<%= product.price %></td>
 
-                          <% if(product.status==='Pending'){ %>
+                          <% if(product.status==='Pending' && product.paymentStatus=='Success' && order.paymentOption!='cod'){ %>
                           <form action="/admin/delivered/<%= product._id %>" method="POST">
                             <td><button class="btn btn-warning" type="submit">Delivered</button></td>
                         </form>
-                        <% }else{ %>
+                        <% } else if(order.paymentOption == 'cod') { %>
+                          <form action="/admin/delivered/<%= product._id %>?cod=true" method="POST">
+                              <td><button class="btn btn-warning" type="submit">Delivered</button></td>
+                          </form>
+                      <% } else { %>
                           <td><button class="btn btn-warning" type="submit" disabled>Delivered</button></td>
 
                           <% } %>
+
                           <% if(product.status=='Delivered'  || product.status=="Returned" || product.status=="Cancelled"){ %>
                          
                             <td><button class="btn btn-danger" type="submit" disabled>Cancel</button></td>

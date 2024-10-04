@@ -354,18 +354,9 @@ html {
                         <p class="text-success">Already applied a Coupon</p>
                         <% } %>
                 </form>
-                
-                
-                
-                   
             </div>
-
-
-
-                        
                     </div>
                     
-
                     <!-- Place Order Button -->
                     <div class="d-flex justify-content-center">
                         <button type="button" class="btnplace mt-2 " onclick="checkout(event)">PLACE ORDER</button>
@@ -505,211 +496,177 @@ async function removeCoupon() {
         document.getElementById("couponFeedback").innerText="Coupon removed!!"
     }
 }
-
-// Function to disable form elements and apply a CSS class
-// function disableForm() {
-//     const form = document.getElementById("couponForm");
-//     const inputs = form.getElementsByTagName("input");
-
  
-//         inputs.disabled = true;
- 
-
-//     // Add the "disabled-form" class to the form for styling
-//     form.classList.add('disabled-form');
-// }
-
-// // Function to enable form when the input is empty
-// function enableForm() {
-//     const form = document.getElementById("couponForm");
-//     const inputs = form.getElementsByTagName("input");
-
-//     // Enable all input elements
-   
-//         inputs.disabled = false;
-   
-//     // Remove the "disabled-form" class to re-enable form styling
-//     form.classList.remove('disabled-form');
-// }
-
-// // Function to check the input and enable/disable the form
-// function checkCouponInput() {
-//     const couponInput = document.getElementById("couponCode");
-
-//     // Check if input is empty, enable the form if it is
-//     if (!couponInput.value) {
-//         enableForm();
-//     }
-// }
 
 // Attach event listener to the coupon input field
 document.getElementById("couponCode").addEventListener("input", checkCouponInput);
 async function checkout(event) {
-    event.preventDefault();
-    try {
-        const addressElement = document.querySelector('input[name="addressId"]:checked');
-        const paymentMethodElement = document.querySelector('input[name="paymentType"]:checked');
-        const appliedCoupon = document.getElementById('couponCode').value;
+            event.preventDefault();
+            try {
+                const addressElement = document.querySelector('input[name="addressId"]:checked');
+                const paymentMethodElement = document.querySelector('input[name="paymentType"]:checked');
+                const appliedCoupon = document.getElementById('couponCode').value;
 
-        if (!addressElement) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Warning',
-                text: 'Please select an address to continue.'
-            });
-            return;
-        }
-        if (!paymentMethodElement) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Warning',
-                text: 'Please select a payment method to continue.'
-            });
-            return;
-        }
+                if (!addressElement) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Warning',
+                        text: 'Please select an address to continue.'
+                    });
+                    return;
+                }
+                if (!paymentMethodElement) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Warning',
+                        text: 'Please select a payment method to continue.'
+                    });
+                    return;
+                }
 
-        const paymentType = paymentMethodElement.value;
-        const addressId = addressElement.value;
+                const paymentType = paymentMethodElement.value;
+                const addressId = addressElement.value;
 
-        let response = await fetch("/placeOrder", {
-            method: "post",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ paymentType, addressId, appliedCoupon })
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            
-            if (data.cod === true) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Order Placed!',
-                    text: 'Your order has been successfully placed.',
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    window.location.href = "/orders";
-                });
-            }else if(data.cod==false)
-            {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Warning!',
-                    text:"Orders above 1000 won't be applicable for Cash on Delivery.",
-                    confirmButtonText: 'OK'
+                let response = await fetch("/placeOrder", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ paymentType, addressId, appliedCoupon })
                 });
 
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.cod === true) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Order Placed!',
+                            text: 'Your order has been successfully placed.',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            window.location.href = "/orders";
+                        });
+                    } else if (data.cod === false) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning!',
+                            text: "Orders above 1000 won't be applicable for Cash on Delivery.",
+                            confirmButtonText: 'OK'
+                        });
+                    } else if (data.razor === true) {
+                        // Razorpay Payment
+                        let options = {
+                            key: data.key,
+                            amount: data.amount,
+                            currency: data.currency,
+                            name: "TrendView",
+                            description: "Test Transaction",
+                            order_id: data.razorpayOrderId,
+                            handler: async function (response) {
+                                try {
+                                    // Send payment verification details to the server
+                                    const paymentData = {
+                                        razorpayPaymentId: response.razorpay_payment_id,
+                                        razorpayOrderId: response.razorpay_order_id,
+                                        razorpaySignature: response.razorpay_signature
+                                    };
 
-            }else if (data.razor === true) {
-                // Razorpay Payment
-                let options = {
-                    key: data.key,
-                    amount: data.amount,
-                    currency: data.currency,
-                    name: "trendView",
-                    description: "Test Transaction",
-                    order_id: data.razorpayOrderId,
-                    handler: async function (response) {
-                        try {
-                            // Send payment verification details to the server
+                                    let verifyResponse = await fetch("/verifyPayment", {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify(paymentData)
+                                    });
+
+                                    let verifyResult = await verifyResponse.json();
+                                    if (verifyResult.success) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Payment Success!',
+                                            text: 'Your payment was verified and successful!',
+                                            confirmButtonText: 'OK'
+                                        }).then(() => {
+                                            window.location.href = "/orders";
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Payment Failed',
+                                            text: 'Your payment could not be verified. Please try again.',
+                                            confirmButtonText: 'OK'
+                                        });
+                                    }
+                                } catch (error) {
+                                    console.error('Error verifying payment:', error);
+                                }
+                            },
+                            prefill: {
+                                name: "Your Name",
+                                email: "Your Email",
+                                contact: "Your Phone Number"
+                            },
+                            theme: {
+                                color: "#FFD700" // Change to gold color
+                            }
+                        };
+
+                        // Razorpay payment failure handling
+                        let rzp = new Razorpay(options);
+                        rzp.on('payment.failed', async function (response) {
+                            console.error('Payment failed:', response.error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Payment Failed',
+                                text: `The payment was declined. Reason: ${response.error.description}`,
+                                confirmButtonText: 'OK'
+                            });
+
+                            // Notify the server of the failed payment
                             const paymentData = {
-                                razorpayPaymentId: response.razorpay_payment_id,
-                                razorpayOrderId: response.razorpay_order_id,
-                                razorpaySignature: response.razorpay_signature
+                                razorpayPaymentId: response.error.metadata.payment_id,
+                                razorpayOrderId: response.error.metadata.order_id,
+                                razorpaySignature: null // No signature for failed payments
                             };
 
                             let verifyResponse = await fetch("/verifyPayment", {
-                                method: "post",
+                                method: "POST",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify(paymentData)
                             });
 
                             let verifyResult = await verifyResponse.json();
-                            if (verifyResult.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Payment Success!',
-                                    text: 'Your payment was verified and successful!',
-                                    confirmButtonText: 'OK'
-                                }).then(() => {
-                                    window.location.href = "/orders";
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Payment Failed',
-                                    text: 'Your payment could not be verified. Please try again.',
-                                    confirmButtonText: 'OK'
-                                });
+                            if (!verifyResult.success) {
+                                console.log('Payment status updated to failed.');
                             }
-                        } catch (error) {
-                            console.error('Error verifying payment:', error);
-                        }
-                    },
-                    "prefill": {
-                        "name": "Your Name",
-                        "email": "Your Email",
-                        "contact": "Your Phone Number"
-                    },
-                    "theme": {
-                        "color": "#3399cc"
+                        });
+
+                        rzp.open();
+                    } else if (data.wallet === true) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Order Placed!',
+                            text: 'Your order has been successfully placed.',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            window.location.href = "/orders";
+                        });
+                    } else if (data.wallet === false) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Insufficient Balance',
+                            text: 'You do not have enough balance to complete this transaction.',
+                            confirmButtonText: 'OK'
+                        });
                     }
-                };
-                
-                // Razorpay payment failure handling
-                let rzp = new Razorpay(options);
-
-                // Handle payment failure
-                rzp.on('payment.failed', async function (response) {
-                    console.error('Payment failed:', response.error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Payment Failed',
-                        text: 'The payment process failed. Please try again.',
-                        confirmButtonText: 'OK'
-                    });
-
-                    // Notify the server of the failed payment
-                    const paymentData = {
-                        razorpayPaymentId: response.error.metadata.payment_id,
-                        razorpayOrderId: response.error.metadata.order_id,
-                        razorpaySignature: null // No signature for failed payments
-                    };
-
-                    let verifyResponse = await fetch("/verifyPayment", {
-                        method: "post",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(paymentData)
-                    });
-
-                    let verifyResult = await verifyResponse.json();
-                    if (!verifyResult.success) {
-                        console.log('Payment status updated to failed.');
-                    }
-                });
-
-                rzp.open();
-            } else if (data.wallet === true) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Order Placed!',
-                    text: 'Your order has been successfully placed.',
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    window.location.href = "/orders";
-                });
-            } else if (data.wallet === false) {
+                }
+            } catch (error) {
+                console.error('Error:', error);
                 Swal.fire({
                     icon: 'error',
-                    title: 'Insufficient Balance',
-                    text: 'You do not have enough balance to complete this transaction.',
-                    confirmButtonText: 'Ok'
+                    title: 'Error',
+                    text: 'An error occurred while processing your order.',
+                    confirmButtonText: 'OK'
                 });
             }
         }
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
 
 
 

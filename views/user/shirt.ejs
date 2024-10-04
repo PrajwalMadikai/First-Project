@@ -286,7 +286,9 @@
                 },
                 position: 'bottom-end', // Set position to bottom right
                 toast: true, // Make it a toast notification
-            });
+            }).then(()=>{
+                window.location.reload()
+            })
 
         } else if (res.stock === true) {
             Swal.fire({
@@ -351,7 +353,9 @@
                 },
                 position: 'bottom-end', // Set position to bottom right
                 toast: true, // Make it a toast notification
-            });
+            }).then(()=>{
+                window.location.reload()
+            })
         } else {
             Swal.fire({
                 icon: 'info',
