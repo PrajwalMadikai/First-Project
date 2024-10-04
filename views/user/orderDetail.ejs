@@ -125,7 +125,11 @@
                     <% } else { %>
                     badge-danger
                     <% } %>">
-                    <%= product.paymentStatus %>
+                    <% if(product.paymentStatus==undefined){ %>
+                       Failed
+                    <% }else{ %>
+                      <%= product.paymentStatus %>
+                    <% } %>
                   </span>
                 </div>
                 <!-- Invoice Download Button -->
@@ -409,7 +413,7 @@ async function repay(orderId,paymentType){
       </ul>
       
       
-        <% if (order.products[0].paymentStatus === 'Failed') { %>
+        <% if (order.products[0].paymentStatus === 'Failed' || order.products[0].paymentStatus ===undefined ) { %>
           <div class="mt-3 ml-5"> 
             <button onclick="repay('<%= order._id %>')" class="  btn-success text-white border-0 mr-2"><i class="fas fa-money-check"></i>&nbsp;&nbsp;&nbsp;Pay Now</button>
              

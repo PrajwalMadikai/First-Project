@@ -63,14 +63,8 @@ exports.renderCheckout = async (req, res) => {
                 req.session.couponApplied = false; 
             }
         }
-        if(totalCartPrice<=5000)
-        {
-            cart.delivery_charge=50
-        }else{
-            cart.delivery_charge=90
-        }
-        cart.total_price+=cart.delivery_charge
-       await cart.save();
+        
+        
 
         res.render('./user/checkOut', {
             cart,
@@ -170,6 +164,8 @@ exports.placeOrder = async (req, res) => {
 
                 if(totalPrice >1000)
                 {
+                    console.log('below 100');
+                    
                     return res.status(200).json({ message: 'Order placed successfully', cod: false });
                 }
 
@@ -281,6 +277,7 @@ exports.verifyPayment = async (req, res) => {
 
             res.status(200).json({ success: true, message: "Payment verified successfully" });
         } else {
+            console.log('payment failed successfully')
             order.products.forEach(p => {
                 if (p.razorpayOrderId === razorpayOrderId) {
                     p.paymentStatus = 'Failed';

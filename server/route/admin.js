@@ -36,7 +36,9 @@ router.delete('/product/delete/:id',isAdminAuth,productController.deleteProduct)
 router.get('/product/block/:id',isAdminAuth,adminController.productBlock)
 router.get('/product/unblock/:id',isAdminAuth,adminController.productUnblock)
 
-
+// <----Dash Board----->
+router.get('/dashboard',isAdminAuth,adminController.getDashboard)
+router.get('/dashboard/update',isAdminAuth,adminController.updateGraphData)
 // <-----Brands------>
 router.get('/brands',isAdminAuth,adminController.loadBrands)
 router.post('/brands',isAdminAuth,adminController.addBrands)

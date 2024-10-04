@@ -90,12 +90,10 @@
                         <div class="card mt-3">
                             <div class="card-body">
                     
-                                <h6 class="text-center mt-4">Cart total</h6>
+                                <h6 class="text-start mt-2 ml-3" style="color:black">Cart total</h6>
+                                <hr>
                                 <ul class="list-group">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        Total MRP
-                                        <h5 id="totalPrice">₹<%= subtotal%></h5>
-                                    </li>
+                                   
 
                                     <% if (appliedCoupon) { %>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -104,14 +102,18 @@
                                     </li>
                                     <% } %>
 
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        Delivery Charge
-                                        <span style="color: green;">Free</span>
-                                    </li>
-
+                                    
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         Grand Total
                                         <h5>₹<%= totalCartPrice %></h5>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Delivery Charge
+                                        <span style="color: green;"><%= cart.delivery_charge %></span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Total MRP
+                                        <h5 id="totalPrice">₹<%= subtotal%></h5>
                                     </li>
                                 </ul>
 

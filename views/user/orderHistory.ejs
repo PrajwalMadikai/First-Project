@@ -83,6 +83,9 @@
                             <h5 class="card-title mb-0">Payment Method</h5>
                         </div>
                         <div class="flex-item">
+                            <h5 class="card-title mb-0">Payment Status</h5>
+                        </div>
+                        <div class="flex-item">
                             <h5 class="card-title mb-0">Details</h5>
                         </div>
                     </div>
@@ -113,6 +116,18 @@
                                 <div class="flex-item">
                                     <p class="mb-0"><%= order.paymentOption %></p>  
                                 </div>
+                                <div class="flex-item">
+                                    <% if (order.products.length > 0) { %>
+                                        <% if (order.products[0].paymentStatus == 'Failed') { %>
+                                            <p class="mb-0 text text-danger"><%= order.products[0].paymentStatus %></p>  
+                                        <% } else { %>
+                                            <p class="mb-0 text text-success"><%= order.products[0].paymentStatus %></p>  
+                                        <% } %>
+                                    <% } else { %>
+                                        <p class="mb-0 text text-warning">No products found</p>
+                                    <% } %>
+                                </div>
+                                
                                 
                                 <div class="flex-item">
                                     <a href="/orderDetail/<%= order._id %>">

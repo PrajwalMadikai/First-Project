@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Admin | trendView</title>
+  <!-- base:css -->
+  <link rel="stylesheet" href="/vendors/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="/vendors/feather/feather.css">
+  <link rel="stylesheet" href="/vendors/base/vendor.bundle.base.css">
+  <!-- endinject -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="/public/css/admin.css">
+  <!-- endinject -->
+  <link rel="shortcut icon" href="../../images/favicon.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<style>
+  tbody tr:nth-child(odd) {
+      background-color: #f2f2f2; /* Light gray for odd rows */
+  }
+
+  tbody tr:nth-child(even) {
+      background-color: #ffffff; /* White for even rows */
+  }
+  thead{
+    background-color: white;
+  }
+  .custom-select {
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+    background-color: #f8f9fa;
+    font-size: 16px;
+}
+
+.custom-select:hover {
+    border-color: #007bff;
+    background-color: #e9ecef;
+}
+
+.custom-select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+
+</style>
+
+<body>
+  <div class="container-fluid d-flex flex-column" style="min-height: 100vh;">
+    <%- include('../partials/adminTopBar') %>
+    <div class="row flex-grow-1 mt-5">
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <div class="user-profile">
+          <div class="user-name adminName">Prajwal</div>
+          <div class="user-designation">Admin</div>
+        </div>
+        <%- include('../partials/adminSidebar') %>
+      </nav>
+      
+      <div class="main-panel flex-grow-1">
+        <div class="content-wrapper">
+          <!-- Header -->
+          
+
+          <!-- Main Content -->
+          <div class="container mt-5">
+            <!-- Chart Filter -->
+            <div class="d-flex justify-content-end align-items-center mb-3">
+              <label for="timeframe" class="me-2" style="margin-bottom: 0;">Filter:</label>
+              <select id="timeframe" class="bar custom-select" style="  border-radius: 5px; border: 1px solid #ced4da; background-color: #f8f9fa; font-size: 16px;">
+                  <option value="monthly" selected>Monthly</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="yearly">Yearly</option>
+              </select>
+            </div>
+            
+
+            <!-- Bar Chart Canvas -->
+            <div class="p-4 mb-5">
+                <canvas id="salesChart"></canvas>
+            </div>
+
+            <div class="row mb-3">
+              <div class="container">
+                <div class="top-section"></div>
+                <h3 class="mt-3 mb-3 text-start" style="color: #000000;">Top 10 Products</h3>
+                <div class="table-responsive border mt-2" style="  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);">
+                  <table class="table table-striped" style="width: 100%; ">
+                    <thead style="background-color: #f8f9fa; border-radius: 8px;">
+                      <tr class="text-center">
+                        <th scope="col">No</th>
+                        <th scope="col">Image</th>
+                        <th scope="col">Product</th>
+                        <th scope="col">Order Count</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% topProducts.forEach((element, index) => { %>
+                        <tr class="align-middle text-center" >
+                          <td><%= index + 1 %></td>
+                          <td><img src="/public/product_img/<%= element.image %>" alt="Product Image" style="width: 40px; height: 40px; border-radius: 50%;"></td>
+                          <td><%= element.name %></td>
+                          <td class="text-center"><%= element.totalOrdered %></td>
+                        </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            
+            <div class="row mb-3">
+              <div class="container">
+                <div class="top-section"></div>
+                <h3 class="mt-3 mb-3 text-center" style="color: #000000;">Top 10 Categories</h3>
+                <div class="table-responsive border mt-2" style="box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);">
+                  <table class="table table-striped" style="width: 100%;  ">
+                    <thead style="background-color: #f8f9fa; ">
+                      <tr class="text-center">
+                        <th scope="col">No</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Order Count</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% topCategorys.forEach((element, index) => { %>
+                        <tr class="align-middle text-center">
+                          <td><%= index + 1 %></td>
+                          <td><%= element._id %></td>
+                          <td class="text-center"><%= element.totalOrdered %></td>
+                        </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="container">
+                <div class="top-section"></div>
+                <h3 class="mt-3 mb-3 text-start" style="color: #000000;">Top 10 Brands</h3>
+                <div class="table-responsive border mt-2" style="  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);">
+                  <table class="table table-striped" style="width: 100%; ">
+                    <thead style="background-color: #f8f9fa; ">
+                      <tr class="text-center">
+                        <th scope="col">No</th>
+                        <th scope="col">Brand</th>
+                        <th scope="col">Order Count</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% topBrands.forEach((element, index) => { %>
+                        <tr class="align-middle text-center"  >
+                          <td><%= index + 1 %></td>
+                          <td><%= element._id %></td>
+                          <td class="text-center"><%= element.totalOrdered %></td>
+                        </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            
+        
+
+          </div>
+
+          
+
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  <script>
+    // Initial parsing of sales data and labels
+    const initialSalesData = JSON.parse('<%- JSON.stringify(salesData) %>'); // Parsed as a JavaScript array
+    let labels = JSON.parse('<%- JSON.stringify(labels) %>'); // Parsed as a JavaScript array
+
+    const ctx = document.getElementById('salesChart').getContext('2d');
+
+    // Create a chart instance
+    const salesChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Total Sales',
+                data: initialSalesData,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Event listener for the timeframe selection
+    document.getElementById('timeframe').addEventListener('change', async function () {
+        const selectedTimeframe = this.value; // Get the selected timeframe
+
+        // Fetch updated sales data from the server
+        const response = await fetch(`/admin/dashboard/update?timeframe=${selectedTimeframe}`);
+        const updatedData = await response.json(); // Parse the JSON response
+
+        // Prepare the updated sales data array and labels
+        let updatedSalesData = [];
+        if (selectedTimeframe === 'monthly') {
+            updatedSalesData = new Array(12).fill(0); // Monthly data
+            labels = [
+                "January", "February", "March", "April", "May", "June", 
+                "July", "August", "September", "October", "November", "December"
+            ];
+            updatedData.forEach(data => {
+                updatedSalesData[data._id - 1] = data.totalSales; // Total sales for each month
+            });
+        } else if (selectedTimeframe === 'weekly') {
+            updatedSalesData = new Array(7).fill(0); // 7 days for a week
+            labels = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]; // Set weekly labels
+            updatedData.forEach(data => {
+                // Data _id represents the day of the week, which is 1 (Sunday) to 7 (Saturday)
+                const dayIndex = data._id - 1; // Adjust for zero-based index
+                updatedSalesData[dayIndex] = data.totalSales; // Set total sales for each corresponding day
+            });
+        } else if (selectedTimeframe === 'yearly') {
+            updatedSalesData = [];
+            labels = Array.from({ length: 6 }, (_, i) => (2020 + i).toString()); // Years from 2020 to 2025
+            updatedData.forEach(data => {
+                updatedSalesData[data._id - 2020] = data.totalSales; // Push total sales for each year
+            });
+        }
+
+        // Update the chart with the new data and labels
+        salesChart.data.labels = labels; // Update x-axis labels
+        salesChart.data.datasets[0].data = updatedSalesData; // Update data for the chart
+        salesChart.update(); // Refresh the chart
+    });
+</script>
+
+
+  <!-- Chart.js Library -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Your Custom Script -->
+  <script src="/js/chart.js"></script>
+
+  <!-- Bootstrap JS -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

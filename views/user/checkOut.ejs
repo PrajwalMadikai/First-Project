@@ -589,7 +589,17 @@ async function checkout(event) {
                 }).then(() => {
                     window.location.href = "/orders";
                 });
-            } else if (data.razor === true) {
+            }else if(data.cod==false)
+            {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning!',
+                    text:"Orders above 1000 won't be applicable for Cash on Delivery.",
+                    confirmButtonText: 'OK'
+                });
+
+
+            }else if (data.razor === true) {
                 // Razorpay Payment
                 let options = {
                     key: data.key,

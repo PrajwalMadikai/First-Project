@@ -134,10 +134,17 @@ exports.getCart = async (req, res) => {
                 req.session.coupon = null; // Clear invalid coupon
             }
         }
+        if(totalCartPrice<=5000)
+            {
+                cart.delivery_charge=50
+            }else{
+                cart.delivery_charge=90
+            }
+            subtotal+=cart.delivery_charge
 
-        cart.total_price = subtotal; // Correctly set the cart total
-
-        // Render the cart with calculated values
+        cart.total_price = subtotal;  
+        await cart.save()
+         
         res.render('./user/cart', {
             user,
             cart,
