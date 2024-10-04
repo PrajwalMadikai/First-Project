@@ -28,9 +28,10 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: gray;
+            background-color: rgb(0, 0, 0);
             border: 1px solid #dee2e6;
             cursor: pointer;
+            color: white;
         }
         .quantity-input {
             width: 60px;
@@ -50,15 +51,15 @@
             transition: transform 0.2s ease;
             width: 100%; /* Adjust as needed */
         }
-/* Prevent horizontal scrolling */
+ 
 body, html {
-    overflow-x: hidden; /* Hides horizontal scroll */
+    overflow-x: hidden;  
 }
 
 .container {
-    max-width: 100%; /* Ensure container doesn't exceed viewport width */
-    padding-right: 15px; /* Adjust padding to ensure fit */
-    padding-left: 15px; /* Same on left */
+    max-width: 100%;  
+    padding-right: 15px;  
+    padding-left: 15px;  
 }
 
 .row {
@@ -129,7 +130,6 @@ body, html {
                 <h1 class="product-title mb-0 " style="color: gray; font-size: large;"><%= productData.brand %></h1>
                 <div class="d-flex justify-content-start">
                 <h1 class="product-title mb-0  mr-5" style="font-size: larger;"><%= productData.title %></h1>
-                <span onclick="addToWhistlist('<%=productData._id %>')"><i class="fa-regular fa-heart"></i></span>
                 </div>
                 <p class="text mb-0 " style="color: green; font-size: 15px;">special price</p>
                  <div class="d-flex align-items-center">
@@ -139,13 +139,7 @@ body, html {
                 <p class="product-price mb-0 text border-2 ml-3"  style="color:green; font-size: 15px; font-weight: bold;"><%= productData.discount %>%</p>
                 <% } %>
                 </div>
-                <p class="product-rating mb-0">
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-half"></i> (39 reviews)
-                </p>
+                
                 <% if(productData.stock <=10){ %>
                 <p class="text-grey mb-1 mt-1" style="color: red;"><%= productData.stock %> Stock Left!!!</p>
                <% } %>
@@ -155,16 +149,16 @@ body, html {
         <!-- <form action="/cart/<%= productData._id %>" method="POST" id="addToCartForm" >  -->
             <div class="quantity-selector my-3">
                 <input type="hidden" name="productId" value="<%= productData._id %>">
-                <div class="quantity-btn" id="decrease-btn"  onclick="decrease()">-</div>
+                <div class="quantity-btn" id="decrease-btn"  onclick="decrease()"><strong>-</strong></div>
                 <input type="text" class="quantity-input" name="quantity" id="quantity" value=1 readonly>
-                <div class="quantity-btn" id="increase-btn" onclick="increase()">+</div>
+                <div class="quantity-btn" id="increase-btn" onclick="increase()"><strong>+</strong></div>
             </div>
                      
                 
 
                 <!-- Buy Now -->
                 <div class="mb-3 mt-4 d-flex flex-column flex-md-row justify-content-center justify-content-md-start align-items-center">
-                    <button class="btn  mb-2 mb-md-0" id="buy"><i class="fa-solid fa-wallet mr-3"></i> Buy Now</button>
+                    <button class="btn  mb-2 mb-md-0" id="buy" onclick="addToWhistlist('<%=productData._id %>')"><i class="fa-solid fa-wallet mr-3"></i>Add to Wishlist</button>
                    
                     <button class="btn  ml-0 ml-md-3 ml-4" id="addtocart" onclick="addToCart()"><i class="fa-solid fa-cart-shopping mr-3"></i>Add to Cart</button>
                 </div>
@@ -201,8 +195,7 @@ body, html {
                         <div class="d-flex align-items-center mb-3">
                             <i class="fas fa-shipping-fast fa-2x me-3"></i>
                             <div>
-                                <h6 class="mb-0">Free Delivery</h6>
-                                <small><a href="#" class="text-decoration-none">Enter your postal code for Delivery Availability</a></small>
+                                <h6 class="mb-0" style="color: black;">Free Delivery</h6>
                             </div>
                         </div>
                         <hr class="my-2">
@@ -210,8 +203,8 @@ body, html {
                         <div class="d-flex align-items-center">
                             <i class="fas fa-undo fa-2x me-3"></i>
                             <div>
-                                <h6 class="mb-0">Return Delivery</h6>
-                                <small>Free 30 Days Delivery Returns. <a href="#" class="text-decoration-none">Details</a></small>
+                                <h6 class="mb-0" style="color: black;">Return Delivery</h6>
+                                <small>Free 30 Days Delivery Returns. </small>
                             </div>
                         </div>
                     </div>
@@ -306,7 +299,7 @@ body, html {
             quantityInput.value = currentValue - 1;
         }
         }
-        async function addToCart() {
+async function addToCart() {
     const productId = '<%= productData._id %>';
     const quantity = document.getElementById('quantity').value;
 

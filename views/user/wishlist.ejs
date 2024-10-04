@@ -27,23 +27,24 @@
 <div class="container">
     <h2 class="my-4">My Wishlist <span id="wishlistCount">(1 item)</span></h2>
     
-    <div class="row mb-2">
+    <div class="row mb-2 d-flex">
         <% wishlist.forEach((item, index) => { %>
-            <div class="col-md-3 mb-4"> <!-- Adjust column size for 4 items in a row -->
-                <div class="card border shadow-sm rounded">
-                    <div class="card-body text-center p-0"> <!-- Remove padding for body -->
-                        <!-- Product Image -->
-                        <img src="/public/product_img/<%= item.productId.image.image1 %>" alt="Product Image" class="img-fluid" style="height: 250px; object-fit: fill; border-radius: 5px; width: 100%;">
-                        <h5 class="card-title mt-2"><%= item.product_name %></h5>
-                        <p class="card-text">Price: ₹<span id="itemPrice" class="text-success"><%= item.price %></span>
-                      
-                        </p>
-                        <button class="btn btn-dark" onclick="addToCart('<%= item.productId._id %>')">ADD TO BAG</button>
+        <div class="col-md-3 mb-4 d-flex"> <!-- Use d-flex to make all cards same height -->
+            <div class="card border shadow-sm rounded d-flex flex-column"> <!-- Make card a flex container -->
+                <div class="card-body text-center p-0 d-flex flex-column justify-content-between"> <!-- Flex inside the card -->
+                    <!-- Product Image -->
+                    <img src="/public/product_img/<%= item.productId.image.image1 %>" alt="Product Image" class="img-fluid" style="height: 250px; object-fit: cover; border-radius: 5px; width: 100%;">
+                    <div class="card-content mt-2">
+                        <h5 class="card-title"><%= item.product_name %></h5>
+                        <p class="card-text">Price: ₹<span id="itemPrice" class="text-success"><%= item.price %></span></p>
                     </div>
+                    <button class="btn btn-dark mt-auto" onclick="addToCart('<%= item.productId._id %>')">ADD TO BAG</button> <!-- Ensure button sticks at the bottom -->
                 </div>
             </div>
+        </div>
         <% }); %>
     </div>
+    
 </div>
 
 

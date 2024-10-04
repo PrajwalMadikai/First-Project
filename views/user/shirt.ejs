@@ -28,6 +28,55 @@
     justify-content: center;  
     padding: 0.5rem 1rem;  
 }
+.bn:hover{
+    color: white;
+}
+.swal2-popup-custom {
+    padding: 1rem; /* Adjust padding */
+    font-size: 1rem; /* Adjust font size */
+    width: 300px; /* Adjust width */
+    background-color: #000000; /* Ensure background color is black */
+    color: white; /* Ensure text is readable on black background */
+}
+
+/* Specifically target the background of the toast */
+.swal2-toast {
+    background-color: #000000 !important;
+}
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.product-info {
+    min-height: 80px; /* Adjust this height based on the longest product name and price */
+    text-align: center;
+}
+
+.card-title {
+    font-size: 1rem;
+    text-align: center;
+}
+
+.card-text {
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.mt-auto {
+    margin-top: auto; /* Ensures that buttons are aligned at the bottom */
+}
+
+.bn {
+    background-color: white;
+    border-color: black;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+}
+
 
  </style>
 
@@ -144,14 +193,20 @@
                                             <div class="overlay d-flex justify-content-center align-items-center"></div>
                                         </div>
                                         <div class="card-body d-flex flex-column justify-content-between">
-                                            <div>
-                                                <h5 class="card-title mb-0"><%= element.title %></h5>
-                                                <p class="card-text mb-0"> ₹<%= element.price %></p>
+                                            <div class="product-info"> <!-- Wrap product info -->
+                                                <h5 class="card-title mb-0 text-center"><%= element.title %></h5>
+                                                <p class="card-text mb-0 text-center"> ₹<%= element.price %></p>
                                             </div>
+                                        </a>
+                                        <div class="mt-auto d-flex justify-content-center"> <!-- Auto margin to push buttons to the bottom -->
+                                            <button class="btn border border-2 btn-sm me-2 bn" onclick="addToWhistlist('<%=element._id %>')"><i class="fa-solid fa-heart"></i> Wishlist</button> <!-- First button -->
+                                            <button class="btn border border-2 btn-sm ml-4 bn" onclick="addToCart('<%=element._id %>')"><i class="fa-solid fa-cart-shopping"></i> Cart</button> <!-- Second button -->
                                         </div>
                                     </div>
-                                </a>
+                                    </div>
+                                 
                             </div>
+                            
                         <% }); %>
                     </div> <!-- End row container -->
                     <div class="pagination d-flex justify-content-center mt-4">
@@ -205,6 +260,116 @@
     </div>
     <%- include("../partials/mainFooter") %>
  <script>
+    async function addToCart(productId) {
+    
+    const quantity =1;
+
+    try {
+        let response = await fetch(`/cart/${productId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quantity: quantity })
+        });
+
+        
+
+        let res = await response.json();
+
+        if (res.success) {
+            Swal.fire({
+                text: "!! Product added to cart", 
+                showConfirmButton: false,
+                timer: 3000, 
+                backdrop: false,
+                customClass: {
+                    popup: 'swal2-popup-custom', 
+                },
+                position: 'bottom-end', // Set position to bottom right
+                toast: true, // Make it a toast notification
+            });
+
+        } else if (res.stock === true) {
+            Swal.fire({
+                title: 'Out of Stock!',
+                text: 'The item you selected is currently out of stock.',
+                icon: 'warning',
+                confirmButtonText: 'OK',
+                position: 'top',
+                toast: true,
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true
+            });
+        } else {
+            Swal.fire({
+                title: 'Warning!',
+                text: 'Something went wrong.',
+                icon: 'warning',
+                confirmButtonText: 'OK',
+                position: 'top',
+                toast: true,
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true
+            });
+        }
+    } catch (error) {
+        // Log the error to the console
+        console.error('Error adding to cart:', error);
+
+        // Show an error message to the user
+        Swal.fire({
+            title: 'Error!',
+            text: 'An unexpected error occurred. Please try again later.',
+            icon: 'error',
+            confirmButtonText: 'OK',
+            position: 'top',
+            toast: true,
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true
+        });
+    }
+}
+    async function addToWhistlist(productId) {
+    let response = await fetch(`/wishlist/${productId}`, {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId })
+    });
+
+    if (response.ok) {
+        let data = await response.json();
+        if (data.newItem === true) {
+            Swal.fire({
+                text: "!! Product added to Wishlist", 
+                showConfirmButton: false,
+                timer: 3000, 
+                backdrop: false,
+                customClass: {
+                    popup: 'swal2-popup-custom', 
+                },
+                position: 'bottom-end', // Set position to bottom right
+                toast: true, // Make it a toast notification
+            });
+        } else {
+            Swal.fire({
+                icon: 'info',
+                title: 'Already in Wishlist',
+                text: 'This product is already in your wishlist!',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    } else {
+        // SweetAlert for error in case the response fails
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Something went wrong!',
+        });
+    }
+    }
 function filterProducts() {
     const selectedCategories = Array.from(document.querySelectorAll('.category-checkbox:checked'))
         .map(checkbox => checkbox.value)
