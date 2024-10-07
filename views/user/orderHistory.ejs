@@ -13,6 +13,12 @@
     transform: scale(1.02);
     background-color: #eaeaea;
 }
+.card-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
 
 /* Flexbox styling for horizontal alignment */
 .d-flex {
@@ -39,6 +45,21 @@
     
    
 }
+body, html {
+    height: 100%;
+    overflow-x: hidden;
+}
+
+.container {
+    height: 100vh; /* Viewport height */
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex-grow: 1;
+    overflow-y: auto;
+}
 
 .pagination .page-item .page-link:hover {
     background-color: #444; /* Darker shade on hover */
@@ -56,7 +77,7 @@
     justify-content: center;  
     padding: 0.5rem 1rem;  
 }
-
+ 
 
     </style>
 </head>
@@ -97,44 +118,43 @@
     <!-- Order Details Rows -->
     <% orders.forEach(order => { %>
         
-            <div class="row mt-2">
-                <div class="col-md-12">
-                    <div class="card shadow-sm order-card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between text-center align-items-center">
-                                <div class="flex-item">
-                                    <p class="mb-0"><%= order.orderNumber %></p>  
-                                </div>
-                                <div class="flex-item">
-                                    <% order.products.forEach((element)=>{ %>
-                                    <p class="mb-0"><%=element.name %>,</p> 
-                                    <% }) %> 
-                                </div>
-                                <div class="flex-item">
-                                    <p class="mb-0">₹<%= order.totalAmount %></p>  
-                                </div>
-                                <div class="flex-item">
-                                    <p class="mb-0"><%= order.paymentOption %></p>  
-                                </div>
-                                <div class="flex-item">
-                                        <% if (order.products[0].paymentStatus == 'Failed' ||order.products[0].paymentStatus==undefined) { %>
-                                            <p class="mb-0 text text-danger">Failed</p>  
-                                        <% } else { %>
-                                            <p class="mb-0 text text-success"><%= order.products[0].paymentStatus %></p>  
-                                        <% } %>
-                                </div>
-                                
-                                
-                                <div class="flex-item">
-                                    <a href="/orderDetail/<%= order._id %>">
-                                        <p class="mb-0 text-success">View</p>
-                                    </a>  
-                                </div>
+        <div class="row mt-2" >
+            <div class="col-md-12">
+                <div class="card shadow-sm order-card d-flex flex-column h-100">
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <div class="d-flex justify-content-between text-center align-items-center">
+                            <div class="flex-item">
+                                <p class="mb-0"><%= order.orderNumber %></p>  
+                            </div>
+                            <div class="flex-item">
+                                <% order.products.forEach((element) => { %>
+                                <p class="mb-0"><%= element.name %>,</p> 
+                                <% }) %> 
+                            </div>
+                            <div class="flex-item">
+                                <p class="mb-0">₹<%= order.totalAmount %></p>  
+                            </div>
+                            <div class="flex-item">
+                                <p class="mb-0"><%= order.paymentOption %></p>  
+                            </div>
+                            <div class="flex-item">
+                                <% if (order.products[0].paymentStatus == 'Failed' || order.products[0].paymentStatus == undefined) { %>
+                                    <p class="mb-0 text text-danger">Failed</p>  
+                                <% } else { %>
+                                    <p class="mb-0 text text-success"><%= order.products[0].paymentStatus %></p>  
+                                <% } %>
+                            </div>
+                            <div class="flex-item">
+                                <a href="/orderDetail/<%= order._id %>">
+                                    <p class="mb-0 text-success">View</p>
+                                </a>  
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+        
         <% }) %>
 
     <div class="pagination d-flex justify-content-center mt-4">

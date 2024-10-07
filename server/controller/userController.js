@@ -11,6 +11,7 @@ const Wallet=require('../model/wallet')
 const Brand=require('../model/brandSchema')
 const jwt=require('jsonwebtoken')
 const crypto = require('crypto');
+const Order=require('../model/order')
  
 
 
@@ -377,8 +378,8 @@ exports.loginPost=async(req,res)=>{
     try{
        let user=await User.findOne({email:req.session.user})
        let product = await productSchema.find().limit(8);
-       
-        res.render("./user/home",{user,product})
+       let latestProducts = await productSchema.find().sort({ createdAt: -1 }).limit(4); 
+        res.render("./user/home",{user,product,latestProducts})
        
     }catch(error)
     {
@@ -448,21 +449,35 @@ exports.loginPost=async(req,res)=>{
                     return { price: { $gte: min, $lt: max } };
                 }
             });
-            filterConditions.$or = priceConditions; // Combine with OR
+            filterConditions.$or = priceConditions;
         }
 
-        // Get the total count of matching products (for pagination)
         const totalProducts = await productSchema.countDocuments(filterConditions);
 
-        // Fetch products with sorting, filtering, and pagination
-        const product = await productSchema.find(filterConditions)
-            .sort(sortOption)
-            .skip(skip)
-            .limit(limit);
+       
+        const productAggregatePipeline = [
+            { $match: filterConditions }, // Match the filtered products
+            { $skip: skip }, // Pagination skip
+            { $limit: limit }, // Pagination limit
+            {
+                $addFields: {
+                    averageRating: {
+                        $avg: "$ratings.rating" // Calculate the average of the ratings
+                    }
+                }
+            }
+        ];
+        
+        // Add the $sort stage only if sortOption is not empty
+        if (Object.keys(sortOption).length > 0) {
+            productAggregatePipeline.push({ $sort: sortOption });
+        }
+        
+        const product = await productSchema.aggregate(productAggregatePipeline);
+        
 
         const totalPages = Math.ceil(totalProducts / limit);
 
-        // Render the product page with all necessary variables
         res.render('./user/shirt', {
             product,
             sort,
@@ -482,7 +497,6 @@ exports.loginPost=async(req,res)=>{
         res.status(500).send('Server error');
     }
 };
-
 
 
 
@@ -519,19 +533,18 @@ exports.loginPost=async(req,res)=>{
     }
  }
 
- exports.viewProduct=async(req,res)=>{
+ exports.viewProduct=async(req,res,next)=>{
     try {
         let user=await User.findOne({email:req.session.user})
         const id=new mongoose.Types.ObjectId(req.params.id)
         let productData=await productSchema.findOne({_id:id})
         let relatedProduct=await productSchema.find({category:productData.category}).limit(6)
-        // let cart=await Cart.findOne({user_id:user._id,'items.product_id':id})
 
         res.render('./user/productView',{productData,relatedProduct,user})
          
         
     } catch (error) {
-        console.log(error);
+       next(error)
         
     }
  }

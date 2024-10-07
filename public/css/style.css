@@ -25,9 +25,17 @@
 /* .maincolor{
     
 } */
+#new{
+  color: white;
+}
+#h1 {
+  white-space: nowrap; /* Prevents text from wrapping */
+}
 
 .homeImage{
-    background-image: url('../images/k.jpg');
+    background-image: url('../images/pexels-ekoagalarov.jpg');
+    background-size:contain;
+    background-repeat: no-repeat;
 }
 #main-price{
     font-weight: 700;
@@ -149,8 +157,8 @@
   .logIn {
     width: 70px;
     height: 30px;
-    margin-top: 35px;
-    border: 1px solid black;
+    margin-top: 39px;
+    /* border: 1px solid black; */
     margin-bottom: 30px;
   }
   .logIn a{

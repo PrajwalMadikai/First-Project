@@ -189,11 +189,9 @@ html {
                                   </label>
                                 </div>
                               
-                                <div class="d-flex justify-content-between ml-3 mr-3">
-                                <a href="/updateAddress/<%= addresses[0].address[0]._id %>">
-                                  <button type="button" class=" blackBtn btn-sm"><i class="fa-solid fa-file-pen"></i></button>
-                                </a>
-                                <button type="button" class="blackBtn btn-sm" onclick="deleteAddress('<%= addresses[0].address[0]._id %>')"><i class="fa-solid fa-trash"></i></button>
+                                <div class="d-flex justify-content-end ml-3 mr-3">
+                               
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteAddress('<%= addresses[0].address[0]._id %>')">Delete</i></button>
                                </div>
                             </div>
                             </div>
@@ -217,9 +215,9 @@ html {
                                           </p>
                                         </label>
                                       </div>
-                                      <div class="d-flex justify-content-between ml-3 mr-3">
-                                      <button type="button" class="blackBtn  btn-sm" onclick="editAddress('<%= address._id %>')"><i class="fa-solid fa-file-pen"></i></button>
-                                      <button type="button" class=" blackBtn btn-sm" onclick="deleteAddress('<%= address._id %>')"><i class="fa-solid fa-trash"></i></button>
+                                      <div class="d-flex justify-content-end ml-3 mr-3">
+                                         
+                                      <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteAddress('<%= address._id %>')">Delete</button>
                                      </div>
                                     </div>
                                   </div>
@@ -427,6 +425,7 @@ html {
         </div>
     </div>
 </div>
+ 
 <script>
     // Function to set the coupon code in the input field when a radio button is clicked
     function setCouponCode(couponCode) {
@@ -458,7 +457,7 @@ async function coupon() {
             body: JSON.stringify({ couponID })
         });
 
-        console.log("Response Status:", response.status); // Log response status
+        console.log("Response Status:", response.status);
 
         // Ensure the response is parsed correctly
         const data = await response.json();
@@ -500,6 +499,7 @@ async function removeCoupon() {
 
 // Attach event listener to the coupon input field
 document.getElementById("couponCode").addEventListener("input", checkCouponInput);
+
 async function checkout(event) {
             event.preventDefault();
             try {
@@ -553,22 +553,23 @@ async function checkout(event) {
                             confirmButtonText: 'OK'
                         });
                     } else if (data.razor === true) {
-                        // Razorpay Payment
+                    console.log('order i dfrom front :',data.razorpayOrderId);
+                    
                         let options = {
                             key: data.key,
                             amount: data.amount,
                             currency: data.currency,
-                            name: "TrendView",
+                            name: "trendView",
                             description: "Test Transaction",
-                            order_id: data.razorpayOrderId,
+                            order_id:  data.razorpayOrderId,
                             handler: async function (response) {
                                 try {
-                                    // Send payment verification details to the server
                                     const paymentData = {
-                                        razorpayPaymentId: response.razorpay_payment_id,
-                                        razorpayOrderId: response.razorpay_order_id,
-                                        razorpaySignature: response.razorpay_signature
-                                    };
+                                                razorpayPaymentId: response.razorpay_payment_id,
+                                                razorpayOrderId: response.razorpay_order_id,  // this should come from the Razorpay response
+                                                razorpaySignature: response.razorpay_signature
+                                            };
+
 
                                     let verifyResponse = await fetch("/verifyPayment", {
                                         method: "POST",
@@ -604,7 +605,7 @@ async function checkout(event) {
                                 contact: "Your Phone Number"
                             },
                             theme: {
-                                color: "#FFD700" // Change to gold color
+                                color: "#3399cc"  
                             }
                         };
 
@@ -615,9 +616,11 @@ async function checkout(event) {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Payment Failed',
-                                text: `The payment was declined. Reason: ${response.error.description}`,
+                                text: `The payment was declined.`,
                                 confirmButtonText: 'OK'
-                            });
+                            }).then(()=>{
+                                window.location.href='/orders'
+                            })
 
                             // Notify the server of the failed payment
                             const paymentData = {
@@ -668,8 +671,7 @@ async function checkout(event) {
             }
         }
 
-
-
+      
 async function deleteAddress(id) {
     try {
         let response = await fetch(`/removeAddress/${id}`, {

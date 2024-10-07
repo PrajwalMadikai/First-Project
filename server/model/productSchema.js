@@ -38,6 +38,17 @@ const imageUpload=new schema({
          image3:String
         
     },
+    ratings:[
+        {
+          userId:{ 
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'users'
+        },
+          rating:{
+            type:Number
+        }
+        }
+    ],
     design:{
         type:String
     },

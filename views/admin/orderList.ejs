@@ -87,7 +87,7 @@
                               <option value="<%= product.quantity %>" selected><%= product.quantity %></option>
                             </select>
                           </td>
-
+                           
                           <td>₹<%= product.price %></td>
 
                           <% if(product.status==='Pending' && product.paymentStatus=='Success' && order.paymentOption!='cod'){ %>
@@ -108,8 +108,10 @@
                             <td><button class="btn btn-danger" type="submit" disabled>Cancel</button></td>
                         <% }else{ %>
                           <form action="/admin/cancelOrder/<%= product._id %>" method="POST">
+                     
                             <td><button class="btn btn-danger" type="submit">Cancel</button></td>
                         </form>
+                        
                         <% } %>
                         <% if(product.status=="Requested" ) {%>
                           <form action="/admin/approve/<%= product._id %>" method="POST">

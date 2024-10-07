@@ -9,6 +9,7 @@ const Coupon=require('../model/coupon')
 const mongoose=require("mongoose")
 const Wallet=require('../model/wallet')
 const Brand=require('../model/brandSchema')
+const { log } = require('console')
  
  
 
@@ -300,14 +301,18 @@ exports.approveReturn=async(req,res)=>{
         {
             productPrice-=order.discounted_price
         }
-        
+        if(product.paymentStatus=="Success"){
   
          const wallet = await Wallet.findOne({ userId: user._id });
         
-         
+         wallet.wallet_history.push({
+            date: Date.now(),
+            amount: productPrice,
+            transactionType: "Credit"
+        });
              wallet.balance +=Number(productPrice);
              await wallet.save();
-          
+        }
 
         res.redirect('/admin/orderList')
 
@@ -360,6 +365,53 @@ exports.addCoupon=async(req,res)=>{
     }
 }
 
+exports.editCoupon=async(req,res)=>{
+    try {
+        let id =req.params.id
+        let coupon=await Coupon.findOne({_id:id})
+        res.render('./admin/editCoupon',{coupon})
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+
+exports.postEditCoupon = async (req, res) => {
+    try {
+
+        let { couponId, couponCode, description, discount, startDate, expiryDate, minimumAmount, maximumAmount } = req.body;
+
+
+        await Coupon.findByIdAndUpdate(couponId, {
+            $set: {
+                coupon_code: couponCode,
+                coupon_description: description,
+                start_date: startDate,
+                discount: discount,
+                expiry_date: expiryDate,
+                maximum_coupon_amount: maximumAmount,
+                minimum_purchase_amount: minimumAmount
+            }
+        });
+
+        res.json({ success: true, message: "Coupon updated successfully" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "An error occurred while updating the coupon." });
+    }
+};
+
+exports.deleteCoupon=async(req,res)=>{
+    try {
+        let couponId=req.params.id
+
+        await Coupon.findByIdAndDelete(couponId)
+        res.json({success:true,message:'Coupon Deleted'})
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
 exports.offerLoad=async(req,res)=>{
     try {
         const currentPage = parseInt(req.query.page) || 1;  

@@ -67,6 +67,9 @@ router.post('/approve/:id',isAdminAuth,adminController.approveReturn)
 //  coupon
 router.get('/coupon',isAdminAuth,adminController.couponLoad)
 router.post('/add-coupon',isAdminAuth,adminController.addCoupon)
+router.get('/editcoupon/:id',isAdminAuth,adminController.editCoupon)
+router.post('/editcoupon/:id',isAdminAuth,adminController.postEditCoupon)
+router.delete('/coupon-delete/:id',isAdminAuth,adminController.deleteCoupon)
 
 // offers
 router.get('/offerManagment',isAdminAuth,adminController.offerLoad)

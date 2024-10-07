@@ -21,9 +21,9 @@ let fileF=(req,file,cb)=>{
             {
                 return cb(null,true)
             }else{
-                res.send("Image only!!")
+                alert("Image only!!")
             }
         } 
  
 
-exports.upload=multer({storage:Filestorage});
+exports.upload=multer({storage:Filestorage,fileFilter:fileF});

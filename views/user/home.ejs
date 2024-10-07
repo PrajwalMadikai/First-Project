@@ -1,5 +1,5 @@
  <%- include("../partials/homeHeader") %>
-
+ <%- include("../partials/mainHeader") %>
      <style>
           .sale-banner {
             background-color: #fdd835; /* Yellow background */
@@ -35,21 +35,19 @@
         .logIn {
     width: 70px;
     height: 30px;
-    margin-top: 35px;
-    border: 1px solid black;
+    margin-top: 39px;
+    /* border: 1px solid black; */
     margin-bottom: 30px;
-    background-color: white;
   }
   .logIn a{
-    color: black !important;
+    color: black;
     font-size: 15px;
     text-decoration: none;
     border: none;
-    padding-left: 2px;
-    padding-top: 2px;
+    padding-left: 15px;
+    padding-top: 30px;
     font-weight: bold;
   }
-
   .swal2-popup-custom {
     padding: 1rem; /* Adjust padding */
     font-size: 1rem; /* Adjust font size */
@@ -64,99 +62,8 @@
 }
   
      </style>
-   <header>
-    <!-- Header Start -->
-    <div class="header-area maincolor">
-        <div class="main-header header-sticky">
-            <div class="container-fluid">
-                <div class="menu-wrapper d-flex align-items-center justify-content-between">
-                    <!-- Logo -->
-                    <div class="logo">
-                        <h4 class="trendView ml-3">trendView</h4>
-                    </div>
-    
-                    <!-- Main-menu -->
-                    <div class="main-menu d-none d-lg-block mt-3">
-                        <nav>
-                            <ul id="navigation" class="d-flex align-items-center">  
-                                <li><a href="/">Home</a></li>
-                                <li><a href="/shirt">Shop</a></li>
-                                <li><a href="#">About</a></li>
-                                <li><a href="#">Contact</a></li>
-                                <!-- <li><a href="#">Formals</a></li> -->
-                            </ul>
-                            <!-- <form class="d-flex me-5 d-md-none d-s-flex">
-                                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                                <button class="btn btn-primary" type="submit">Search</button>
-                            </form> -->
-                        </nav>
-                    </div>
-    
-                    <!-- Header Right: Search Bar, Wishlist Icon, User Icon, Logout Button -->
-                    <div class="d-flex align-items-center">
-                        <div class="header-right d-none d-lg-flex align-items-center">
-                            <!-- Search Form -->
-                            <!-- <form class="d-flex me-5 ">
-                                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                                <button class=" searchBtn" type="submit">Search</button>
-                            </form> -->
-    
-                            <!-- Wishlist Icon -->
-                            <a href="/wishlist" class="me-3">
-                                <img src="/public/icons/heart.png" alt="" style="height: 20px;">
-                            </a>
-                            <a href="/cart-items" class="    me-3">
-                                <img src="/public/icons/shopping-cart.png" alt="" style="height: 20px;">
-                            </a>
-                            
-                            <!-- User Icon -->
-                            <a href="/profile" class="    me-3">
-                                <img src="/public/icons/user.png" alt="" style="height: 20px;">
-                            </a>
 
-    
-                            <!-- Logout Button -->
-                            <% if(!user) {%>
-                                <button class="logIn me-2" type="button"> <a href="/login" style="text-decoration: none; color: white;">Login</a></button>
-                                <% }else{ %>
-                                    <button class="btn btn-danger me-2" type="button"> <a href="/logout" style="text-decoration: none;">Logout</a></button>
-                            <% } %>
-                        </div>
-    
-                        <!-- Mobile Right-Side Content -->
-                        <div class="mobile-right d-flex d-lg-none align-items-center align-items-center mr-3 mb-4">
-                            <a href="#" class="    me-3">
-                                <img src="/public/icons/heart.png" alt="" style="height: 20px;">
-                            </a>
-                            <a href="/cart-items" class="    me-3">
-                                <img src="/public/icons/shopping-cart.png" alt="" style="height: 20px;">
-                            </a>
-    
-                            <!-- User Icon -->
-                            <a href="#" class="    me-3">
-                                <img src="/public/icons/user.png" alt="" style="height: 20px;">
-                            </a>
-                            <% if(!user) {%>
-                                <button class="logIn me-2" > <a href="/login" style="text-decoration: none;">Login</a></button>
-                                <% }else{ %>
-                                    <button class="btn btn-danger me-2" type="button"> <a href="/logout" style="text-decoration: none;">Logout</a></button>
-                            <% } %>
-                        </div>
-    
-                        <!-- Mobile Menu -->
-                        <div class="d-lg-none ms-3">
-                            <div class="mobile_menu"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    
 
-    <!-- Header End -->
-</header>
 
     <main>
         <!--? slider Area Start -->
@@ -168,11 +75,11 @@
                         <div class="row justify-content-between align-items-center">
                             <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8">
                                 <div class="hero__caption">
-                                    <h1 data-animation="fadeInLeft"  >Select Your New Perfect Style</h1>
-                                    <p data-animation="fadeInLeft"  >Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat is aute irure.</p>
+                                    <h1 data-animation="fadeInLeft"  id="h1">Select Your <span id="new">New</span><br>Perfect Style</h1>
+                                    <p data-animation="fadeInLeft"  >Choose the one your heart says.</p>
                                     <!-- Hero-btn -->
                                     <div class="hero__btn" data-animation="fadeInLeft"  data-duration="2000ms">
-                                        <a href="" class="btn hero-btn">Shop Now</a>
+                                        <a href="/shirt" class="btn hero-btn">Shop Now</a>
                                     </div>
                                 </div>
                             </div>
@@ -215,7 +122,7 @@
             </div>
         
             <div class="row mt-4">
-                <% product.forEach(element => { %>
+                <% latestProducts.forEach(element => { %>
                 <div class="col-md-3 mb-5">
                     <a href="/product/<%= element._id %>" style="text-decoration: none; color: inherit;">
                         <div class="card h-100 d-flex flex-column">
@@ -246,7 +153,7 @@
             </div>
             
             <div class="text-center mt-4">
-                <button class="btn btn-dark">View All Products</button>
+                <a href="/shirt"><button class="btn btn-dark">View All Products</button></a>
             </div>
             
        <div class="container mt-4  logos"> 
@@ -300,38 +207,37 @@
                     </div>
                 </div>
                 <div class="row mt-4">
-                    <% product.forEach((element)=>{ %>
+                    <% product.forEach((element) => { %>
                         <div class="col-md-3 mb-5">
-                            <div class="card product-card text-start">
-                                <div class="position-relative">
-                                    <input type="hidden" name="productId" id="productId" value="<%= element._id %>">
-                                    <% if(element.discount){ %>
-                                        <span class="discount-badge" style="background-color: rgb(121, 234, 41);"><%= element.discount %>%</span>
-                                    <% } %>
-                                    
-                                    <img src="/public/product_img/<%= element.image.image1 %>" alt="Product 1">
-                                    <button class="add-to-cart">Add to Cart</button>
-                                </div>
-                                <h4 class="product-name pl-2 pt-3 mb-0 mt-0"><%= element.title %></h4>
-                                
-                                <!-- Price and wishlist button aligned -->
-                                <div class="d-flex justify-content-between align-items-center pl-2 pr-2 mb-0">
-                                    <div>
-                                        <strong class="pr-2 text-black">₹<%= element.price %></strong>
-                                        <del class="fs-6">₹<%= element.oldPrice %></del>
+                            <a href="/product/<%= element._id %>" style="text-decoration: none; color: inherit;">
+                                <div class="card h-100 d-flex flex-column">
+                                    <div class="image-container position-relative">
+                                        <img src="/public/product_img/<%= element.image.image1 %>" class="card-img-top product-image" alt="Product Image">
+                                        <div class="overlay d-flex justify-content-center align-items-center"></div>
                                     </div>
-                                    <!-- Wishlist button -->
-                                    <button class="btn btn-outline-danger btn-sm wishlist-button">
-                                        <i class="fas fa-heart">button</i> <!-- FontAwesome icon for heart -->
+                                    <div class="card-body d-flex flex-column justify-content-between">
+                                        <div class="product-info"> <!-- Wrap product info -->
+                                            <h5 class="card-title mb-0 text-center"><%= element.title %></h5>
+                                            <p class="card-text mb-0 text-center">₹<%= element.price %></p>
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <div class="mt-auto d-flex justify-content-center mb-2"> <!-- Adjust button container -->
+                                    <button class="btn border border-2 btn-sm me-2 bn" onclick="addToWhistlist('<%= element._id %>')">
+                                        <i class="fa-solid fa-heart"></i> Wishlist
+                                    </button>
+                                    <button class="btn border border-2 btn-sm bn" onclick="addToCart('<%= element._id %>')">
+                                        <i class="fa-solid fa-cart-shopping"></i> Cart
                                     </button>
                                 </div>
-                            </div>
+                                </div>
                         </div>
                     <% }) %>
-                    
                 </div>
+                
                 <div class="text-center mt-4 mb-4">
-                    <button class="btn btn-dark">View All Products</button>
+                   <a href="/shirt"><button class="btn btn-dark">View All Products</button></a> 
                 </div>
             
                  
@@ -354,7 +260,7 @@
                             <strong>1 June - 10 June 2021</strong><br>
                             *Terms & Conditions apply
                         </div>
-                        <a href="#" class="btn btn-dark shop-btn">SHOP NOW</a>
+                        <a href="/shirt" class="btn btn-dark shop-btn">SHOP NOW</a>
                     </div>
                 </div>
             </div>
@@ -412,7 +318,9 @@ async function addToCart(productId) {
                 },
                 position: 'bottom-end', // Set position to bottom right
                 toast: true, // Make it a toast notification
-            });
+            }).then(()=>{
+                window.location.reload()
+            })
 
         } else if (res.stock === true) {
             Swal.fire({
@@ -480,7 +388,9 @@ async function addToWhistlist(productId) {
                 },
                 position: 'bottom-end', // Set position to bottom right
                 toast: true, // Make it a toast notification
-            });
+            }).then(()=>{
+                window.location.reload()
+            })
         } else {
             Swal.fire({
                 icon: 'info',

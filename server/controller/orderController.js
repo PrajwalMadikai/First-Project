@@ -10,6 +10,8 @@ const Wallet = require('../model/wallet')
 const puppeteer = require('puppeteer');
 const path = require('path');
 const crypto = require('crypto');
+const wallet = require('../model/wallet')
+const { type } = require('os')
 require('dotenv').config();
 
 const razorpay=new Razorpay({
@@ -106,6 +108,7 @@ async function updateProductStock(products, checkProducts) {
 
 
 
+
 exports.placeOrder = async (req, res) => {
     try {
         const { addressId, paymentType, appliedCoupon } = req.body;
@@ -114,6 +117,8 @@ exports.placeOrder = async (req, res) => {
         let cart = await Cart.findOne({ user_id: user._id }).populate('items.product_id');
         
         let totalPrice = cart.total_price;
+        console.log('totoal:',totalPrice);
+        
         let totalDiscount = cart.coupon_discount || 0;
 
         let addressDoc = await Address.findOne({'address._id': addressId});
@@ -185,20 +190,29 @@ exports.placeOrder = async (req, res) => {
             }
 
             if (paymentType === 'razor') {
+
+                totalPrice = Number(totalPrice);
+
+                
                 const razorpayOrder = await razorpay.orders.create({
-                    amount: Number(order.totalAmount * 100),  
+                    amount: totalPrice * 100,  
                     receipt: order._id.toString(),
                     currency: 'INR'
                 });
-                await updateProductStock(products,cart.items.map(item => item.product_id));
+
+                order.products.forEach(product => {
+                    product.razorpayOrderId = razorpayOrder.id;
+                });
+
+            await updateProductStock(products,cart.items.map(item => item.product_id));
             await order.save();
             cart.items = [];
             cart.total_price = 0;
             cart.coupon_name = '';
             cart.coupon_discount = '';
             cart.isCoupon = false;
+            
             await cart.save();
-
             return res.status(200).json({
                 razor: true,
                 amount: razorpayOrder.amount,
@@ -206,6 +220,7 @@ exports.placeOrder = async (req, res) => {
                 key: process.env.razorpay_keyId,
                 orderId:order._id
             });
+             
         }
 
         if (paymentType === 'wallet') {
@@ -243,6 +258,7 @@ exports.placeOrder = async (req, res) => {
     }
 };
  
+ 
 exports.verifyPayment = async (req, res) => {
     try {
         const { razorpayPaymentId, razorpayOrderId, razorpaySignature } = req.body;
@@ -254,44 +270,48 @@ exports.verifyPayment = async (req, res) => {
             if (order) {
                 order.products.forEach(p => {
                     if (p.razorpayOrderId === razorpayOrderId) {
-                        p.paymentStatus = 'Failed'; // Set status to Failed
+                        p.paymentStatus = 'Failed';  
                     }
                 });
-                await order.save(); // Ensure save is awaited
+                await order.save();  
             }
             return res.status(400).json({ success: false, message: "Payment failed or canceled" });
         }
 
-        // Proceed with normal verification logic
-        const generatedSignature = crypto.createHmac('sha256', razorpay.key_secret)
-            .update(razorpayOrderId + "|" + razorpayPaymentId)
-            .digest('hex');
+         
 
+        const generatedSignature = crypto.createHmac('sha256', razorpay.key_secret)
+                .update(razorpayOrderId + "|" + razorpayPaymentId)
+                .digest('hex');
+
+
+        
         let order = await Order.findOne({ 'products.razorpayOrderId': razorpayOrderId });
 
         if (generatedSignature === razorpaySignature) {
+            console.log('Payment verification successful');
             order.products.forEach(p => {
                 if (p.razorpayOrderId === razorpayOrderId) {
                     p.paymentStatus = 'Success';
                 }
             });
             await order.save();
-            res.status(200).json({ success: true, message: "Payment verified successfully" });
+            return res.status(200).json({ success: true, message: "Payment verified successfully" });
         } else {
-            console.log('payment verification failed');
             order.products.forEach(p => {
                 if (p.razorpayOrderId === razorpayOrderId) {
                     p.paymentStatus = 'Failed';
                 }
             });
             await order.save();
-            res.status(400).json({ success: false, message: "Payment verification failed" });
+            return res.status(400).json({ success: false, message: "Payment verification failed" });
         }
     } catch (error) {
         console.error("Error verifying payment:", error);
-        res.status(500).json({ success: false, message: "Internal Server Error" });
+        return res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
+
 
  exports.Repay=async(req,res)=>{
     try {
@@ -328,7 +348,7 @@ exports.orderHistory = async (req, res) => {
     try {
         const user = await User.findOne({ email: req.session.userAuth });
         const currentPage = parseInt(req.query.page) || 1;  
-        const itemsPerPage = 4;  
+        const itemsPerPage = 3;  
         const totalOrders = await Order.countDocuments({ userId: user._id});  
         const orders = await Order.find({ userId: user._id })
         .populate('products.productId')    
@@ -473,18 +493,27 @@ exports.cancelProduct = async (req, res) => {
     try {
         // Convert productId to ObjectId
         const productId =new mongoose.Types.ObjectId(req.params.id);  
-
-        const { returnReason, quantity } = req.body;
+         
+        const { returnReason, quantity,product } = req.body;
         let stockInc = Number(quantity);
-        console.log("reason:", returnReason);
+       console.log('stock:',stockInc);
+       
 
         // Find the user based on session
         let user = await User.findOne({ email: req.session.userAuth });
 
         // Update product stock
-        await Product.findByIdAndUpdate(productId, {
+        await Product.findByIdAndUpdate(product, {
             $inc: { stock: stockInc }
         });
+         
+        let order=await Order.findOne({userId:user._id,'products._id': productId })
+        const productInOrder = order.products.find(p => p._id.equals(productId));
+        const price = productInOrder.price
+
+        console.log('type:',typeof(price));
+        console.log('price',price);
+        
         
        await Order.findOneAndUpdate(
             { 
@@ -498,8 +527,19 @@ exports.cancelProduct = async (req, res) => {
                 }
             },
         );
+        let newWallet=await Wallet.findOne({userId:user._id})
+         if(order)
+         {
+            newWallet.balance+=price
+            newWallet.wallet_history.push({
+                date: Date.now(),
+                amount: price,
+                transactionType: "Credit"
+            })
+            await newWallet.save()
+         }
  
-
+     
         res.json({ success: true, message: "Order cancelled successfully" });
 
     } catch (error) {
@@ -508,7 +548,28 @@ exports.cancelProduct = async (req, res) => {
     }
 };
 
+exports.addRating=async(req,res)=>{
+    try {
 
+       const {productId,rating}=req.body
+
+       let user = await User.findOne({ email: req.session.userAuth });
+       let product=await Product.findById(productId)
+
+       if (!product) {
+        return res.status(404).json({ message: 'Product not found' });
+      }
+      product.ratings.push({ userId:user._id, rating:rating });
+      await product.save()
+       console.log('rating added');
+       
+      res.json({ok:true, message: 'Rating added successfully' });
+    
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
 
 exports.couponApply = async (req, res) => {
     try {
@@ -522,7 +583,7 @@ exports.couponApply = async (req, res) => {
             return res.status(404).json({ message: "Cart not found or empty" });
         }
 
-        let totalCartPrice = cart.total_price;  
+        let totalCartPrice = cart.total_price + cart.delivery_charge;  
 
         const couponCode = req.body.couponID;
         const coupon = await Coupon.findOne({ coupon_code: couponCode });
@@ -631,7 +692,7 @@ exports.getInvoice = async (req, res) => {
                     <p>Total Amount: ₹${order.totalAmount - order.delivery_charges}<br>
                     ${order.discounted_price ? `Discount Amount: ₹${order.discounted_price} <br>` : ""} 
                     Delivery Charge: ₹${order.delivery_charges}<br>
-                    Paid Amount : ₹${order.totalAmount}
+                    Paid Amount : ₹${order.totalAmount-order.discounted_price}
                     </p>
                 </div>
             </body>

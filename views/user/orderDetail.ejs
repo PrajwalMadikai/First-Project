@@ -54,6 +54,10 @@
     color:white;
     border-radius: 2px;
   }
+  .swal2-popup-custom{
+    background-color:black !important;
+    
+  }
 </style>
 
 <body>
@@ -79,7 +83,7 @@
       <!-- Invoice Download Button -->
       <div>
         <a href="/download-invoice/<%= order._id %>">
-          <button class="inBtn">Invoice Download</button>
+          <button class="inBtn">Download Invoice</button>
         </a>
       </div>
     </div>
@@ -138,14 +142,26 @@
                     <% } %>
                   </span>
                 </div>
-                 
+                <% if (product.status === 'Delivered') { %>
+                  <button class="btn btn-outline-primary border-2"   data-bs-toggle="modal" data-bs-target="#returnModal<%= product._id %>">Return</button>
+                <% } else if (product.status === 'Pending') { %>
+                  <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancelModal<%= product._id %>">Cancel</button>
+                <% } %>
+
               </div>
-            
-              <% if (product.status === 'Delivered') { %>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#returnModal<%= product._id %>">Return</button>
-              <% } else if (product.status === 'Pending') { %>
-                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal<%= product._id %>">Cancel</button>
-              <% } %>
+                <!-- Rating Section -->
+                <div class="mt-4 rating-sec">
+                  <h6>Rate this product:</h6>
+                  <div class="rating-stars" data-product-id="<%= product.productId %>">
+                    <i class="star fa fa-star" data-rating="1"></i>
+                    <i class="star fa fa-star" data-rating="2"></i>
+                    <i class="star fa fa-star" data-rating="3"></i>
+                    <i class="star fa fa-star" data-rating="4"></i>
+                    <i class="star fa fa-star" data-rating="5"></i>
+                  </div>
+                  <button class="btn btn-primary mt-2" id="applyRatingBtn<%= product.productId %>">Submit Rating</button>
+                  <p id=" rating-info text text-success"><b></b></p>
+                </div>
             </div>
             
           </div>
@@ -187,6 +203,7 @@
             <form id="cancelForm<%= product._id %>">
               <div class="modal-body">
                 <div class="mb-3">
+                 
                   <label for="cancelReason<%= product._id %>" class="form-label">Reason</label>
                   <textarea id="cancelReason<%= product._id %>" name="cancelReason" rows="5" cols="40" class="form-control" required></textarea>
                 </div>
@@ -198,7 +215,79 @@
           </div>
         </div>
       </div>
-    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+      <script>
+       document.querySelectorAll('.rating-stars').forEach(starContainer => {
+  let stars = starContainer.querySelectorAll('.star');
+  let selectedRating = 0;
+
+  // Handle star click events
+  stars.forEach(star => {
+    star.addEventListener('click', function () {
+      selectedRating = this.getAttribute('data-rating');
+      updateStarColors(stars, selectedRating);
+    });
+  });
+
+  // Update star colors based on the selected rating
+  function updateStarColors(stars, rating) {
+    stars.forEach(star => {
+      if (star.getAttribute('data-rating') <= rating) {
+        star.style.color = '#FFD700'; // Highlight selected stars
+      } else {
+        star.style.color = 'transparent'; // Unselected stars are transparent
+      }
+    });
+  }
+
+  // Handle apply button click event
+  let applyBtn = document.getElementById('applyRatingBtn' + starContainer.getAttribute('data-product-id'));
+  applyBtn.addEventListener('click', function () {
+    if (selectedRating > 0) {
+      // Prepare data to send
+      const productId = starContainer.getAttribute('data-product-id');
+      const userId = 'someUserId'; // Replace this with the actual logged-in user's ID
+
+      // Send the rating to the server
+      fetch('/rate-product', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId, rating: selectedRating, userId })
+      }).then(response => response.json()).then(data => {
+        if (data.success ==true) {
+          Swal.fire({
+                text: "Rating Added", 
+                showConfirmButton: false,
+                timer: 3000, 
+                backdrop: false,
+                customClass: {
+                    popup: 'swal2-popup-custom', 
+                },
+                position: 'bottom-end', // Set position to bottom right
+                toast: true, // Make it a toast notification
+            }).then(()=>{
+              document.querySelector('.rating-sec').style.display = 'none';
+            }) 
+               
+
+           
+        } else {
+          alert('Failed to submit rating.');
+        }
+      }).catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while submitting your rating.');
+      });
+    } else {
+      console.log('catch block');
+      
+    }
+  });
+});
+
+      </script>
+      
+     
       <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
       <script>
 
@@ -251,12 +340,13 @@ document.getElementById('cancelForm<%= product._id %>').addEventListener('submit
     let reason = document.getElementById('cancelReason<%= product._id %>').value;
     let productId = '<%= product._id %>'; 
     let quantity = '<%= product.quantity %>'
+    let product='<%= product.productId%>'
    
     try {
         let response = await fetch(`/cancelOrder/${productId}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ returnReason: reason, quantity }) // Send the reason and quantity in the body
+            body: JSON.stringify({ returnReason: reason, quantity ,product}) // Send the reason and quantity in the body
         });
 
         if (response.ok) {
@@ -299,7 +389,6 @@ async function repay(orderId,paymentType){
         console.log('response:', response);
         if(response.ok){
           let data = await response.json();
-    console.log('success', data);
           
            let options = {
                         key: data.key,
@@ -310,7 +399,6 @@ async function repay(orderId,paymentType){
                         order_id: data.razorpayOrderId,
                         handler: async function (response) {
                             try {
-                                // Send payment verification details to the server
                                 const paymentData = {
                                     razorpayPaymentId: response.razorpay_payment_id,
                                     razorpayOrderId: response.razorpay_order_id,
@@ -400,15 +488,16 @@ async function repay(orderId,paymentType){
     
     <% }) %>
     <div class="d-flex justify-content-end container ">
-      <div class=" checkout__order mb-4"> 
-        <h4 class="order__title">Your Order</h4>
+      <div class=" checkout__order mb-4" style="background-color: #e0f7fa; padding: 10px;"> 
+        <h5 class="order__title">Your Order</h5>
+        <hr>
         <ul class=" checkout__total__all border-top-0 ">
          
 
            
           
-          <li class="">Total Mrp <span class="order_summary" id="">₹ <%= order.totalAmount %></span></li>
-          <li class="">Discound On MRP <span class="text-success" id=""> <%= order.discounted_price?order.discounted_price :'' %></span></li>
+          <li class="text text-start">Total Mrp <span class="order_summary" id="">₹ <%= order.totalAmount +order.discounted_price%></span></li>
+          <li class="">Discound On MRP <span class="text-success" id=""> <%= order.discounted_price?'₹'+ order.discounted_price :'' %></span></li>
           <li class="">Coupon Name <span class="text-success" id="cart-total"> <%= order.coupon_name %></span></li>
           <li class="">Total Amound <span id="cart-total">₹ <%= order.totalAmount %></span></li>
       </ul>

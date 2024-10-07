@@ -140,7 +140,7 @@ exports.getProfile=async(req,res)=>{
  exports.postEditAddress = async (req, res) => {
     try {
         let id = req.params.id;
-        // Use findOne instead of find to get a single user object
+      
         let user = await User.findOne({ email: req.session.userAuth });
         
         // Ensure the user is found

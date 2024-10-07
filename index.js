@@ -9,6 +9,7 @@ let connectDB=require("./server/config/createDB")
 let passport=require('./server/config/passport')
 const adminRoute=require('./server/route/admin')  
 const cookieParser = require('cookie-parser');
+const { errorHandler}=require('./server/middleware/errorHandler')
 const { cartMiddleware, wishlistMiddleware } = require('./server/middleware/countMiddleware'); 
 require('dotenv').config()
 let app=express()
@@ -36,7 +37,8 @@ app.use((req,res,next)=>{
     next()
 })
 app.use(cartMiddleware);  
-app.use(wishlistMiddleware);  
+app.use(wishlistMiddleware); 
+app.use(errorHandler); 
 
 app.use(passport.initialize())
 app.use(passport.session())

@@ -19,7 +19,12 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
 
   <link rel="stylesheet" href="https://unpkg.com/cropperjs/dist/cropper.css" />
-
+   <style>
+    .image-preview{
+      height: 300px;
+      width: 300px;
+    }
+   </style>
 </head>
 
 <body>
@@ -253,7 +258,11 @@
                   <label for="price">Price</label>
                   <input type="number" class="form-control" id="price" name="price" value="<%= product.price %>" placeholder="Enter product price" required>
                 </div>
-          
+                 <!-- Hidden inputs to pass existing image data -->
+                <input type="hidden" name="existingImg1" value="<%= product.image.image1 %>">
+                <input type="hidden" name="existingImg2" value="<%= product.image.image2 %>">
+                <input type="hidden" name="existingImg3" value="<%= product.image.image3 %>">
+
                 <!-- Image Upload -->
                 <div class="form-group text-center">
                   <label for="productImages">Image Upload</label>
@@ -267,6 +276,7 @@
                                   id="productImage1" accept="image/*"   
                                   onchange="openCropperModal('productImage1', 'previewImage1')"
                                   name="img1">
+                                
                           </label>
                       </div>
 
@@ -290,6 +300,7 @@
                                   id="productImage3" accept="image/*"   
                                   onchange="openCropperModal('productImage3', 'previewImage3')"
                                   name="img3">
+                                   
                           </label>
                       </div>
                       

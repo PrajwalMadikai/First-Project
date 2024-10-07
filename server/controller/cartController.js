@@ -22,6 +22,7 @@ exports.addCart = async (req, res) => {
       
       if(newProduct.stock==0)
       {
+        
        return res.status(200).json({message:"out of stock",stock:true})
       }
       // Handle cart logic

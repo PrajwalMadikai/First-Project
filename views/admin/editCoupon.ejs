@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Admin  |  trendView</title>
+  <!-- base:css -->
+  <link rel="stylesheet" href="/vendors/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="/vendors/feather/feather.css">
+  <link rel="stylesheet" href="/vendors/base/vendor.bundle.base.css">
+  <!-- endinject -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="/public/css/admin.css">
+  <!-- endinject -->
+  <link rel="shortcut icon" href="../../images/favicon.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <style>
+    
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid d-flex flex-column" style="min-height: 100vh;">
+    <%-include('../partials/adminTopBar')  %>
+    <div class="row flex-grow-1 mt-5">
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <div class="user-profile">
+          <div class="user-name adminName">Prajwal</div>
+          <div class="user-designation">Admin</div>
+        </div>
+        <%- include('../partials/adminSidebar') %>
+      </nav>
+      
+      <div class="main-panel flex-grow-1">
+        <div class="content-wrapper">
+           
+            <form id="editCouponForm">
+                <!-- Hidden input to store the coupon ID -->
+                <input type="hidden" name="couponId" id="couponId" value="<%= coupon._id %>">
+            
+                <!-- Coupon Code -->
+                <div class="form-group">
+                    <label for="editCouponCode">Coupon Code</label>
+                    <input type="text" class="form-control" id="editCouponCode" name="couponCode" value="<%= coupon.coupon_code %>" placeholder="Enter coupon code" required>
+                    <p id="editCouponCodeError" class="text-danger" style="display:none;"></p>
+                </div>
+            
+                <!-- Discount -->
+                <div class="form-group">
+                    <label for="editDiscount">Discount (%)</label>
+                    <input type="number" class="form-control" id="editDiscount" name="discount" value="<%= coupon.discount %>" placeholder="Enter discount percentage" required>
+                    <p id="editDiscountError" class="text-danger" style="display:none;"></p>
+                </div>
+            
+                <!-- Start Date -->
+                <div class="form-group">
+                    <label for="editStartDate">Start Date</label>
+                    <input type="date" class="form-control" id="editStartDate" name="startDate" value="<%= coupon.start_date.toISOString().split('T')[0] %>" required>
+                    <p id="editStartDateError" class="text-danger" style="display:none;"></p>
+                </div>
+            
+                <!-- Expiry Date -->
+                <div class="form-group">
+                    <label for="editExpiryDate">Expiry Date</label>
+                    <input type="date" class="form-control" id="editExpiryDate" name="expiryDate" value="<%= coupon.expiry_date.toISOString().split('T')[0] %>" required>
+                    <p id="editExpiryDateError" class="text-danger" style="display:none;"></p>
+                </div>
+            
+                <!-- Minimum Purchase Amount -->
+                <div class="form-group">
+                    <label for="editMinimumAmount">Minimum Purchase Amount</label>
+                    <input type="number" class="form-control" id="editMinimumAmount" name="minimumAmount" value="<%= coupon.minimum_purchase_amount %>" placeholder="Enter minimum amount" required>
+                    <p id="editMinimumAmountError" class="text-danger" style="display:none;"></p>
+                </div>
+            
+                <!-- Maximum Coupon Amount -->
+                <div class="form-group">
+                    <label for="editMaximumAmount">Maximum Coupon Amount</label>
+                    <input type="number" class="form-control" id="editMaximumAmount" name="maximumAmount" value="<%= coupon.maximum_coupon_amount %>" placeholder="Enter maximum amount" required>
+                    <p id="editMaximumAmountError" class="text-danger" style="display:none;"></p>
+                </div>
+            
+                <!-- Coupon Description -->
+                <div class="form-group">
+                    <label for="editDescription">Coupon Description</label>
+                    <textarea class="form-control" id="editDescription" name="couponDescription" rows="2" placeholder="Enter coupon description" required><%= coupon.coupon_description %></textarea>
+                    <p id="editDescriptionError" class="text-danger" style="display:none;"></p>
+                </div>
+            
+                <!-- Submit Button -->
+                <button type="button" class="btn btn-dark" onclick="editcoupon()">Save Changes</button>
+            </form>
+            
+              
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+<script>
+ 
+ 
+
+async function editcoupon() {
+    // Get form field values
+    const couponCode = document.getElementById('editCouponCode').value.trim();
+    const description = document.getElementById('editDescription').value.trim();
+    const discount = document.getElementById('editDiscount').value.trim();
+    const startDate = document.getElementById('editStartDate').value;
+    const expiryDate = document.getElementById('editExpiryDate').value;
+    const minimumAmount = document.getElementById('editMinimumAmount').value.trim();
+    const maximumAmount = document.getElementById('editMaximumAmount').value.trim();
+
+    let isValid = true;
+
+    // Clear previous error messages
+    clearErrorMessages();
+
+    // Validate coupon code
+    if (!couponCode) {
+        showError('editCouponCodeError', 'Coupon code cannot be empty');
+        isValid = false;
+    }
+
+    // Validate description
+    if (!description) {
+        showError('editDescriptionError', 'Description cannot be empty');
+        isValid = false;
+    }
+
+    // Validate discount
+    if (!discount || isNaN(discount) || discount <= 0) {
+        showError('editDiscountError', 'Discount should be a positive number');
+        isValid = false;
+    }
+
+    // Validate start date
+    if (!startDate) {
+        showError('editStartDateError', 'Start date cannot be empty');
+        isValid = false;
+    }
+
+    // Validate expiry date
+    if (!expiryDate) {
+        showError('editExpiryDateError', 'Expiry date cannot be empty');
+        isValid = false;
+    } else if (new Date(expiryDate) <= new Date(startDate)) {
+        showError('editExpiryDateError', 'Expiry date should be after the start date');
+        isValid = false;
+    }
+
+    // Validate minimum purchase amount
+    if (!minimumAmount || isNaN(minimumAmount) || minimumAmount <= 0) {
+        showError('editMinimumAmountError', 'Minimum amount should be a positive number');
+        isValid = false;
+    }
+
+    // Validate maximum coupon amount
+    if (!maximumAmount || isNaN(maximumAmount) || maximumAmount <= 0) {
+        showError('editMaximumAmountError', 'Maximum coupon amount should be a positive number');
+        isValid = false;
+    }
+
+    if (isValid) {
+        const data = {
+            couponId: document.getElementById('couponId').value,
+            couponCode: couponCode,
+            description: description,
+            discount: discount,
+            startDate: startDate,
+            expiryDate: expiryDate,
+            minimumAmount: minimumAmount,
+            maximumAmount: maximumAmount
+        };
+
+        let response = await fetch(`/admin/editcoupon/${data.couponId}`, {
+            method: "POST",
+            headers: { "Content-Type": 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        let res = await response.json();
+        
+        if (res.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Coupon Edited Successfully!',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = '/admin/coupon';
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Coupon Edit Failed',
+                confirmButtonText: 'OK'
+            });
+        }
+    }
+}
+
+// Function to show error messages
+function showError(elementId, message) {
+    const errorElement = document.getElementById(elementId);
+    errorElement.innerText = message;
+    errorElement.style.display = 'block'; // Show the error message
+}
+
+// Function to clear error messages
+function clearErrorMessages() {
+    const errorElements = document.querySelectorAll('.text-danger');
+    errorElements.forEach(el => {
+        el.innerText = '';
+        el.style.display = 'none'; // Hide the error message
+    });
+}
+
+</script>
+
+  <%-include('../partials/adminFooter')  %>

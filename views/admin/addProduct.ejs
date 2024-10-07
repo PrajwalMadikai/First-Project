@@ -254,7 +254,7 @@
           <div class="row">
             <div class="container mt-5">
               <h2 class="mb-4">Upload New Product</h2>
-              <form action="/admin/addProduct" method="POST" enctype="multipart/form-data" onsubmit=" return validRegister()">
+              <form action="/admin/addProduct" method="POST" enctype="multipart/form-data" onsubmit="return validRegister(event)" >
                 <!-- Product Name -->
                 <div class="form-group">
                   <label for="productName">Product Name</label>
@@ -283,6 +283,7 @@
                           <option value="<%= brand.name %>"><%= brand.name %></option>
                       <% }); %>
                   </select>
+                  <p class="text d-flex justify-content-start text-danger" id="brand-error"></p>
               </div>
               
                   <!-- Features -->
@@ -305,9 +306,10 @@
                 </div>
                  
                 <!-- Stock -->
+                 <!-- changed type text to num -->
                 <div class="form-group">
                   <label for="brand">Stock</label>
-                  <input type="text" class="form-control" id="stock" name="stock" placeholder="Enter product stock"  >
+                  <input type="Number" class="form-control" id="stock" name="stock" placeholder="Enter product stock" required>
                   <p class="text d-flex justify-content-start text-danger" id="stock-error"></p>
                 </div>
           
@@ -362,7 +364,7 @@
                                   name="img3">
                           </label>
                       </div>
-                      <!-- Box 4 -->
+                      
                       
                   </div>
                   <p id="productImageError" class="text-danger fs-15"></p>
@@ -371,7 +373,7 @@
            </div>
           
                 <!-- Submit Button -->
-                <button type="submit" class="btn btn-success d-flex justify-content-center mt-4">Submit</button>
+                <button type="submit" class="btn btn-success d-flex justify-content-center mt-4"  >Submit</button>
               </form>
             </div>
 
@@ -412,53 +414,65 @@
   <script>
     
 function validRegister() {
+
   const productName = document.getElementById('productName').value;
-  const description = document.getElementById('description').value;
   const category = document.getElementById('category').value;
-  const brand = document.getElementById('brand').value;
+  const brand = document.getElementById('brandSelect').value;
   const stock = document.getElementById('stock').value;
   const oldPrice = document.getElementById('oldPrice').value;
   const price = document.getElementById('price').value;
 
-  // Clear any previous error messages
+  let isValid = true;
+
+  // Clear previous error messages
   document.getElementById('productName-error').textContent = '';
-  document.getElementById('description-error').textContent = '';
   document.getElementById('category-error').textContent = '';
   document.getElementById('brand-error').textContent = '';
   document.getElementById('stock-error').textContent = '';
   document.getElementById('oldPrice-error').textContent = ''; 
   document.getElementById('price-error').textContent = ''; 
- 
 
-  if (!productName || productName.trim().length==0) {
-      document.getElementById('productName-error').textContent = 'Product name field should not be empty!';
-      return false;
+  const name = /^[A-Za-z]+(\s[A-Za-z]+)*$/;
+  if (!productName || productName.trim().length === 0 ) {
+    document.getElementById('productName-error').textContent = 'Product name should not be empty!';
+    isValid = false;
   }
-   
-  if (!category || category.trim().length==0) {
-      document.getElementById('category-error').textContent = 'Category name field should not be empty!';
-      return false;
-  }
-  if (!brand || brand.trim().length==0) {
-      document.getElementById('brand-error').textContent = 'Brand name field should not be empty!';
-      return false;
-  }
-  if (!stock || stock.trim().length==0 ||isNaN(stock) || stock<0) {
-      document.getElementById('stock-error').textContent = 'Stock field should not be empty or string!';
-      return false;
-  }
-  if (!oldPrice || oldPrice<=0 || isNaN(oldPrice)) {
-      document.getElementById('oldPrice-error').textContent = 'Old price should not be negative number!';
-      return false;
-  }
-  if (!price || price<=0 || isNaN(price)) {
-      document.getElementById('price-error').textContent = 'Price should not be negative number!';
-      return false;
+if(!name.test(productName)){
+  document.getElementById('productName-error').textContent = 'Product name should be String!';
+  isValid = false;
+}
+  // Validate Category
+  if (!category || category.trim().length === 0) {
+    document.getElementById('category-error').textContent = 'Category should not be empty!';
+    isValid = false;
   }
 
-   
+  // Validate Brand
+  if (!brand || brand.trim().length === 0) {
+    document.getElementById('brand-error').textContent = 'Brand should not be empty!';
+    isValid = false;
+  }
 
-  return true;
+  // Validate Stock (must be a positive number)
+  if (!stock || isNaN(stock) || Number(stock) < 0) {
+    document.getElementById('stock-error').textContent = 'Stock should be a positive number!';
+    isValid = false;
+  }
+
+  // Validate Old Price (must be a positive number)
+  if (!oldPrice || isNaN(oldPrice) || Number(oldPrice) <= 0) {
+    document.getElementById('oldPrice-error').textContent = 'Old price should be a positive number!';
+    isValid = false;
+  }
+
+  // Validate Price (must be a positive number)
+  if (!price || isNaN(price) || Number(price) <= 0) {
+    document.getElementById('price-error').textContent = 'Price should be a positive number!';
+    isValid = false;
+  }
+
+  // If validation fails, prevent form submission
+  return isValid;
 }
 
   </script>

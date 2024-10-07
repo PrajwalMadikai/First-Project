@@ -96,6 +96,9 @@ router.get('/orderDetail/:id',isAuthenticate.isLogin,orderController.getOrderDet
 router.post('/return/:id',isAuthenticate.isLogin,orderController.returnProduct)
 router.post('/cancelOrder/:id',isAuthenticate.isLogin,orderController.cancelProduct)
 
+//   <--------Rating--------->
+router.post('/rate-product',isAuthenticate.isLogin,orderController.addRating)
+
 //    <---  coupons  -->
 router.post('/apply-coupon',isAuthenticate.isLogin,orderController.couponApply)
 router.post('/remove-coupon',isAuthenticate.isLogin,orderController.removeCoupon)
