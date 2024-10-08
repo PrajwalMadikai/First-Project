@@ -28,8 +28,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(session({ 
     secret: 'secretkey',
     resave:false, 
-    saveUninitialized:false 
-      
+    saveUninitialized:false ,
 }))  
 app.use(flash())
 app.use((req,res,next)=>{
@@ -50,6 +49,8 @@ app.use(methodOverride('_method'))
 
 app.use(cookieParser()); 
 
+
+
 app.use((req, res, next) => {
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate'); // HTTP 1.1.
     res.setHeader('Pragma', 'no-cache'); // HTTP 1.0.
@@ -60,5 +61,4 @@ app.use((req, res, next) => {
 app.use('/',require("./server/route/route"))
 app.use('/admin',adminRoute)
  
-app.listen(port,()=>{console.log(`http://localhost:${port}`);
-})  
+app.listen(port,()=>{console.log(`http://localhost:${port}`);})  

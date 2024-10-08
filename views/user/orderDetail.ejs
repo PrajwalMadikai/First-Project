@@ -55,9 +55,42 @@
     border-radius: 2px;
   }
   .swal2-popup-custom{
-    background-color:black !important;
+    background-color:white !important;
     
   }
+  .rating-boxes {
+  display: flex; /* Make the boxes align horizontally */
+  gap: 10px; /* Add space between boxes */
+}
+
+.rating-boxes {
+  display: flex; /* Make the boxes align horizontally */
+  gap: 10px; /* Add space between boxes */
+}
+
+.box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px; /* Define box width */
+  height: 50px; /* Define box height */
+  border: 1px solid #ccc; /* 1px border for each box */
+  text-align: center;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s, border-color 0.3s; /* Smooth transition for selection effect */
+}
+
+.box i {
+  margin-right: 5px; /* Add some space between the star and the number */
+}
+
+/* Add styles for the selected box */
+.box.selected {
+  background-color: #ffd700; /* Change background color for selected box */
+  border-color: #ffae00; /* Change border color for selected box */
+}
+
 </style>
 
 <body>
@@ -104,7 +137,7 @@
             <div class="d-flex justify-content-between font-weight-bold">
               <div>
                 <span class="mr-2">₹<%= product.price %></span>
-                <span class="text text-danger" style="text-decoration: line-through;">₹<%= product.productId.price %></span>
+                <span class="text " style="color: grey; text-decoration: line-through;">₹<%= product.productId.oldPrice %></span>
               </div>
               <div><%= product.quantity %></div>
               <div>₹<%= product.price %></div>
@@ -144,24 +177,36 @@
                 </div>
                 <% if (product.status === 'Delivered') { %>
                   <button class="btn btn-outline-primary border-2"   data-bs-toggle="modal" data-bs-target="#returnModal<%= product._id %>">Return</button>
-                <% } else if (product.status === 'Pending') { %>
+                <% } else if (product.status === 'Pending' && product.paymentStatus!="Failed") { %>
                   <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancelModal<%= product._id %>">Cancel</button>
                 <% } %>
 
               </div>
+              <% if(product.status=="Delivered"){ %>
                 <!-- Rating Section -->
                 <div class="mt-4 rating-sec">
                   <h6>Rate this product:</h6>
-                  <div class="rating-stars" data-product-id="<%= product.productId %>">
-                    <i class="star fa fa-star" data-rating="1"></i>
-                    <i class="star fa fa-star" data-rating="2"></i>
-                    <i class="star fa fa-star" data-rating="3"></i>
-                    <i class="star fa fa-star" data-rating="4"></i>
-                    <i class="star fa fa-star" data-rating="5"></i>
+                  <div class="rating-boxes" data-product-id="<%= product.productId %>">
+                    <div class="box" data-rating="1">
+                      <i class="fa fa-star"></i> 
+                    </div>
+                    <div class="box" data-rating="2">
+                      <i class="fa fa-star"></i> 
+                    </div>
+                    <div class="box" data-rating="3">
+                      <i class="fa fa-star"></i> 
+                    </div>
+                    <div class="box" data-rating="4">
+                      <i class="fa fa-star"></i> 
+                    </div>
+                    <div class="box" data-rating="5">
+                      <i class="fa fa-star"></i> 
+                    </div>
                   </div>
-                  <button class="btn btn-primary mt-2" id="applyRatingBtn<%= product.productId %>">Submit Rating</button>
-                  <p id=" rating-info text text-success"><b></b></p>
+                  <button class="btn btn-primary mt-2" id="applyRatingBtn<%= product.productId %>">Submit</button>
+                  <p id="rating-info" class="text text-success"><b></b></p>
                 </div>
+                <% } %>
             </div>
             
           </div>
@@ -217,35 +262,31 @@
       </div>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
       <script>
-       document.querySelectorAll('.rating-stars').forEach(starContainer => {
-  let stars = starContainer.querySelectorAll('.star');
+    document.querySelectorAll('.rating-boxes').forEach(boxContainer => {
+  let boxes = boxContainer.querySelectorAll('.box');
   let selectedRating = 0;
 
-  // Handle star click events
-  stars.forEach(star => {
-    star.addEventListener('click', function () {
-      selectedRating = this.getAttribute('data-rating');
-      updateStarColors(stars, selectedRating);
+  // Handle box click events
+  boxes.forEach(box => {
+    box.addEventListener('click', function () {
+      selectedRating = this.getAttribute('data-rating'); // Capture the selected rating value
+
+      // Remove 'selected' class from all boxes
+      boxes.forEach(b => b.classList.remove('selected'));
+
+      // Add 'selected' class to the clicked box
+      this.classList.add('selected');
+
+      console.log('Selected rating:', selectedRating); // Just to verify the value on click
     });
   });
 
-  // Update star colors based on the selected rating
-  function updateStarColors(stars, rating) {
-    stars.forEach(star => {
-      if (star.getAttribute('data-rating') <= rating) {
-        star.style.color = '#FFD700'; // Highlight selected stars
-      } else {
-        star.style.color = 'transparent'; // Unselected stars are transparent
-      }
-    });
-  }
-
   // Handle apply button click event
-  let applyBtn = document.getElementById('applyRatingBtn' + starContainer.getAttribute('data-product-id'));
+  let applyBtn = document.getElementById('applyRatingBtn' + boxContainer.getAttribute('data-product-id'));
   applyBtn.addEventListener('click', function () {
     if (selectedRating > 0) {
       // Prepare data to send
-      const productId = starContainer.getAttribute('data-product-id');
+      const productId = boxContainer.getAttribute('data-product-id');
       const userId = 'someUserId'; // Replace this with the actual logged-in user's ID
 
       // Send the rating to the server
@@ -254,33 +295,28 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productId, rating: selectedRating, userId })
       }).then(response => response.json()).then(data => {
-        if (data.success ==true) {
+        if (data.success == true) {
           Swal.fire({
-                text: "Rating Added", 
-                showConfirmButton: false,
-                timer: 3000, 
-                backdrop: false,
-                customClass: {
-                    popup: 'swal2-popup-custom', 
-                },
-                position: 'bottom-end', // Set position to bottom right
-                toast: true, // Make it a toast notification
-            }).then(()=>{
-              document.querySelector('.rating-sec').style.display = 'none';
-            }) 
-               
-
-           
+            text: "Rating Added",
+            showConfirmButton: false,
+            timer: 3000,
+            backdrop: false,
+            customClass: {
+              popup: 'swal2-popup-custom',
+            },
+            position: 'bottom-end', // Set position to bottom right
+            toast: true, // Make it a toast notification
+          }).then(() => {
+            document.querySelector('.rating-sec').style.display = 'none';
+          });
         } else {
-          alert('Failed to submit rating.');
         }
       }).catch(error => {
         console.error('Error:', error);
         alert('An error occurred while submitting your rating.');
       });
     } else {
-      console.log('catch block');
-      
+      console.log('No rating selected.');
     }
   });
 });
@@ -380,7 +416,140 @@ document.getElementById('cancelForm<%= product._id %>').addEventListener('submit
 });
 
 
-async function repay(orderId,paymentType){
+// async function repay(orderId,paymentType){
+//         let response=await fetch("/re-payment",{
+//           method:"POST",
+//           headers:{"Content-Type":"application/json"},
+//           body:JSON.stringify({orderId,paymentType})
+//         })
+//         console.log('response:', response);
+//         if(response.ok){
+//           let data = await response.json();
+          
+//            let options = {
+//                         key: data.key,
+//                         amount: data.amount,
+//                         currency: data.currency,
+//                         name: "trendView",
+//                         description: "Test Transaction",
+//                         order_id: data.razorpayOrderId,
+//                         handler: async function (response) {
+//                             try {
+//                                 const paymentData = {
+//                                     razorpayPaymentId: response.razorpay_payment_id,
+//                                     razorpayOrderId: response.razorpay_order_id,
+//                                     razorpaySignature: response.razorpay_signature
+//                                 };
+
+//                                 let verifyResponse = await fetch("/verifyPayment", {
+//                                     method: "post",
+//                                     headers: { "Content-Type": "application/json" },
+//                                     body: JSON.stringify(paymentData)
+//                                 });
+
+//                                 let verifyResult = await verifyResponse.json();
+//                                 if (verifyResult.success) {
+//                                     Swal.fire({
+//                                         icon: 'success',
+//                                         title: 'Payment Success!',
+//                                         text: 'Your payment was verified and successful!',
+//                                         confirmButtonText: 'OK'
+//                                     }).then(() => {
+//                                         window.location.reload()
+//                                     });
+//                                 } else {
+//                                     Swal.fire({
+//                                         icon: 'error',
+//                                         title: 'Payment Failed',
+//                                         text: 'Your payment could not be verified. Please try again.',
+//                                         confirmButtonText: 'OK'
+//                                     }).then(()=>{
+//                           window.location.reload()
+//                         })
+//                                 }
+//                             } catch (error) {
+//                                 console.error('Error verifying payment:', error);
+//                             }
+//                         },
+//                         "prefill": {
+//                             "name": "Your Name",
+//                             "email": "Your Email",
+//                             "contact": "Your Phone Number"
+//                         },
+//                         "theme": {
+//                             "color": "#3399cc"
+//                         }
+//                     };
+                    
+//                     // Razorpay payment failure handling
+//                     let rzp = new Razorpay(options);
+
+//                     // Handle payment failure
+//                     rzp.on('payment.failed', async function (response) {
+//                         console.error('Payment failed:', response.error);
+//                         Swal.fire({
+//                             icon: 'error',
+//                             title: 'Payment Failed',
+//                             text: 'The payment process failed. Please try again.',
+//                             confirmButtonText: 'OK'
+//                         }).then(()=>{
+//                           window.location.reload()
+//                         })
+
+//                         // Notify the server of the failed payment
+//                         const paymentData = {
+//                             razorpayPaymentId: response.error.metadata.payment_id,
+//                             razorpayOrderId: response.error.metadata.order_id,
+//                             razorpaySignature: null // No signature for failed payments
+//                         };
+
+//                         let verifyResponse = await fetch("/verifyPayment", {
+//                             method: "post",
+//                             headers: { "Content-Type": "application/json" },
+//                             body: JSON.stringify(paymentData)
+//                         });
+
+//                         let verifyResult = await verifyResponse.json();
+//                         if (!verifyResult.success) {
+//                             console.log('Payment status updated to failed.');
+//                         }
+//                     });
+
+//                     rzp.open();
+
+//     }
+    
+//   }
+      </script>
+    
+    <% }) %>
+    <div class="d-flex justify-content-end container ">
+      <div class=" checkout__order mb-4" style="background-color: #e0f7fa; padding: 10px;"> 
+        <h5 class="order__title">Your Order</h5>
+        <hr>
+        <ul class=" checkout__total__all border-top-0 ">
+         
+
+           
+          
+          <li class="text text-start">Total Mrp <span class="order_summary" id="">₹ <%= order.totalAmount +order.discounted_price%></span></li>
+          <li class="">Discound On MRP <span class="text-success" id=""> <%= order.discounted_price?'₹'+ order.discounted_price :'' %></span></li>
+          <li class="">Coupon Name <span class="text-success" id="cart-total"> <%= order.coupon_name %></span></li>
+          <li class="">Total Amound <span id="cart-total">₹ <%= order.totalAmount %></span></li>
+      </ul>
+      
+      
+        <% if (order.products[0].paymentStatus === 'Failed' || order.products[0].paymentStatus ===undefined ) { %>
+          <div class="mt-3 ml-5"> 
+            <button onclick="repay('<%= order._id %>')" class="  btn-success text-white border-0 mr-2"><i class="fas fa-money-check"></i>&nbsp;&nbsp;&nbsp;Pay Now</button>
+             
+          </div>
+        <% }  %>
+        
+      </div>
+    </div>
+    <script>
+      async function repay(orderId,paymentType){
         let response=await fetch("/re-payment",{
           method:"POST",
           headers:{"Content-Type":"application/json"},
@@ -484,34 +653,7 @@ async function repay(orderId,paymentType){
     }
     
   }
-      </script>
-    
-    <% }) %>
-    <div class="d-flex justify-content-end container ">
-      <div class=" checkout__order mb-4" style="background-color: #e0f7fa; padding: 10px;"> 
-        <h5 class="order__title">Your Order</h5>
-        <hr>
-        <ul class=" checkout__total__all border-top-0 ">
-         
-
-           
-          
-          <li class="text text-start">Total Mrp <span class="order_summary" id="">₹ <%= order.totalAmount +order.discounted_price%></span></li>
-          <li class="">Discound On MRP <span class="text-success" id=""> <%= order.discounted_price?'₹'+ order.discounted_price :'' %></span></li>
-          <li class="">Coupon Name <span class="text-success" id="cart-total"> <%= order.coupon_name %></span></li>
-          <li class="">Total Amound <span id="cart-total">₹ <%= order.totalAmount %></span></li>
-      </ul>
-      
-      
-        <% if (order.products[0].paymentStatus === 'Failed' || order.products[0].paymentStatus ===undefined ) { %>
-          <div class="mt-3 ml-5"> 
-            <button onclick="repay('<%= order._id %>')" class="  btn-success text-white border-0 mr-2"><i class="fas fa-money-check"></i>&nbsp;&nbsp;&nbsp;Pay Now</button>
-             
-          </div>
-        <% }  %>
-        
-      </div>
-    </div>
+    </script>
 <%- include("../partials/mainFooter") %>
     
 <%- include("../partials/homeFooter") %>

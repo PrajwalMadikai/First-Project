@@ -41,16 +41,19 @@
             border-left: none;
             border-right: none;
         }
-
         .image-container {
-            overflow: hidden;
-            position: relative;
-        }
+        position: relative;
+        overflow: hidden; /* Ensures that the zoomed image stays within the container */
+        width: 100%; /* Adjust to fit the desired size */
+        max-width: 500px; /* Set a maximum width for the image if needed */
+    }
 
-        #main-image1 {
-            transition: transform 0.2s ease;
-            width: 100%; /* Adjust as needed */
-        }
+    .main-image {
+        transition: transform 0.1s ease; /* For smooth scaling effect */
+        width: 100%; /* Ensure the image fits the container */
+    }
+
+
  
 body, html {
     overflow-x: hidden;  
@@ -414,7 +417,7 @@ async function addToWhistlist(productId) {
           
      </script>
      <script>
- // Select the main image and the zoom box
+//  // Select the main image and the zoom box
 const mainImage = document.getElementById('main-image1');
 const zoomBox = document.getElementById('zoom-box');
 const zoomImage = document.getElementById('zoom-image');
@@ -480,8 +483,7 @@ function changeMainImage(thumbnail) {
     // Set the clicked thumbnail's src to the original main image's src
     thumbnail.src = mainImageSrc;
 }
-
-
+ 
      </script>
 
      <!-- size script  -->

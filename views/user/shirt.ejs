@@ -198,7 +198,12 @@
                                         <div class="card-body d-flex flex-column justify-content-between">
                                             <div class="product-info"> <!-- Wrap product info -->
                                                 <h5 class="card-title mb-0 text-center"><%= element.title %></h5>
-                                                <p class="card-text mb-0 text-center"> ₹<%= element.price %></p>
+                                                <div class="price-discount-container d-flex justify-content-center align-items-center">
+                                                    <p class="card-text mb-0 text-center fw-bold">₹<%= element.price %></p>
+                                                    <% if(element.discount){ %>
+                                                    <p class="card-text mb-0 ms-2" style="color: rgb(38, 196, 38);">%<%= element.discount %></p>
+                                                     <% } %>
+                                                </div>
                                                 <p id="stock"><% element.stock %></p>
                                                 <% if (element.ratings && element.ratings.length > 0) { %>
                                                     <p class="card-text mt-0 text-center"> <%= element.averageRating.toFixed(1) %> <i class="fa fa-star" style="color: gold;"></i>

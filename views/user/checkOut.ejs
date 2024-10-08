@@ -485,19 +485,30 @@ async function coupon() {
 
 
 async function removeCoupon() {
-    let response=fetch('/remove-coupon',{
-        method:"POST",
-        headers:{"Content-Type":'application/json'}
+    
+    try {
+        let response = await fetch('/remove-coupon', {
+            method: "POST",
+            headers: { "Content-Type": 'application/json' }
+        });
 
-    })
-    if(response.ok)
-    {
-        document.getElementById("couponFeedback").innerText="Coupon removed!!"
+        
+        let data = await response.json();
+
+       
+        if (data.success) {
+            
+            window.location.reload();
+        } else {
+            document.getElementById("couponFeedback").innerText = "Failed to remove coupon!";
+        }
+
+    } catch (error) {
+        console.error('Error removing coupon:', error);
+        document.getElementById("couponFeedback").innerText = "An error occurred. Please try again.";
     }
 }
- 
 
-// Attach event listener to the coupon input field
 document.getElementById("couponCode").addEventListener("input", checkCouponInput);
 
 async function checkout(event) {
@@ -535,8 +546,24 @@ async function checkout(event) {
 
                 if (response.ok) {
                     const data = await response.json();
-                    
-                    if (data.cod === true) {
+                if(data.stock==false)
+                {
+                    Swal.fire({
+                        title: 'Out of Stock',
+                        text: data.message,
+                        icon: 'error',
+                        confirmButtonText: 'Okay'
+                    });
+                }else if(data.product==false)
+                {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Product Unavailable',
+                        text: 'The product you are looking for is currently unavailable.',
+                        footer: '<a href="/shirt">Go to Shop</a>',
+                        confirmButtonText: 'Okay'
+                    });
+                }else if (data.cod === true) {
                         Swal.fire({
                             icon: 'success',
                             title: 'Order Placed!',
@@ -553,7 +580,6 @@ async function checkout(event) {
                             confirmButtonText: 'OK'
                         });
                     } else if (data.razor === true) {
-                    console.log('order i dfrom front :',data.razorpayOrderId);
                     
                         let options = {
                             key: data.key,

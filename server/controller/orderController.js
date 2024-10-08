@@ -117,7 +117,6 @@ exports.placeOrder = async (req, res) => {
         let cart = await Cart.findOne({ user_id: user._id }).populate('items.product_id');
         
         let totalPrice = cart.total_price;
-        console.log('totoal:',totalPrice);
         
         let totalDiscount = cart.coupon_discount || 0;
 
@@ -128,6 +127,32 @@ exports.placeOrder = async (req, res) => {
         let products = []; 
         let totalQuantity = cart.items.reduce((acc, item) => acc + item.quantity, 0);
         let discountPerUnit = totalDiscount / totalQuantity;
+        // checking if the admin is deleted the product
+        for (let item of cart.items) {
+            if (!item.product_id) {
+                
+                await Cart.updateOne(
+                    { _id: cart._id },
+                    { $pull: { items: { _id: item._id } } }
+                );
+        
+                cart.total_price -= item.price * item.quantity;
+                await cart.save();
+
+                return res.status(200).json({ message: "Product not available", product: false });
+            }
+        }
+            // Stock validation
+            for (const item of cart.items) {
+                const productId = item.product_id._id;
+                const newproduct = await Product.findById(productId);  
+            if (newproduct.stock < item.quantity) {
+                return res.status(400).json({ message: `Insufficient stock for ${newproduct.title}. Available: ${newproduct.stock}, Required: ${item.quantity}` ,stock:false});
+            }
+
+             
+        }
+        
 
         for (const item of cart.items) {
             const originalPrice = item.product_id.price;
@@ -249,7 +274,7 @@ exports.placeOrder = async (req, res) => {
 
                 return res.status(200).json({ wallet: true });
             } else {
-                return res.status(400).json({ wallet: false });
+                return res.status(200).json({ wallet: false });
             }
         }
     } catch (error) {
@@ -460,7 +485,7 @@ exports.getOrderDetail = async (req, res) => {
     try {
         const id = req.params.id;
         let user = await User.findOne({ email: req.session.userAuth });
-        let order = await Order.findOne({ userId: user._id, _id: id });
+        let order = await Order.findOne({ userId: user._id, _id: id }).populate('products.productId') 
 
 
         res.render('./user/orderDetail', { order, user }); 
@@ -563,7 +588,7 @@ exports.addRating=async(req,res)=>{
       await product.save()
        console.log('rating added');
        
-      res.json({ok:true, message: 'Rating added successfully' });
+      res.json({success:true, message: 'Rating added successfully' });
     
     } catch (error) {
         console.log(error);
@@ -628,7 +653,14 @@ exports.couponApply = async (req, res) => {
 
 exports.removeCoupon=async(req,res)=>{
     try {
-        
+        const user = await User.findOne({ email: req.session.userAuth });
+        let cart=await Cart.findOne({user_id:user._id})
+        cart.total_price+=cart.coupon_discount
+        cart.coupon_name=''
+        cart.isCoupon=false
+        cart.coupon_discount=0
+        await cart.save()
+        res.json({success:true,message:"Coupon Removed"})
     } catch (error) {
         console.log(error);
         

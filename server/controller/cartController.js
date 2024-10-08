@@ -172,7 +172,6 @@ exports.updateCart=async(req,res)=>{
 
           let  dif=price-item.price
            let total=cart.total_price+dif  
-           console.log('total is:',total);
            
         
                     await Cart.updateOne(

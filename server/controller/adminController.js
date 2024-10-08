@@ -72,17 +72,21 @@ exports.loginGet=async(req,res)=>{
 
 exports.loginPost=async(req,res)=>{
     try {
-        const userData=await user.findOne({email:"admin@gmail.com"})
-
+        const userData=await user.findOne({isAdmin:true})
+    
         if(!userData){
-            res.render('./admin/login',{wrong:"No User or Password"})
+            res.render('./admin/login',{wrong:"Wrong User or Password"})
         }
 
-    if(req.body.password==userData.password && userData.isAdmin==true)
+    if(req.body.password==userData.password)
         {
+        
+            
             req.session.admin=req.body.email;
             res.redirect('/admin/dashboard')
         }else{
+             
+            
             req.flash('wrong',"Wrong Password")
             res.redirect('/admin/login')
         }
@@ -440,15 +444,15 @@ exports.productOffer = async (req, res) => {
 
         const product = await fileUpload.findById(productId);
         
+ 
 
         const categories = await category.findOne({ name: product.category });
-        const categoryDiscount = categories.discount; // Ensure it's a number or default to 0
+        const categoryDiscount = categories.discount ? categories.discount :0;  
 
-        // Ensure discountPercentage is a number
         const discount = Number(discountPercentage)  
 
-        // Compare discountPercentage and categoryDiscount
         const effectiveDiscountPercentage = discount > categoryDiscount ? discount : categoryDiscount;
+
         console.log("highest:", effectiveDiscountPercentage);
 
          
@@ -715,9 +719,10 @@ exports.postSalesReport = async (req, res) => {
  
 exports.getDashboard = async (req, res) => {
     try {
+         
+        
         const currentYear = new Date().getFullYear();
 
-        // Match condition for delivered products for the current year
         let matchCondition = {
             "products.status": "Delivered",
             orderDate: {
