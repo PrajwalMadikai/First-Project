@@ -8,7 +8,7 @@ const razorpay = new Razorpay({
     key_secret: process.env.razopay_keySecret
 });
 
-exports.addAmount = async (req, res) => {
+exports.addAmount = async (req,res,next) => {
     try {
         const { amount } = req.body;
         const user = await User.findOne({ email: req.session.userAuth });
@@ -48,13 +48,13 @@ exports.addAmount = async (req, res) => {
             razorpayOrderId: razorpayOrder.id
         });
     } catch (error) {
-        console.error('Error creating Razorpay order:', error);
+       next(error)
         res.status(500).json({ success: false, message: 'Error creating Razorpay order.' });
     }
 };
 
 // Verify payment
-exports.verifyPaymentPOST = async (req, res) => {
+exports.verifyPaymentPOST = async (req,res,next) => {
     const { razorpayOrderId, razorpayPaymentId, razorpaySignature, amount } = req.body;
 
     console.log(req.body, 'ksdjfaghasd2')
@@ -90,7 +90,7 @@ exports.verifyPaymentPOST = async (req, res) => {
                 message: "Payment verified successfully",
             });
         } catch (error) {
-            console.error("Error updating wallet:", error);
+           next(error)
             return res.status(500).json({
                 message: "An error occurred while processing your payment. Please try again later."
             });

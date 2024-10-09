@@ -210,14 +210,19 @@ body {
                         <div class="wallet-card">
                         <h4>My Wallet</h4>
                         <p class="balance"> ₹
+                            <% if(wallet){ %>
                                 <%= wallet.balance ? wallet.balance :0 %>
+                                <% }else{ %>
+                                    <%= 0 %>
+                                    <% } %>
                              </p>
                         <p class="available">Available Balance</p>
                         <button class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#addFundsModal">Add Funds</button>
                 
                 <!-- Recent Transactions -->
-                <h5>Returned List</h5>
-                <% walletHistory.forEach((item) => { %>
+                <h5>Transaction List</h5>
+                <% if(wallet){ %>
+                <% wallet.wallet_history.forEach((item) => { %>
                     <div class="transaction-card d-flex justify-content-between align-items-center">
                         <div>
                             <h6><%= item.transactionType %></h6>
@@ -230,6 +235,7 @@ body {
                         <% } %>
                     </div>
                 <% }) %>
+                <% } %>
 
 
                         </div>

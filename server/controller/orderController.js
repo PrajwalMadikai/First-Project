@@ -19,7 +19,7 @@ key_id:process.env.razopay_keyId,
 key_secret:process.env.razopay_keySecret
 })
 
-exports.renderCheckout = async (req, res) => {
+exports.renderCheckout = async (req,res,next) => {
     try {
         let user = await User.findOne({ email: req.session.userAuth });
         let cart = await Cart.findOne({ user_id: user._id }).populate('items.product_id');
@@ -79,7 +79,7 @@ exports.renderCheckout = async (req, res) => {
             discountAmount: discountAmount  
         });
     } catch (error) {
-        console.log("Error rendering checkout:", error);
+        next(error)
         res.status(500).send(`An error occurred: ${error.message}`);
     }
 };
@@ -101,7 +101,7 @@ async function updateProductStock(products, checkProducts) {
             }
         }
     } catch (error) {
-        console.error("Error updating product stock:", error);
+    
         throw error; // Propagate the error to the calling function
     }
 }
@@ -109,7 +109,7 @@ async function updateProductStock(products, checkProducts) {
 
 
 
-exports.placeOrder = async (req, res) => {
+exports.placeOrder = async (req,res,next) => {
     try {
         const { addressId, paymentType, appliedCoupon } = req.body;
 
@@ -278,13 +278,13 @@ exports.placeOrder = async (req, res) => {
             }
         }
     } catch (error) {
-        console.error("Error placing order:", error);
+       next(error)
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
  
  
-exports.verifyPayment = async (req, res) => {
+exports.verifyPayment = async (req,res,next) => {
     try {
         const { razorpayPaymentId, razorpayOrderId, razorpaySignature } = req.body;
 
@@ -332,7 +332,7 @@ exports.verifyPayment = async (req, res) => {
             return res.status(400).json({ success: false, message: "Payment verification failed" });
         }
     } catch (error) {
-        console.error("Error verifying payment:", error);
+      next(error)
         return res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
@@ -365,11 +365,11 @@ exports.verifyPayment = async (req, res) => {
         
 
     } catch (error) {
-        console.log(error);
+     next(error)
         
     }
  }
-exports.orderHistory = async (req, res) => {
+exports.orderHistory = async (req,res,next) => {
     try {
         const user = await User.findOne({ email: req.session.userAuth });
         const currentPage = parseInt(req.query.page) || 1;  
@@ -391,7 +391,7 @@ exports.orderHistory = async (req, res) => {
             totalPages
         });
     } catch (error) {
-        console.log(error);
+     next(error)
     }
 };
 
@@ -410,7 +410,7 @@ exports.removeAddress=async(req,res)=>{
         );
         res.json({success:true,message:"Address Deleted"})
     } catch (error) {
-        console.log(error);
+     next(error)
         
     }
 }
@@ -424,7 +424,7 @@ exports.getupdateAddress=async(req,res)=>{
         res.render("./user/updateAddress",{info,user})
         
     } catch (error) {
-        console.log(error);
+     next(error)
         
     }
 }
@@ -455,12 +455,12 @@ exports.updateAddress=async(req,res)=>{
         res.json({success:true,message:"Address Edited"})
         
     } catch (error) {
-        console.log(error);
+     next(error)
         
     }
 }
 
-exports.deleteOrder = async (req, res) => {
+exports.deleteOrder = async (req,res,next) => {
     try {
         const productId = req.params.id;  
         const ObjectId =new mongoose.Types.ObjectId(productId);   
@@ -476,21 +476,21 @@ exports.deleteOrder = async (req, res) => {
 
         res.redirect('/orders');
     } catch (error) {
-        console.log(error);
+     next(error)
         res.status(500).send('Error deleting order');
     }
 }
 
-exports.getOrderDetail = async (req, res) => {
+exports.getOrderDetail = async (req,res,next) => {
     try {
         const id = req.params.id;
         let user = await User.findOne({ email: req.session.userAuth });
-        let order = await Order.findOne({ userId: user._id, _id: id }).populate('products.productId') 
+        let order = await Order.findOne({ userId: user._id, _id: id })  
 
 
         res.render('./user/orderDetail', { order, user }); 
     } catch (error) {
-        console.log(error);
+     next(error)
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
@@ -500,7 +500,8 @@ exports.returnProduct=async(req,res)=>{
     try {
         const id=req.params.id
         const reason=req.body.returnReason
-        console.log("reason:",reason);
+        console.log('reason:',reason);
+        
         
         let user=await User.findOne({ email: req.session.userAuth });
         await Order.updateOne({userId:user._id,'products._id':id},
@@ -509,12 +510,12 @@ exports.returnProduct=async(req,res)=>{
         res.json({ success: true });
          
     } catch (error) {
-        console.log(error);
+     next(error)
         
     }
 }
  
-exports.cancelProduct = async (req, res) => {
+exports.cancelProduct = async (req,res,next) => {
     try {
         // Convert productId to ObjectId
         const productId =new mongoose.Types.ObjectId(req.params.id);  
@@ -535,10 +536,7 @@ exports.cancelProduct = async (req, res) => {
         let order=await Order.findOne({userId:user._id,'products._id': productId })
         const productInOrder = order.products.find(p => p._id.equals(productId));
         const price = productInOrder.price
-
-        console.log('type:',typeof(price));
-        console.log('price',price);
-        
+ 
         
        await Order.findOneAndUpdate(
             { 
@@ -568,7 +566,7 @@ exports.cancelProduct = async (req, res) => {
         res.json({ success: true, message: "Order cancelled successfully" });
 
     } catch (error) {
-        console.log("Error:", error);
+       next(error)
         res.status(500).json({ success: false, message: "Failed to cancel the order" });
     }
 };
@@ -591,12 +589,12 @@ exports.addRating=async(req,res)=>{
       res.json({success:true, message: 'Rating added successfully' });
     
     } catch (error) {
-        console.log(error);
+     next(error)
         
     }
 }
 
-exports.couponApply = async (req, res) => {
+exports.couponApply = async (req,res,next) => {
     try {
          
 
@@ -645,7 +643,7 @@ exports.couponApply = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error("Error applying coupon:", error);
+        next(error)
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
@@ -662,11 +660,11 @@ exports.removeCoupon=async(req,res)=>{
         await cart.save()
         res.json({success:true,message:"Coupon Removed"})
     } catch (error) {
-        console.log(error);
+     next(error)
         
     }
 }
-exports.getInvoice = async (req, res) => {
+exports.getInvoice = async (req,res,next) => {
     try {
         const id = req.params.id;
         const user = await User.findOne({ email: req.session.userAuth });
@@ -749,7 +747,7 @@ exports.getInvoice = async (req, res) => {
         });
 
     } catch (error) {
-        console.log('Error occurred while downloading invoice:', error);
+        next(error)
         res.status(500).json({ success: false, message: 'Server error occurred' });
     }
 };

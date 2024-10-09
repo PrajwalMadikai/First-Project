@@ -13,7 +13,8 @@ const { log } = require('console')
  
  
 
-exports.getUser = async (req, res) => {
+exports.getUser = async (req,res,next) => {
+    try{
     const currentPage = parseInt(req.query.page) || 1;  
     const itemsPerPage = 3;  
 
@@ -22,41 +23,46 @@ exports.getUser = async (req, res) => {
 
     const totalPages = Math.ceil(totalCustomers / itemsPerPage);  
     res.render('./admin/users', { customers, currentPage, totalPages });
+    }catch(error)
+    {
+        next(error)
+        
+    }
 };
 
-exports.block=async(req,res)=>{  
+exports.block=async(req,res,next)=>{  
     try {
         await user.updateOne({_id: req.params.id},{$set:{isBlock:true}})
          res.redirect('/admin/user')
     } catch (error) {
-        console.log(error);
+        next(error)
         
     }
    
 }
-exports.unblock=async(req,res)=>{  
+exports.unblock=async(req,res,next)=>{  
     try {
         await user.updateOne({_id: req.params.id},{$set:{isBlock:false}})
          res.redirect('/admin/user')
     } catch (error) {
-        console.log(error);
+        next(error)
         
     }
    
 }
 
-exports.delete=async(req,res)=>{
+exports.delete=async(req,res,next)=>{
     try {
         await user.deleteOne({_id:req.params.id})
         req.flash('error',"User has been Deleted")
         res.redirect('/admin/user')
     } catch (error) {
-        console.log(error);
+        next(error)
         
     }
 }
  
-exports.loginGet=async(req,res)=>{
+exports.loginGet=async(req,res,next)=>{
     try {
         if(req.session.admin)
         {
@@ -65,12 +71,12 @@ exports.loginGet=async(req,res)=>{
         res.render('./admin/login')
         }
     } catch (error) {
-        console.log(error);
+        next(error)
         
     }
 }
 
-exports.loginPost=async(req,res)=>{
+exports.loginPost=async(req,res,next)=>{
     try {
         const userData=await user.findOne({isAdmin:true})
     
@@ -92,66 +98,66 @@ exports.loginPost=async(req,res)=>{
         }
 
     } catch (error) {
-        console.log(error);
+        next(error)
         
     }
 }
 
-exports.categoryBlock=async(req,res)=>{  
+exports.categoryBlock=async(req,res,next)=>{  
     try {
         const id=req.params.id
         await category.updateOne({_id: req.params.id},{$set:{isBlock:true}})
         // await product.updateMany({category:req.params.id},{$set:{isBlock:true}})
          res.redirect('/admin/category')
     } catch (error) {
-        console.log(error);
+        next(error)
         
     }
    
 }
 
-exports.categoryunBlock=async(req,res)=>{  
+exports.categoryunBlock=async(req,res,next)=>{  
     try {
         await category.updateOne({_id: req.params.id},{$set:{isBlock:false}})
          res.redirect('/admin/category')
     } catch (error) {
-        console.log(error);
+        next(error)
         
     }
    
 } 
-exports.productBlock=async(req,res)=>{  
+exports.productBlock=async(req,res,next)=>{  
     try {
         await fileUpload.updateOne({_id: req.params.id},{$set:{isBlock:true}})
          res.redirect('/admin/product')
     } catch (error) {
-        console.log(error);
+        next(error)
         
     }
    
 } 
-exports.productUnblock=async(req,res)=>{  
+exports.productUnblock=async(req,res,next)=>{  
     try {
         await fileUpload.updateOne({_id: req.params.id},{$set:{isBlock:false}})
          res.redirect('/admin/product')
     } catch (error) {
-        console.log(error);
+        next(error)
         
     }
    
 } 
 
-exports.loadBrands=async(req,res)=>{
+exports.loadBrands=async(req,res,next)=>{
     try {
         let brands=await Brand.find()
         res.render('./admin/brands',{brands})
         
     } catch (error) {
-        console.log(error);
+        next(error)
         
     }
 }
-exports.addBrands = async (req, res) => {
+exports.addBrands = async (req,res,next) => {
     try {
         const { brandName } = req.body;
         
@@ -170,26 +176,26 @@ exports.addBrands = async (req, res) => {
         await newBrand.save();
         res.json({ success: true, message: "Brand Added" });
     } catch (error) {
-        console.error(error);
+        next(error)
         res.status(500).json({ success: false, message: "An error occurred." });
     }
 };
 
-exports.blockBrand=async(req,res)=>{
+exports.blockBrand=async(req,res,next)=>{
     try {
         let id=req.params.id
-console.log();
+ 
 
         await Brand.findByIdAndUpdate(id,{
             $set:{isBlock:true}
         })
         res.redirect('/admin/brands')
     } catch (error) {
-        console.log(error);
+        next(error)
         
     }
 }
-exports.unblockBrand=async(req,res)=>{
+exports.unblockBrand=async(req,res,next)=>{
     try {
         let id=req.params.id
 
@@ -198,13 +204,13 @@ exports.unblockBrand=async(req,res)=>{
         })
         res.redirect('/admin/brands')
     } catch (error) {
-        console.log(error);
+        next(error)
         
     }
 }
 
 
-exports.deleteBrand=async(req,res)=>{
+exports.deleteBrand=async(req,res,next)=>{
     try {
         let id=req.params.id
         
@@ -212,11 +218,11 @@ exports.deleteBrand=async(req,res)=>{
         res.redirect('/admin/brands')
 
     } catch (error) {
-        console.log(error);
+        next(error)
         
     }
 }
-exports.logout=async(req,res)=>{
+exports.logout=async(req,res,next)=>{
     req.session.destroy((err)=>{
     if(err)
     {
@@ -226,7 +232,7 @@ exports.logout=async(req,res)=>{
 res.redirect('/admin/login')
 }
 
-exports.loadOrder=async(req,res)=>{
+exports.loadOrder=async(req,res,next)=>{
     try {
         const currentPage = parseInt(req.query.page) || 1;  
         const itemsPerPage = 6;  
@@ -238,12 +244,12 @@ exports.loadOrder=async(req,res)=>{
 
         res.render('./admin/orderList',{orders,currentPage,totalPages})
     } catch (error) {
-        console.log(error);
+        next(error)
         
     }
 }
 
-exports.cancelOrder = async (req, res) => {
+exports.cancelOrder = async (req,res,next) => {
     try {
         const productId = req.params.id;  
         const ObjectId =new mongoose.Types.ObjectId(productId);   
@@ -255,12 +261,12 @@ exports.cancelOrder = async (req, res) => {
 
         res.redirect('/admin/orderList');
     } catch (error) {
-        console.log(error);
+        next(error)
         res.status(500).send('Error deleting order');
     }
 }
 
-exports.deliveredOrder=async(req,res)=>{
+exports.deliveredOrder=async(req,res,next)=>{
     try {
         const id=new mongoose.Types.ObjectId(req.params.id)
         const isCod=req.query.cod
@@ -281,12 +287,12 @@ exports.deliveredOrder=async(req,res)=>{
 
         res.redirect('/admin/orderList')
     } catch (error) {
-        console.log(error);
+        next(error)
         
     }
 }
 
-exports.approveReturn=async(req,res)=>{
+exports.approveReturn=async(req,res,next)=>{
     try {
         const id=new mongoose.Types.ObjectId(req.params.id)
         let user=await User.findOne({email: req.session.userAuth})
@@ -321,22 +327,22 @@ exports.approveReturn=async(req,res)=>{
         res.redirect('/admin/orderList')
 
     } catch (error) {
-        console.log(error);
+        next(error)
         
     }
 }
 
-exports.couponLoad=async(req,res)=>{
+exports.couponLoad=async(req,res,next)=>{
     try {
         let coupons=await Coupon.find()
         res.render("./admin/coupon",{coupons})
     } catch (error) {
-        console.log(error);
+        next(error)
         
     }
 }
 
-exports.addCoupon=async(req,res)=>{
+exports.addCoupon=async(req,res,next)=>{
     try {
 
         const { couponCode, discount, startDate, expiryDate, minimumAmount, maximumAmount, description } = req.body; 
@@ -364,23 +370,23 @@ exports.addCoupon=async(req,res)=>{
         res.status(201).json({ message: 'Coupon added successfully!' });
 
     } catch (error) {
-        console.log(error);
+        next(error)
         
     }
 }
 
-exports.editCoupon=async(req,res)=>{
+exports.editCoupon=async(req,res,next)=>{
     try {
         let id =req.params.id
         let coupon=await Coupon.findOne({_id:id})
         res.render('./admin/editCoupon',{coupon})
     } catch (error) {
-        console.log(error);
+        next(error)
         
     }
 }
 
-exports.postEditCoupon = async (req, res) => {
+exports.postEditCoupon = async (req,res,next) => {
     try {
 
         let { couponId, couponCode, description, discount, startDate, expiryDate, minimumAmount, maximumAmount } = req.body;
@@ -400,23 +406,23 @@ exports.postEditCoupon = async (req, res) => {
 
         res.json({ success: true, message: "Coupon updated successfully" });
     } catch (error) {
-        console.log(error);
+        next(error)
         res.status(500).json({ success: false, message: "An error occurred while updating the coupon." });
     }
 };
 
-exports.deleteCoupon=async(req,res)=>{
+exports.deleteCoupon=async(req,res,next)=>{
     try {
         let couponId=req.params.id
 
         await Coupon.findByIdAndDelete(couponId)
         res.json({success:true,message:'Coupon Deleted'})
     } catch (error) {
-        console.log(error);
+        next(error)
         
     }
 }
-exports.offerLoad=async(req,res)=>{
+exports.offerLoad=async(req,res,next)=>{
     try {
         const currentPage = parseInt(req.query.page) || 1;  
         const itemsPerPage = 4;  
@@ -433,12 +439,12 @@ exports.offerLoad=async(req,res)=>{
         let users=await user.find()
         res.render('./admin/offers',{products,offerProductsList,categories,offerCategoryList,user:users,currentPage,totalProductPages})
     } catch (error) {
-        console.log(error);
+        next(error)
         
     }
 }
 
-exports.productOffer = async (req, res) => {
+exports.productOffer = async (req,res,next) => {
     try {
         const { productId, discountPercentage, expirAt } = req.body;
 
@@ -471,14 +477,14 @@ exports.productOffer = async (req, res) => {
 
         res.json({ success: true, message: "Product offer added successfully" });
     } catch (error) {
-        console.log(error);
+        next(error)
         res.status(500).json({ success: false, message: "Error applying product offer" });
     }
 };
 
 
 
-exports.categoryOffer = async (req, res) => {
+exports.categoryOffer = async (req,res,next) => {
     try {
         const { categoryId, discountPercentage, expirAt } = req.body;
         
@@ -495,14 +501,14 @@ exports.categoryOffer = async (req, res) => {
 
         res.json({ success: true });
     } catch (error) {
-        console.log(error);
+        next(error)
         res.status(500).json({ success: false, message: "Error applying category offer" });
     }
 };
 
  
 
-exports.deleteProductOffer = async (req, res) => {
+exports.deleteProductOffer = async (req,res,next) => {
     try {
         let id = req.params.id;
         const product = await fileUpload.findById(id); 
@@ -520,12 +526,12 @@ exports.deleteProductOffer = async (req, res) => {
             res.status(404).json({ success: false, message: "Product not found" });
         }
     } catch (error) {
-        console.log(error);
+        next(error)
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
 
-exports.updateProductOffer = async (req, res) => {
+exports.updateProductOffer = async (req,res,next) => {
     try {
         const { productId,name, discount, date } = req.body;
 
@@ -554,13 +560,13 @@ exports.updateProductOffer = async (req, res) => {
 
         res.json({ success: true, message: "Product offer updated successfully" });
     } catch (error) {
-        console.log("Error during update:", error);
+        next(error)
         res.status(500).json({ success: false, message: "Error updating product offer" });
     }
 };
 
 
-exports.deleteCategoryOffer=async(req,res)=>{
+exports.deleteCategoryOffer=async(req,res,next)=>{
     try {
         let categoryId=req.params.id
 
@@ -577,11 +583,11 @@ exports.deleteCategoryOffer=async(req,res)=>{
         res.json({success:true,message:"Category Offer removed"})
         
     } catch (error) {
-        console.log(error);
+        next(error)
         
     }
 }
-exports.loadSalesReport = async (req, res) => {
+exports.loadSalesReport = async (req,res,next) => {
     try {
         let totalOrders = await Order.countDocuments({ products: { $elemMatch: { status: 'Delivered' } }});
 
@@ -609,14 +615,14 @@ exports.loadSalesReport = async (req, res) => {
             totalDiscount,
         });  
     } catch (error) {
-        console.log(error);
+        next(error)
         res.status(500).send("An error occurred while loading the sales report.");
     }
 };
 
 
 
-exports.postSalesReport = async (req, res) => {
+exports.postSalesReport = async (req,res,next) => {
     const { filterType, startDate, endDate } = req.body;
     let dateFilter = {};
     
@@ -711,13 +717,13 @@ exports.postSalesReport = async (req, res) => {
             filterType
         });
     } catch (error) {
-        console.error('Error fetching sales report:', error);
+        next(error)
         res.status(500).json({ success: false, message: 'Failed to fetch sales report' });
     }
 };
 
  
-exports.getDashboard = async (req, res) => {
+exports.getDashboard = async (req,res,next) => {
     try {
          
         
@@ -815,11 +821,11 @@ exports.getDashboard = async (req, res) => {
 
         res.render('./admin/dashboard', { salesData: totalSalesData, labels, selectedTimeframe: 'monthly',topProducts,topCategorys,topBrands });
     } catch (error) {
-        console.error(error);
+        next(error)
         res.status(500).send("Server Error");
     }
 };
-exports.updateGraphData = async (req, res) => {
+exports.updateGraphData = async (req,res,next) => {
     try {
         const { timeframe } = req.query; // Get timeframe from query params
         const currentYear = new Date().getFullYear();
@@ -889,7 +895,7 @@ exports.updateGraphData = async (req, res) => {
         // Prepare the response data
         res.json(salesData);
     } catch (error) {
-        console.error(error);
+        next(error)
         res.status(500).send("Server Error");
     }
 };

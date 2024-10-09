@@ -92,7 +92,7 @@ exports.editProduct=async (req,res,next)=>{
     }
 
 }
-exports.editProductPut = async (req, res) => {
+exports.editProductPut = async (req, res,next) => {
     const productId = req.params.id;
     const files = req.files;
   

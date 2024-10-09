@@ -1,0 +1,131 @@
+<%- include("../partials/homeHeader") %>
+<%- include("../partials/mainHeader") %>
+
+<div class="container-fluid w-100 mt-5 ps-5 d-flex align-items-center custom-breadcrumb" style="height: 10vh; background-color: #ccc;">
+    <li class="breadcrumb-item" style="list-style: none;"><a href="/home">Home</a>&nbsp;</li>
+    <li class="breadcrumb-item active" aria-current="page" style="list-style: none; max-width: 500px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+     &nbsp; About Us
+    </li>
+</div>
+
+<style>
+    /* Main container styling */
+    .custom-about-section {
+        padding: 50px 0;
+        background-color: #5b6872;
+    }
+
+    /* About information section */
+    .custom-about-info {
+        background-image: url("/public/images/about-bg.png");
+        background-size: cover;
+        color: #fff;
+        padding: 40px;
+        border-radius: 8px 0 0 8px;
+    }
+
+    .custom-about-info h3 {
+        font-weight: bold;
+    }
+
+    .custom-about-info p {
+        margin-bottom: 20px;
+    }
+
+    /* About us content section */
+    .custom-about-content {
+        background-color: #fff;
+        padding: 40px;
+        border-radius: 0 8px 8px 0;
+    }
+
+    .custom-about-content h1 {
+        font-weight: bold;
+    }
+
+    .custom-about-content p {
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    /* Button styling */
+    .custom-about-content button {
+        background-color: #000000;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        transition: background-color 0.3s;
+    }
+
+    .custom-about-content button:hover {
+        background-color: #000000;
+        color: #fff;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .custom-about-info {
+            border-radius: 8px 8px 0 0;
+        }
+
+        .custom-about-content {
+            border-radius: 0 0 8px 8px;
+        }
+    }
+
+    /* Social media icons */
+    .custom-social-icons {
+        margin-top: 20px;
+    }
+
+    .custom-social-icons a {
+        margin-right: 10px;
+        color: #fff;
+        font-size: 1.5rem;
+        transition: color 0.3s;
+    }
+
+    .custom-social-icons a:hover {
+        color: #ddd;
+    }
+</style>
+
+<section class="custom-about-section">
+    <div class="container">
+        <div class="row">
+            <!-- About Information Section -->
+            <div class="col-md-5 custom-about-info">
+                <h3>Our Mission</h3>
+                <p style="color: #fff;">We are committed to delivering the best services and products to our customers. Our mission is to empower people and create solutions that drive growth.</p>
+                <ul>
+                    <li>Over 1 years of experience</li>
+                    <li>Global outreach</li>
+                    <li>Customer-centric services</li>
+                </ul>
+                <div class="custom-social-icons">
+                    <a href="#"><i class="bi bi-twitter"></i></a>
+                    <a href="#"><i class="bi bi-instagram"></i></a>
+                    <a href="#"><i class="bi bi-facebook"></i></a>
+                </div>
+            </div>
+
+            <!-- About Content Section -->
+            <div class="col-md-7 custom-about-content">
+                <h1>About Us</h1>
+                <p>
+                    Founded in 2024, our company has been providing top-notch services across various sectors. We started as a small team of passionate individuals, and now we have grown into a global leader in the industry. Our diverse team works tirelessly to ensure that we remain at the forefront of innovation and customer satisfaction.
+                </p>
+                <p>
+                    We believe in a future where technology and human interaction go hand in hand, and we strive to make that vision a reality through our solutions.
+                </p>
+
+                <div class="d-flex justify-content-end">
+                    <img class="mt-3" src="/public/images/our_team.gif" alt="" style="width: 10ch;">
+                     
+            </div>
+        </div>
+    </div>
+</section>
+
+<%- include("../partials/mainFooter") %>

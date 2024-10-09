@@ -1,0 +1,185 @@
+<%- include("../partials/homeHeader") %>
+<%- include("../partials/mainHeader") %>
+
+<div class="container-fluid w-100   mt-5 ps-5 d-flex align-items-center custom-breadcrumb" style="height: 10vh ;background-color: #ccc;" >
+    <li class="breadcrumb-item" style="list-style: none;"><a href="/home">Home</a>&nbsp;</li>
+    <li class="breadcrumb-item active " aria-current="page" style="list-style: none; max-width: 500px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+     &nbsp; contact
+    </li>
+</div>
+
+<style>
+    /* Main container styling */
+    .custom-contact-section {
+        padding: 50px 0;
+        background-color: #5b6872;
+    }
+
+    /* Contact information section */
+    .custom-contact-info {
+        background-image: url("/public/images/cont.png");
+        background-size: cover;
+        color: #fff;
+        padding: 40px;
+        border-radius: 8px 0 0 8px;
+    }
+
+    .custom-contact-info h3 {
+        font-weight: bold;
+    }
+
+    .custom-contact-info p {
+        margin-bottom: 20px;
+    }
+
+    .custom-contact-info .custom-icon {
+        font-size: 1.5rem;
+        margin-right: 10px;
+    }
+
+    .custom-contact-info ul {
+        list-style: none;
+        padding-left: 0;
+    }
+
+    .custom-contact-info li {
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Contact form section */
+    .custom-contact-form {
+        background-color: #fff;
+        padding: 40px;
+        border-radius: 0 8px 8px 0;
+    }
+
+    .custom-contact-form h1 {
+        font-weight: bold;
+    }
+
+    .custom-contact-form label {
+        font-weight: 500;
+    }
+
+    .custom-contact-form input, 
+    .custom-contact-form textarea {
+        border-radius: 4px;
+    }
+
+    /* Button styling */
+    .custom-contact-form button {
+        background-color: #000000;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        transition: background-color 0.3s;
+    }
+
+    .custom-contact-form button:hover {
+        background-color: #000000;
+        color: #fff;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .custom-contact-info {
+            border-radius: 8px 8px 0 0;
+        }
+
+        .custom-contact-form {
+            border-radius: 0 0 8px 8px;
+        }
+    }
+
+    /* Social media icons */
+    .custom-social-icons {
+        margin-top: 20px;
+    }
+
+    .custom-social-icons a {
+        margin-right: 10px;
+        color: #fff;
+        font-size: 1.5rem;
+        transition: color 0.3s;
+    }
+
+    .custom-social-icons a:hover {
+        color: #ddd;
+    }
+</style>
+
+<section class="custom-contact-section">
+    <div class="container">
+        <div class="row">
+            <!-- Contact Information Section -->
+            <div class="col-md-5 custom-contact-info">
+                <h3>Contact Information</h3>
+                <p>Say something to start a live chat!</p>
+                <ul>
+                    <li><i class="custom-icon bi bi-telephone-fill"></i> +1012 3456 789</li>
+                    <li><i class="custom-icon bi bi-envelope-fill"></i> demo@gmail.com</li>
+                    <li><i class="custom-icon bi bi-geo-alt-fill"></i> 132 Dartmouth Street Boston, Massachusetts 02156 United States</li>
+                </ul>
+                <div class="custom-social-icons">
+                    <a href="#"><i class="bi bi-twitter"></i></a>
+                    <a href="#"><i class="bi bi-instagram"></i></a>
+                    <a href="#"><i class="bi bi-facebook"></i></a>
+                </div>
+            </div>
+
+            <!-- Contact Form Section -->
+            <div class="col-md-7 custom-contact-form">
+                <h1>Contact Us</h1>
+                <p>Any question or remarks? Just write us a message!</p>
+                <form>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="firstName">First Name</label>
+                            <input type="text" class="form-control" id="firstName" placeholder="First Name">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" class="form-control" id="lastName" placeholder="Last Name">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" id="email" placeholder="Email">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="phoneNumber">Phone Number</label>
+                            <input type="text" class="form-control" id="phoneNumber" placeholder="+1 012 3456 789">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label>Select Subject?</label>
+                        <div>
+                            <input type="radio" id="generalInquiry" name="subject" checked>
+                            <label for="generalInquiry">General Inquiry</label>
+                        </div>
+                        <div>
+                            <input type="radio" id="generalFeedback" name="subject">
+                            <label for="generalFeedback">General Feedback</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="message">Message</label>
+                        <textarea id="message" class="form-control" rows="4" placeholder="Write your message..."></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <img class="mt-3" src="/public/images/Wikimania2023_Animated_Sticker_Airplane (2).gif" alt="" style="width: 10ch;">
+                        <div>
+                            <button type="submit" class="btn custom-btn">Send Message</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+<%- include("../partials/mainFooter") %>

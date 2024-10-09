@@ -23,11 +23,11 @@ const transporter = nodemailer.createTransport({
     }
   });
 
-exports.signGet=async(req,res)=>{
+exports.signGet=async(req,res,next)=>{
     res.render('./user/signup')
 }
 
-exports.signPost=async(req,res)=>{
+exports.signPost=async(req,res,next)=>{
 
   try {
        const {firstName,lastName,email,phone,password,refferal}=req.body  
@@ -114,7 +114,7 @@ exports.signPost=async(req,res)=>{
        res.redirect('/otp-page')
 
     } catch (error) {
-        console.log(error);
+       next(error)
         
     }
 }
@@ -122,15 +122,15 @@ exports.signPost=async(req,res)=>{
  
 
 
-exports.otpPage=async (req,res)=>{
+exports.otpPage=async (req,res,next)=>{
     try {
         res.render('./user/otp') 
         } catch (error) {
-        console.log(error);
+       next(error)
         }
 }
 
-exports.otpPost=async (req,res)=>{
+exports.otpPost=async (req,res,next)=>{
     try {
          let otpFinder=await userOtpVerification.findOne({ email:req.session.userEmail})
 
@@ -146,21 +146,21 @@ exports.otpPost=async (req,res)=>{
             res.redirect('/otp-page')
          }
         } catch (error) {
-        console.log(error);
+       next(error)
         
         }
 }
 
-exports.forgotGet=async (req,res)=>{
+exports.forgotGet=async (req,res,next)=>{
      try {
 
         res.render('./user/email')
      } catch (error) {
-        console.log(error);
+       next(error)
         
      }
 }
-exports.forgotPost=async(req,res)=>{
+exports.forgotPost=async(req,res,next)=>{
      
         req.session.userEmail=req.body.email
 
@@ -201,19 +201,19 @@ exports.forgotPost=async(req,res)=>{
                 }
         
     } catch (error) {
-        console.log(error);
+       next(error)
     }
 }
-exports.emailVerifyGet=async(req,res)=>{
+exports.emailVerifyGet=async(req,res,next)=>{
     try {
          
         res.render("./user/emailVerification")
     } catch (error) {
-        console.log(error);
+       next(error)
         
     }
 }
-exports.emailVerifyPost=async(req,res)=>{
+exports.emailVerifyPost=async(req,res,next)=>{
     try {
         let user=await userOtpVerification.findOne({email:req.session.userEmail})
         console.log('verify User:',user);
@@ -226,21 +226,21 @@ exports.emailVerifyPost=async(req,res)=>{
             res.redirect('/emailcode')
         }
     } catch (error) {
-        console.log(error);
+       next(error)
         
     }
 }
 
-exports.newPassGet=async(req,res)=>{
+exports.newPassGet=async(req,res,next)=>{
    try {
          
         res.render("./user/changePassword")
    } catch (error) {
-    console.log(error);
+   next(error)
     
    }
 }
-exports.newPassPatch=async(req,res)=>{
+exports.newPassPatch=async(req,res,next)=>{
     try {
         let user=await User.find({email:req.session.emailVerification})
         let newPass=req.body.password;
@@ -254,12 +254,12 @@ exports.newPassPatch=async(req,res)=>{
 
         
     } catch (error) {
-        console.log(error);
+       next(error)
         
     }
 }
 
-exports.otpResent=async(req,res)=>{
+exports.otpResent=async(req,res,next)=>{
     try {
         let user=await User.findOne({email:req.session.userEmail})
         const otp=`${Math.floor(1000+Math.random()*9000)}`;
@@ -291,12 +291,12 @@ exports.otpResent=async(req,res)=>{
 
        console.log("OTP Resented");
     } catch (error) {
-        console.log(error);
+       next(error)
         
     }
 }
 
-exports.otpResentPost=async(req,res)=>{
+exports.otpResentPost=async(req,res,next)=>{
     try {
         let otpFinder=await userOtpVerification.findOne({ email:req.session.userEmail})
 
@@ -313,12 +313,12 @@ exports.otpResentPost=async(req,res)=>{
         }
         
     } catch (error) {
-        console.log(error);
+       next(error)
         
     }
 }
  
-exports.loginGet=async(req,res)=>{
+exports.loginGet=async(req,res,next)=>{
     if(req.session.user)
     {
         res.redirect('/')
@@ -327,7 +327,7 @@ exports.loginGet=async(req,res)=>{
     }
 }
 
-exports.loginPost=async(req,res)=>{
+exports.loginPost=async(req,res,next)=>{
     try {
         let findUser = await user.findOne({ email: req.body.email });
 
@@ -355,7 +355,7 @@ exports.loginPost=async(req,res)=>{
         )
         res.cookie('token',token,{httpOnly:true})
 
-        if(isMatch && findUser.isAdmin==false && findUser.isBlock==false || req.session.isBlock==false){
+        if(isMatch && findUser.isAdmin==false && findUser.isBlock==false && req.session.isBlock==false){
             req.session.user=findUser.email
         
             res.redirect('/')
@@ -368,22 +368,24 @@ exports.loginPost=async(req,res)=>{
             res.redirect('/login')
         }
     } catch (error) {
-        console.log(error); 
+       next(error) 
         
     }
     
 }
  
- exports.homeGet=async(req,res)=>{
+ exports.homeGet=async(req,res,next)=>{
     try{
        let user=await User.findOne({email:req.session.user})
        let product = await productSchema.find().limit(8);
        let latestProducts = await productSchema.find().sort({ createdAt: -1 }).limit(4); 
+      
+
         res.render("./user/home",{user,product,latestProducts})
        
     }catch(error)
     {
-        console.log(error);
+       next(error)
         
     }
  }
@@ -493,7 +495,7 @@ exports.loginPost=async(req,res)=>{
         });
 
     } catch (error) {
-        console.log(error);
+       next(error)
         res.status(500).send('Server error');
     }
 };
@@ -501,7 +503,7 @@ exports.loginPost=async(req,res)=>{
 
 
 
- exports.filterProduct=async(req,res)=>{
+ exports.filterProduct=async(req,res,next)=>{
     try {
         const selectedCategories = req.query.categories ? req.query.categories.split(',') : [];
         const selectedBrands = req.query.brands ? req.query.brands.split(',') : [];
@@ -528,7 +530,7 @@ exports.loginPost=async(req,res)=>{
 
         res.json({ products });
     } catch (error) {
-        console.log('Error fetching filtered products:', error);
+       next(error)
         res.status(500).json({ message: 'Internal server error' });
     }
  }
@@ -554,7 +556,7 @@ exports.loginPost=async(req,res)=>{
 
 
 
- exports.logout=async(req,res)=>{
+ exports.logout=async(req,res,next)=>{
     try {
         req.session.destroy(err => {
             if (err) {
@@ -565,7 +567,7 @@ exports.loginPost=async(req,res)=>{
         
         res.redirect('/')
     } catch (error) {
-        console.log(error);
+       next(error)
         
     }
  } 

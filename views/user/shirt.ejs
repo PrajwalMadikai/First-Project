@@ -70,7 +70,7 @@
 
 .bn {
     background-color: white;
-    border-color: black;
+    border-color: rgb(0, 0, 0);
 }
 
 .btn-sm {
@@ -190,7 +190,7 @@
                         <% product.forEach(element => { %>
                             <div class="col-md-4 mb-4"> <!-- Each product in a column -->
                                 <a href="/product/<%= element._id %>" style="text-decoration: none; color: inherit;">
-                                    <div class="card h-100 d-flex flex-column">
+                                    <div class="card h-100 d-flex flex-column  ">
                                         <div class="image-container position-relative">
                                             <img src="/public/product_img/<%= element.image.image1 %>" class="card-img-top product-image" alt="Product Image">
                                             <div class="overlay d-flex justify-content-center align-items-center"></div>
@@ -262,7 +262,7 @@
       </div>
       </section>
     
-    <!--? Search model Begin -->
+    <!-- ? Search model Begin
     <div class="search-model-box">
         <div class="h-100 d-flex align-items-center justify-content-center">
             <div class="search-close-btn">+</div>
@@ -270,7 +270,7 @@
                 <input type="text" id="search-input" placeholder="Searching key.....">
             </form>
         </div>
-    </div>
+    </div> -->
     <%- include("../partials/mainFooter") %>
  <script>
     async function addToCart(productId) {

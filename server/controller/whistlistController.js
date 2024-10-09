@@ -2,7 +2,7 @@ const Whistlist=require('../model/wishlist')
 const Product=require('../model/productSchema')
 const User=require('../model/userSchema')
 
-exports.loadWhistlist = async (req, res) => {
+exports.loadWhistlist = async (req,res,next) => {
     try {
         let user = await User.findOne({ email: req.session.userAuth });
  
@@ -15,7 +15,7 @@ exports.loadWhistlist = async (req, res) => {
 
         res.render('./user/wishlist', { wishlist: wishlist.items, user ,count});
     } catch (error) {
-        console.error(error);
+        next(error)
         res.status(500).send('Internal Server Error');
     }
 };
@@ -23,7 +23,7 @@ exports.loadWhistlist = async (req, res) => {
 
  
 
-exports.addWhistlist = async (req, res) => {
+exports.addWhistlist = async (req,res,next) => {
     try {
         const { productId } = req.body;
 
@@ -67,7 +67,7 @@ exports.addWhistlist = async (req, res) => {
             return res.json({ success: true, message: "Product added to Wishlist", newItem: true });
         }
     } catch (error) {
-        console.error(error);
+        next(error)
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
@@ -84,7 +84,7 @@ exports.deleteWhistlist=async(req,res)=>{
          res.json({success:true,message:"deleted"})
 
     } catch (error) {
-        console.log(error);
+      next(error)
         
     }
 }

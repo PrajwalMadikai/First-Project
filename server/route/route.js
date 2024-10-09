@@ -114,7 +114,8 @@ router.get('/wishlist',isAuthenticate.isLogin,whistlistController.loadWhistlist)
 router.post('/wishlist/:id',isAuthenticate.isLogin,whistlistController.addWhistlist)
 router.post('/wishlist-delete/:id',isAuthenticate.isLogin,whistlistController.deleteWhistlist)
 
-
+router.get('/contact',profileController.getContact)
+router.get('/about',profileController.getabout)
 
 router.get('/logout',isAuthenticate.isLogin,controller.logout) 
 

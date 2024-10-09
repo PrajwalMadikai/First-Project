@@ -25,7 +25,7 @@ app.use("/public", express.static(path.join(__dirname, "/public")));
 
 app.set('views', path.join(__dirname, 'views'));
   
-app.use(session({ 
+app.use(session({
     secret: 'secretkey',
     resave:false, 
     saveUninitialized:false ,
@@ -35,6 +35,8 @@ app.use((req,res,next)=>{
     res.locals.message=req.flash()
     next()
 })
+
+ 
 app.use(cartMiddleware);  
 app.use(wishlistMiddleware); 
 app.use(errorHandler); 
@@ -60,5 +62,9 @@ app.use((req, res, next) => {
  
 app.use('/',require("./server/route/route"))
 app.use('/admin',adminRoute)
+
+app.use((req, res, next) => {
+    res.status(404).render('./partials/404'); // Render the 404 EJS page
+});
  
 app.listen(port,()=>{console.log(`http://localhost:${port}`);})  

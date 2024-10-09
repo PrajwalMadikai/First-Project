@@ -6,7 +6,7 @@ const { default: mongoose } = require('mongoose');
 const Wishlist = require('../model/wishlist');
 
 
-exports.addCart = async (req, res) => {
+exports.addCart = async (req,res,next) => {
   try {
       const id =new  mongoose.Types.ObjectId(req.params.id); 
       const quantity = req.body.quantity; 
@@ -76,14 +76,14 @@ exports.addCart = async (req, res) => {
 
       return res.status(200).json({ success: true, message: "Item added to cart" });
   } catch (error) {
-      console.log(error);
+      next(error)
       return res.status(500).json({ success: false, message: "Error adding item to cart" });
   }
 };
 
  
 
-exports.getCart = async (req, res) => {
+exports.getCart = async (req,res,next) => {
     try {
         let user = await User.findOne({ email: req.session.user });
         let cart = await Cart.findOne({ user_id: user._id }).populate('items.product_id');
@@ -152,7 +152,7 @@ exports.getCart = async (req, res) => {
             discountAmount: discountAmount.toFixed(2) // Ensure 2 decimal places for discount amount
         });
     } catch (error) {
-        console.error("Error fetching cart:", error);
+       next(error)
         res.status(500).send("An error occurred while retrieving the cart.");
     }
 };
@@ -187,6 +187,7 @@ exports.updateCart=async(req,res)=>{
                 }
     
     } catch (error) {
+        next(error)
       res.status(500).json({message:"An error Occurred"})
     }
 }
@@ -211,7 +212,7 @@ exports.deleteCart=async(req,res)=>{
         res.json({success:true,message:"Item removed successfully"})
    
     } catch (error) {
-        console.log(error);
+        next(error)
         
     }
 }

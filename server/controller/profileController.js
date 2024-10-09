@@ -4,7 +4,7 @@ const Order=require('../model/order')
 const Wallet=require('../model/wallet')
 const crypto = require('crypto');
 
-exports.getProfile=async(req,res)=>{
+exports.getProfile=async(req,res,next)=>{
     try {
         let user=await User.findOne({email: req.session.userAuth})
         const info = await Address.find({ userId: user._id })
@@ -14,9 +14,7 @@ exports.getProfile=async(req,res)=>{
             let newWallet=new Wallet({
                 userId:user._id,
                 balance:0,
-                wallet_history:{
-                    amount:0
-                }
+                 
             })
             await Wallet.create(newWallet)
         }
@@ -28,16 +26,16 @@ exports.getProfile=async(req,res)=>{
         }
         
          
-        res.render('./user/profile', { user,info,wallet,walletHistory:wallet.wallet_history});
+        res.render('./user/profile', { user,info,wallet});
         
     } catch (error) {
-        console.log(error);
+       next(error)
         
     }
  }
  
 
- exports.editProfile=async(req,res)=>{
+ exports.editProfile=async(req,res,next)=>{
     try {
         const {firstName,email,phone}=req.body
         let user=await User.findOne({email: req.session.userAuth})
@@ -54,21 +52,21 @@ exports.getProfile=async(req,res)=>{
         res.redirect('/profile')
         
     } catch (error) {
-        console.log(error);
+       next(error)
         
     }
  }
- exports.loadAddress=async(req,res)=>{
+ exports.loadAddress=async(req,res,next)=>{
     
     try {
         let user=await User.findOne({email: req.session.userAuth})
         res.render("./user/address",{user})
     } catch (error) {
-        console.log(error);
+       next(error)
         
     }
  }
- exports.postAddress=async(req,res)=>{
+ exports.postAddress=async(req,res,next)=>{
     try {
         
            let name=req.body.name
@@ -113,12 +111,12 @@ exports.getProfile=async(req,res)=>{
         res.status(200).json({success:true,message:"Address Added"})
         
     } catch (error) {
-        console.log(error);
+       next(error)
         
     }
  }
 
- exports.getEditAddress=async(req,res)=>{
+ exports.getEditAddress=async(req,res,next)=>{
     try {
         let id=req.params.id
         let user=await User.findOne({email:req.session.userAuth})
@@ -132,12 +130,12 @@ exports.getProfile=async(req,res)=>{
         
         res.render('./user/editAddress',{address,user})
     } catch (error) {
-        console.log(error);
+       next(error)
         
     }
  }
 
- exports.postEditAddress = async (req, res) => {
+ exports.postEditAddress = async (req, res,next) => {
     try {
         let id = req.params.id;
       
@@ -166,13 +164,13 @@ exports.getProfile=async(req,res)=>{
         
         res.redirect('/profile');
     } catch (error) {
-        console.log(error);
+       next(error)
         res.status(500).send('Internal Server Error');
     }
 };
 
 
- exports.deleteAddress=async(req,res)=>{
+ exports.deleteAddress=async(req,res,next)=>{
     try {
         let id=req.params.id
         
@@ -188,9 +186,27 @@ exports.getProfile=async(req,res)=>{
         
        res.json({success:true,message:"Deleted successfully"})
     } catch (error) {
-        console.log(error);
+       next(error)
         
     }
  }
+
+ exports.getContact=async(req,res,next)=>{
+    try {
+        res.render('./user/contact')
+    } catch (error) {
+       next(error)
+        
+    }
+ }
+ exports.getabout=async(req,res,next)=>{
+    try {
+        res.render('./user/about')
+    } catch (error) {
+       next(error)
+        
+    }
+ }
+
 
  
