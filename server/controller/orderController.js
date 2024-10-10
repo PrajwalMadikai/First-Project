@@ -665,7 +665,7 @@ exports.removeCoupon=async(req,res)=>{
     }
 }
 exports.getInvoice = async (req,res,next) => {
-    try {
+     
         const id = req.params.id;
         const user = await User.findOne({ email: req.session.userAuth });
         const order = await Order.findOne({ userId: user._id, _id: id });
@@ -729,25 +729,33 @@ exports.getInvoice = async (req,res,next) => {
             </html>
         `;
 
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-        await page.setContent(htmlContent);
-        const pdfFilePath = path.join(__dirname, 'invoices', `invoice.pdf`);
-        await page.pdf({ path: pdfFilePath, format: 'A4' });
-
-        await browser.close();
-
-        // Send the PDF as response
-        res.setHeader('Content-Disposition', `attachment; filename=invoice.pdf`);
-        res.setHeader('Content-Type', 'application/pdf');
-        res.download(pdfFilePath, (err) => {
-            if (err) {
-                console.error('Download error:', err);
-            }
-        });
-
-    } catch (error) {
-        next(error)
-        res.status(500).json({ success: false, message: 'Server error occurred' });
-    }
+        try {
+            const browser = await puppeteer.launch();
+            const page = await browser.newPage();
+    
+            // Set the content of the page to the HTML string
+            await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+    
+            // Define the path where the PDF will be saved
+            const pdfFilePath = path.join(__dirname, 'invoices', `invoice.pdf`);
+    
+            // Create the PDF
+            await page.pdf({ path: pdfFilePath, format: 'A4' });
+    
+            // Close the browser
+            await browser.close();
+    
+            // Send the PDF as response
+            res.setHeader('Content-Disposition', `attachment; filename=invoice.pdf`);
+            res.setHeader('Content-Type', 'application/pdf');
+            res.download(pdfFilePath, (err) => {
+                if (err) {
+                    console.error('Download error:', err);
+                }
+            });
+        } catch (error) {
+            next(error)
+            res.status(500).send('Error generating PDF');
+        }
+     
 };
