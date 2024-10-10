@@ -8,6 +8,7 @@ const Razorpay=require('razorpay')
 const mongoose=require('mongoose')
 const Wallet = require('../model/wallet')
 const puppeteer = require('puppeteer');
+const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const wallet = require('../model/wallet')
@@ -730,22 +731,29 @@ exports.getInvoice = async (req,res,next) => {
         `;
 
         try {
-            const browser = await puppeteer.launch();
+            const browser = await puppeteer.launch({
+                headless: true,
+                args: [
+                  '--no-sandbox',
+                  '--disable-setuid-sandbox',
+                  '--disable-dev-shm-usage',
+                  '--disable-accelerated-2d-canvas',
+                  '--disable-gpu'
+                ],
+              });
             const page = await browser.newPage();
-    
-            // Set the content of the page to the HTML string
             await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-    
-            // Define the path where the PDF will be saved
-            const pdfFilePath = path.join(__dirname, 'invoices', `invoice.pdf`);
-    
-            // Create the PDF
+        
+            const invoicesDir = path.join(__dirname, 'invoices');
+
+            if (!fs.existsSync(invoicesDir)) {
+              fs.mkdirSync(invoicesDir);
+            }
+            
+            const pdfFilePath = path.join(invoicesDir, `invoice.pdf`);
             await page.pdf({ path: pdfFilePath, format: 'A4' });
-    
-            // Close the browser
             await browser.close();
-    
-            // Send the PDF as response
+        
             res.setHeader('Content-Disposition', `attachment; filename=invoice.pdf`);
             res.setHeader('Content-Type', 'application/pdf');
             res.download(pdfFilePath, (err) => {
@@ -754,8 +762,9 @@ exports.getInvoice = async (req,res,next) => {
                 }
             });
         } catch (error) {
-            next(error)
+            console.error('Error generating PDF:', error);
             res.status(500).send('Error generating PDF');
         }
+        
      
 };

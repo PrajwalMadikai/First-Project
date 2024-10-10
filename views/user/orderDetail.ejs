@@ -84,7 +84,9 @@
   display: flex; /* Make the boxes align horizontally */
   gap: 10px; /* Add space between boxes */
 }
-
+.b1{
+  height: 20px;
+}
 .box {
   display: flex;
   align-items: center;
@@ -159,18 +161,14 @@
               </div>
               <div><%= product.quantity %></div>
               <div>₹<%= product.price %></div>
-              <div class="badge 
-                <% if (product.status === 'Delivered') { %> 
-                badge-success 
-                <% } else if (product.status === 'Cancelled') { %> 
-                badge-danger 
-                <% } else if (product.status === 'Pending') { %> 
-                badge-warning
-                <% } else { %> 
-                badge-primary 
-                <% } %>">
-                <%= product.status %>
-              </div>
+              <div class="badge b1 
+              <%= product.status === 'Delivered' ? 'badge-success' : 
+                  product.status === 'Cancelled' ? 'badge-danger' : 
+                  product.status === 'Pending' ? 'badge-warning' : 
+                  'badge-primary' %>">
+              <%= product.status %>
+            </div>
+            
             </div>
             <hr>
             <div class="progress">
@@ -463,10 +461,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
       switch (orderStatus) {
           case 'Pending':
-              progressPercentage = 20;
+              progressPercentage = 10;
               break;
           case 'Requested':
-              progressPercentage = 50;
+              progressPercentage = 30;
+              barColor='#0d6efd'
               
               break;
           
@@ -475,12 +474,12 @@ document.addEventListener("DOMContentLoaded", function () {
               barColor='green'
               break;
           case 'Cancelled':
-              progressPercentage = 80;
-              barColor = "red";
+              progressPercentage = 70;
+              barColor = "#dc3545";
               break;
           case 'Returned':
               progressPercentage = 50;
-              barColor = "blue";
+              barColor = "#0d6efd";
               break;
           default:
               progressPercentage = 0;
