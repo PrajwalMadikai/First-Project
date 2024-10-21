@@ -133,7 +133,7 @@
    <div class="d-flex justify-content-between mt-2">
     <h5 class="font-weight-bold  text-danger container">Order Detail</h5>
       <!-- Invoice Download Button -->
-      <% if (order.products.paymentStatus === 'Success') { %> 
+      <% if (order.products[0].paymentStatus === 'Success') { %> 
       <div>
         <a href="/download-invoice/<%= order._id %>">
           <button class="inBtn">Download Invoice</button>
