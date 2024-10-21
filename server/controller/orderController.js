@@ -734,13 +734,16 @@ exports.getInvoice = async (req,res,next) => {
             const browser = await puppeteer.launch({
                 headless: true,
                 args: [
-                  '--no-sandbox',
-                  '--disable-setuid-sandbox',
-                  '--disable-dev-shm-usage',
-                  '--disable-accelerated-2d-canvas',
-                  '--disable-gpu'
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--disable-dev-shm-usage',
+                    '--disable-accelerated-2d-canvas',
+                    '--disable-gpu',
+                    '--single-process',
+                    '--disable-software-rasterizer'
                 ],
-              });
+            });
+            
             const page = await browser.newPage();
             await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
         

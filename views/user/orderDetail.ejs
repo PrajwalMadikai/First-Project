@@ -133,11 +133,13 @@
    <div class="d-flex justify-content-between mt-2">
     <h5 class="font-weight-bold  text-danger container">Order Detail</h5>
       <!-- Invoice Download Button -->
+      <% if (order.products.paymentStatus === 'Success') { %> 
       <div>
         <a href="/download-invoice/<%= order._id %>">
           <button class="inBtn">Download Invoice</button>
         </a>
       </div>
+      <% } %>
     </div>
     <% order.products.forEach((product) => { %>
       <div class="box-shadow col-lg-12 d-flex container pr-4 my-4 border border-1 shadow-md rounded-lg">
@@ -505,7 +507,9 @@ document.addEventListener("DOMContentLoaded", function () {
           
           <li class="text text-start">Total Mrp <span class="order_summary" id="">₹ <%= order.totalAmount +order.discounted_price%></span></li>
           <li class="">Discound On MRP <span class="text-success" id=""> <%= order.discounted_price?'₹'+ order.discounted_price :'' %></span></li>
+          <% if(order.coupon_name){ %>
           <li class="">Coupon Name <span class="text-success" id="cart-total"> <%= order.coupon_name %></span></li>
+          <% } %>
           <li class="">Total Amound <span id="cart-total">₹ <%= order.totalAmount %></span></li>
       </ul>
       
