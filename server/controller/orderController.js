@@ -378,7 +378,7 @@ exports.orderHistory = async (req,res,next) => {
         const totalOrders = await Order.countDocuments({ userId: user._id});  
         const orders = await Order.find({ userId: user._id })
         .populate('products.productId')    
-        .sort({ orderDate: 1 })         
+        .sort({ orderDate: -1 })         
         .skip((currentPage - 1) * itemsPerPage)   
         .limit(itemsPerPage);             
 

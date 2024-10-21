@@ -6,7 +6,7 @@ const env=require('dotenv').config()
 passport.use(new googleStrategy({
     clientID:process.env.CLIENT_ID,
     clientSecret:process.env.CLIENT_SECRET,
-    callbackURL:'http://localhost:3000/auth/google/callback',
+    callbackURL:'https://trendview.tech/auth/google/callback',
     
 },
 async (accessToken,refreshToken,profile,done)=>{
