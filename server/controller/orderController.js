@@ -667,32 +667,49 @@ exports.removeCoupon=async(req,res)=>{
 }
 exports.getInvoice = async (req, res, next) => {
     try {
+        console.log("Request params:", req.params); // Log request parameters
 
-    const id = req.params.id;
-    const user = await User.findOne({ email: req.session.userAuth });
+        const id = req.params.id;
+        
+        // Find user by email from session
+        const user = await User.findOne({ email: req.session.userAuth });
+        if (!user) {
+            console.error("User not found");
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+        
+        // Find the order based on user ID and order ID
+        const order = await Order.findOne({ userId: user._id, _id: id });
+        if (!order) {
+            console.error("Order not found");
+            return res.status(404).json({ success: false, message: "Order not found" });
+        }
 
-    const order = await Order.findOne({ userId: user._id, _id: id });
+        let address = order.address[0];
+        console.log("Address:", address); // Log address for verification
 
-    let address = order.address[0];
+        // Create invoices directory if it doesn't exist
+        const invoicesDir = path.join(__dirname, 'invoices');
+        if (!fs.existsSync(invoicesDir)) {
+            fs.mkdirSync(invoicesDir, { recursive: true }); // Use recursive option for nested directories
+        }
 
-   const invoicesDir = path.join(__dirname, 'invoices');
-    if (!fs.existsSync(invoicesDir)) {
-        fs.mkdirSync(invoicesDir, { recursive: true }); // Use recursive option for nested directories
-    }
-    const pdfFilePath = path.join(invoicesDir, `invoice_${id}.pdf`);
+        const pdfFilePath = path.join(invoicesDir, `invoice_${id}.pdf`);
 
-    
+        // Initialize PDF document
         const doc = new PDFDocument({ size: 'A4', margin: 40 });
-
         res.setHeader('Content-Disposition', `attachment; filename=invoice_${id}.pdf`);
         res.setHeader('Content-Type', 'application/pdf');
 
+        // Pipe the PDF to a file and the response
         doc.pipe(fs.createWriteStream(pdfFilePath));
         doc.pipe(res);
 
+        // Write PDF content
         doc.fontSize(16).text('Invoice', { align: 'center' });
         doc.moveDown(1);
 
+        // Shipping Address
         doc.fontSize(12).text('Shipping Address', { underline: true });
         doc.fontSize(10).text(`${user.firstName} ${user.lastName}`);
         doc.text(`${address.house}, ${address.city}, ${address.district} - ${address.pin}`);
