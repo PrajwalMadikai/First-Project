@@ -7,7 +7,7 @@ const Product=require('../model/productSchema')
 const Razorpay=require('razorpay')
 const mongoose=require('mongoose')
 const Wallet = require('../model/wallet')
-const puppeteer = require('puppeteer');
+const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
@@ -665,111 +665,96 @@ exports.removeCoupon=async(req,res)=>{
         
     }
 }
-exports.getInvoice = async (req,res,next) => {
-     
-        const id = req.params.id;
-        const user = await User.findOne({ email: req.session.userAuth });
-        const order = await Order.findOne({ userId: user._id, _id: id });
-        let address = order.address[0];
+exports.getInvoice = async (req, res, next) => {
+    const id = req.params.id;
 
-        const htmlContent = `
-            <html>
-            <head>
-                <style>
-                    body { font-family: Arial, sans-serif; margin: 20px; }
-                    .invoice-header { text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 20px; }
-                    .address, .item-details, .totals { margin-bottom: 20px; }
-                    .item-table { width: 100%; border-collapse: collapse; }
-                    .item-table th, .item-table td { border: 1px solid black; padding: 8px; text-align: left; }
-                    .totals { text-align: right; }
-                </style>
-            </head>
-            <body>
-                <div class="invoice-header">Invoice</div>
-                
-                <div class="address">
-                    <h3>Shipping Address:</h3>
-                    <p>${user.firstName}<br>
-                    ${address.house}, ${address.city}, ${address.district} - ${address.pin}<br>
-                    Phone: ${address.phone}<br>
-                    Email: ${user.email}</p>
-                </div>
+    const user = await User.findOne({ email: req.session.userAuth });
 
-                <div class="item-details">
-                    <h3>Item Details:</h3>
-                    <table class="item-table">
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Product Name</th>
-                            <th>Quantity</th>
-                            <th>Price</th>
-                            ${order.discounted_price ? "<th>Discount</th>" : ""}
-                            <th>Total</th>
-                        </tr>
-                        ${order.products.map(product => `
-                            <tr>
-                                <td>${order.orderNumber}</td>
-                                <td>${product.name}</td>
-                                <td>${product.quantity}</td>
-                                <td>₹${product.price}</td>
-                                ${order.discounted_price ? `<td>₹${order.discounted_price}</td>` : ""}
-                                <td>₹${(product.price - (order.discounted_price || 0)) * product.quantity}</td>
-                            </tr>
-                        `).join('')}
-                    </table>
-                </div>
+    const order = await Order.findOne({ userId: user._id, _id: id });
 
-                <div class="totals">
-                    <p>Total Amount: ₹${order.totalAmount - order.delivery_charges}<br>
-                    ${order.discounted_price ? `Discount Amount: ₹${order.discounted_price} <br>` : ""} 
-                    Delivery Charge: ₹${order.delivery_charges}<br>
-                    Paid Amount : ₹${order.totalAmount-order.discounted_price}
-                    </p>
-                </div>
-            </body>
-            </html>
-        `;
+    let address = order.address[0];
 
-        try {
-            const browser = await puppeteer.launch({
-                headless: true,
-                args: [
-                  '--no-sandbox',
-                  '--disable-setuid-sandbox',
-                  '--disable-dev-shm-usage',
-                  '--disable-accelerated-2d-canvas',
-                  '--disable-gpu',
-                  '--single-process',
-                  '--disable-software-rasterizer',
-                  '--disable-web-security',
-                  '--disable-features=IsolateOrigins,site-per-process'
-                ],
-              });
-              
-            const page = await browser.newPage();
-            await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-        
-            const invoicesDir = path.join(__dirname, 'invoices');
+    const invoicesDir = path.join(__dirname, 'invoices');
+    if (!fs.existsSync(invoicesDir)) {
+        fs.mkdirSync(invoicesDir);
+    }
+    const pdfFilePath = path.join(invoicesDir, `invoice_${id}.pdf`);
 
-            if (!fs.existsSync(invoicesDir)) {
-              fs.mkdirSync(invoicesDir);
-            }
-            
-            const pdfFilePath = path.join(invoicesDir, `invoice.pdf`);
-            await page.pdf({ path: pdfFilePath, format: 'A4' });
-            await browser.close();
-        
-            res.setHeader('Content-Disposition', `attachment; filename=invoice.pdf`);
-            res.setHeader('Content-Type', 'application/pdf');
-            res.download(pdfFilePath, (err) => {
-                if (err) {
-                    console.error('Download error:', err);
-                }
-            });
-        } catch (error) {
-            console.error('Error generating PDF:', error);
-            res.status(500).send('Error generating PDF');
+    try {
+        const doc = new PDFDocument({ size: 'A4', margin: 40 });
+
+        res.setHeader('Content-Disposition', `attachment; filename=invoice_${id}.pdf`);
+        res.setHeader('Content-Type', 'application/pdf');
+
+        doc.pipe(fs.createWriteStream(pdfFilePath));
+        doc.pipe(res);
+
+        doc.fontSize(16).text('Invoice', { align: 'center' });
+        doc.moveDown(1);
+
+        doc.fontSize(12).text('Shipping Address', { underline: true });
+        doc.fontSize(10).text(`${user.firstName} ${user.lastName}`);
+        doc.text(`${address.house}, ${address.city}, ${address.district} - ${address.pin}`);
+        doc.text(`Phone: ${address.phone}`);
+        doc.text(`Email: ${user.email}`);
+        doc.moveDown(1);
+
+        // Order Details Table
+        doc.fontSize(12).text('Item Details', { underline: true });
+        doc.moveDown(0.5);
+
+        // Table Headers
+        doc.font('Helvetica-Bold').fontSize(10);
+        doc.text('Order ID', { continued: true, width: 80 });
+        doc.text('Product Name', { continued: true, width: 150 });
+        doc.text('Quantity', { continued: true, width: 80 });
+        doc.text('Price', { continued: true, width: 80 });
+        if (order.discounted_price) {
+            doc.text('Discount', { continued: true, width: 80 });
         }
-        
-     
+        doc.text('Total', { align: 'left' });
+        doc.moveDown(0.5);
+
+        // Product Rows
+        let totalAmount = 0;
+        order.products.forEach(product => {
+            const productTotal = (product.price - (order.discounted_price || 0)) * product.quantity;
+            totalAmount += productTotal;
+
+            doc.font('Helvetica').fontSize(9);
+            doc.text(`${order.orderNumber}`, { continued: true, width: 80 });
+            doc.text(`${product.name}`, { continued: true, width: 150 });
+            doc.text(`${product.quantity}`, { continued: true, width: 80 });
+            doc.text(`₹${product.price}`, { continued: true, width: 80 });
+            if (order.discounted_price) {
+                doc.text(`₹${order.discounted_price}`, { continued: true, width: 80 });
+            }
+            doc.text(`₹${productTotal}`, { align: 'left' });
+            doc.moveDown(0.5);
+        });
+
+        // Totals Section
+        const totalDiscount = order.discounted_price || 0;
+        const deliveryCharge = order.delivery_charges || 0;
+        const payableAmount = totalAmount + deliveryCharge - totalDiscount;
+
+        doc.moveDown(1);
+        doc.fontSize(10).text(`Total Amount: ₹${totalAmount.toFixed(2)}`, { align: 'right' });
+        if (totalDiscount > 0) {
+            doc.text(`Discount Amount: ₹${totalDiscount.toFixed(2)}`, { align: 'right' });
+        }
+        doc.text(`Delivery Charge: ₹${deliveryCharge.toFixed(2)}`, { align: 'right' });
+        doc.text(`Paid Amount: ₹${payableAmount.toFixed(2)}`, { align: 'right' });
+
+        // Footer Section
+        doc.moveDown(2);
+        doc.fontSize(8).text('Thank you for your purchase!', { align: 'center' });
+        doc.text('Trovup - Your trusted partner in quality.', { align: 'center' });
+
+        // Finalize the PDF and end the stream
+        doc.end();
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        res.status(500).json({ success: false, message: 'Error generating PDF' });
+    }
 };
