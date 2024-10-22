@@ -666,21 +666,22 @@ exports.removeCoupon=async(req,res)=>{
     }
 }
 exports.getInvoice = async (req, res, next) => {
-    const id = req.params.id;
+    try {
 
+    const id = req.params.id;
     const user = await User.findOne({ email: req.session.userAuth });
 
     const order = await Order.findOne({ userId: user._id, _id: id });
 
     let address = order.address[0];
 
-    const invoicesDir = path.join(__dirname, 'invoices');
+   const invoicesDir = path.join(__dirname, 'invoices');
     if (!fs.existsSync(invoicesDir)) {
-        fs.mkdirSync(invoicesDir);
+        fs.mkdirSync(invoicesDir, { recursive: true }); // Use recursive option for nested directories
     }
     const pdfFilePath = path.join(invoicesDir, `invoice_${id}.pdf`);
 
-    try {
+    
         const doc = new PDFDocument({ size: 'A4', margin: 40 });
 
         res.setHeader('Content-Disposition', `attachment; filename=invoice_${id}.pdf`);
@@ -749,12 +750,13 @@ exports.getInvoice = async (req, res, next) => {
         // Footer Section
         doc.moveDown(2);
         doc.fontSize(8).text('Thank you for your purchase!', { align: 'center' });
-        doc.text('Trovup - Your trusted partner in quality.', { align: 'center' });
+        doc.text('trendView - Your trusted partner in quality.', { align: 'center' });
 
         // Finalize the PDF and end the stream
         doc.end();
     } catch (error) {
         console.error('Error generating PDF:', error);
+        console.error(error.stack);
         res.status(500).json({ success: false, message: 'Error generating PDF' });
     }
 };
