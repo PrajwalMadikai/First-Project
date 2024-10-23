@@ -665,7 +665,6 @@ exports.removeCoupon=async(req,res)=>{
         
     }
 }
-
 exports.getInvoice = async (req, res, next) => {
     try {
         console.log("Request params:", req.params);
@@ -724,25 +723,40 @@ exports.getInvoice = async (req, res, next) => {
         doc.text(`Email: ${user.email}`);
         doc.moveDown(1);
 
+        // Calculate total table width and position
+        const pageWidth = doc.page.width - (doc.page.margins.left + doc.page.margins.right);
+        const tableX = doc.page.margins.left;
+
         // Helper functions for table drawing
         const drawTableHeaders = (headers, y) => {
             doc.font('Helvetica-Bold').fontSize(10);
-            let x = doc.page.margins.left;
+            let x = tableX;
+
+            // Draw background for header
+            doc.fillColor('#f4f4f4');
+            doc.rect(x, y, pageWidth, 20).fill();
+            doc.fillColor('#000000');
 
             headers.forEach(header => {
-                doc.text(header.text, x + 5, y + 5, { width: header.width, align: header.align || 'left' });
                 doc.rect(x, y, header.width, 20).stroke();
+                doc.text(header.text, x + 5, y + 5, {
+                    width: header.width - 10,
+                    align: header.align || 'left'
+                });
                 x += header.width;
             });
         };
 
         const drawTableRow = (row, y) => {
             doc.font('Helvetica').fontSize(9);
-            let x = doc.page.margins.left;
+            let x = tableX;
 
             row.forEach(cell => {
-                doc.text(cell.text, x + 5, y + 5, { width: cell.width, align: cell.align || 'left' });
                 doc.rect(x, y, cell.width, 20).stroke();
+                doc.text(cell.text, x + 5, y + 5, {
+                    width: cell.width - 10,
+                    align: cell.align || 'left'
+                });
                 x += cell.width;
             });
         };
@@ -751,65 +765,78 @@ exports.getInvoice = async (req, res, next) => {
         doc.fontSize(12).text('Item Details', { underline: true });
         doc.moveDown(0.5);
 
-        // Define table structure
+        // Define table structure with adjusted widths
         const headers = [
-            { text: 'Order ID', width: 80 },
-            { text: 'Product Name', width: 160 },
-            { text: 'Quantity', width: 60, align: 'center' },
-            { text: 'Price', width: 70, align: 'right' },
-            { text: 'Discount', width: 70, align: 'right' },
-            { text: 'Total', width: 90, align: 'right' }
+            { text: 'Order ID', width: 80, align: 'left' },
+            { text: 'Product Name', width: 160, align: 'left' }, // Adjusted width
+            { text: 'Quantity', width: 70, align: 'center' },
+            { text: 'Price', width: 80, align: 'right' },
+            { text: 'Discount', width: 80, align: 'right' },
+            { text: 'Total', width: 80, align: 'right' }
         ];
 
         drawTableHeaders(headers, doc.y);
-        let y = doc.y + 20;
+        let y = doc.y; // Starting y after headers without extra moveDown
 
         // Product Rows
         let totalAmount = 0;
         order.products.forEach(product => {
-            const productTotal = (product.price - (order.discounted_price || 0)) * product.quantity;
+            const discount = order.discounted_price || 0;
+            const productTotal = (product.price * product.quantity) - discount;
             totalAmount += productTotal;
 
             const row = [
-                { text: order.orderNumber, width: 80 },
-                { text: product.name, width: 160 },
-                { text: product.quantity.toString(), width: 60, align: 'center' },
-                { text: `₹${product.price.toFixed(2)}`, width: 70, align: 'right' },
-                { text: order.discounted_price ? `₹${order.discounted_price.toFixed(2)}` : '₹0', width: 70, align: 'right' },
-                { text: `₹${productTotal.toFixed(2)}`, width: 90, align: 'right' }
+                { text: order.orderNumber, width: 80, align: 'left' },
+                { text: product.name, width: 160, align: 'left' }, // Adjusted width
+                { text: product.quantity.toString(), width: 70, align: 'center' },
+                { text: product.price.toFixed(2), width: 80, align: 'right' },
+                { text: discount.toFixed(2), width: 80, align: 'right' },
+                { text: productTotal.toFixed(2), width: 80, align: 'right' }
             ];
 
             drawTableRow(row, y);
-            y += 20;
+            y += 20; // Maintain spacing but no extra moveDown
 
             // Add new page if content exceeds current page
             if (y > doc.page.height - doc.page.margins.bottom - 100) {
                 doc.addPage();
                 y = doc.page.margins.top;
                 drawTableHeaders(headers, y);
-                y += 20;
+                y += 20; // Position after headers
             }
         });
 
-        // Totals Section
+        // Totals Section with proper alignment
         const totalDiscount = order.discounted_price || 0;
         const deliveryCharge = order.delivery_charges || 0;
         const payableAmount = totalAmount + deliveryCharge - totalDiscount;
 
-        // Align total section properly
-        doc.moveDown(1.5);
-        doc.fontSize(10);
-        const totalSectionX = doc.page.width - doc.page.margins.right - 200;
+        // Draw total section box
+        const totalBoxWidth = 250;
+        const totalBoxX = doc.page.width - doc.page.margins.right - totalBoxWidth;
+        y += 20;
 
-        doc.text(`Total Amount: ₹${totalAmount.toFixed(2)}`, totalSectionX, y + 20, { align: 'right' });
-        if (totalDiscount > 0) {
-            doc.text(`Discount Amount: ₹${totalDiscount.toFixed(2)}`, totalSectionX, y + 40, { align: 'right' });
-        }
-        doc.text(`Delivery Charge: ₹${deliveryCharge.toFixed(2)}`, totalSectionX, y + 60, { align: 'right' });
-        doc.text(`Payable Amount: ₹${payableAmount.toFixed(2)}`, totalSectionX, y + 80, { align: 'right' });
+        // Total section with proper formatting
+        [
+            { label: 'Total Amount:', value: totalAmount },
+            { label: 'Discount Amount:', value: totalDiscount },
+            { label: 'Delivery Charge:', value: deliveryCharge },
+            { label: 'Payable Amount:', value: payableAmount }
+        ].forEach((item, index) => {
+            const yPos = y + (index * 20);
+            doc.font('Helvetica-Bold').fontSize(10);
+            doc.text(item.label, totalBoxX, yPos);
+            doc.font('Helvetica').fontSize(10);
+            doc.text(
+                item.value.toFixed(2),
+                totalBoxX,
+                yPos,
+                { width: totalBoxWidth, align: 'right' }
+            );
+        });
 
         // Footer Section
-        doc.moveDown(3);
+        doc.moveDown(4);
         doc.fontSize(8).text('Thank you for your purchase!', { align: 'center' });
         doc.text('trendView - Your trusted partner in quality.', { align: 'center' });
 
