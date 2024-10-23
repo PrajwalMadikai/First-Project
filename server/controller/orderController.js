@@ -665,19 +665,20 @@ exports.removeCoupon=async(req,res)=>{
         
     }
 }
+
 exports.getInvoice = async (req, res, next) => {
     try {
-        console.log("Request params:", req.params); // Log request parameters
+        console.log("Request params:", req.params);
 
         const id = req.params.id;
-        
+
         // Find user by email from session
         const user = await User.findOne({ email: req.session.userAuth });
         if (!user) {
             console.error("User not found");
             return res.status(404).json({ success: false, message: "User not found" });
         }
-        
+
         // Find the order based on user ID and order ID
         const order = await Order.findOne({ userId: user._id, _id: id });
         if (!order) {
@@ -686,12 +687,12 @@ exports.getInvoice = async (req, res, next) => {
         }
 
         let address = order.address[0];
-        console.log("Address:", address); // Log address for verification
+        console.log("Address:", address);
 
         // Create invoices directory if it doesn't exist
         const invoicesDir = path.join(__dirname, 'invoices');
         if (!fs.existsSync(invoicesDir)) {
-            fs.mkdirSync(invoicesDir, { recursive: true }); // Use recursive option for nested directories
+            fs.mkdirSync(invoicesDir, { recursive: true });
         }
 
         const pdfFilePath = path.join(invoicesDir, `invoice_${id}.pdf`);
@@ -701,12 +702,18 @@ exports.getInvoice = async (req, res, next) => {
         res.setHeader('Content-Disposition', `attachment; filename=invoice_${id}.pdf`);
         res.setHeader('Content-Type', 'application/pdf');
 
-        // Pipe the PDF to a file and the response
         doc.pipe(fs.createWriteStream(pdfFilePath));
         doc.pipe(res);
 
-        // Write PDF content
-        doc.fontSize(16).text('Invoice', { align: 'center' });
+        // Header Section
+        doc.fontSize(16).text('trendView', { align: 'center' });
+        doc.fontSize(8).text('Your trusted partner in quality.', { align: 'center' });
+        doc.moveDown(1);
+        doc.fontSize(14).text('Invoice', { align: 'center' });
+        doc.moveDown(2);
+
+        // Order Information
+        doc.fontSize(10).text(`Order ID: ${order.orderNumber}`);
         doc.moveDown(1);
 
         // Shipping Address
@@ -717,21 +724,45 @@ exports.getInvoice = async (req, res, next) => {
         doc.text(`Email: ${user.email}`);
         doc.moveDown(1);
 
+        // Helper functions for table drawing
+        const drawTableHeaders = (headers, y) => {
+            doc.font('Helvetica-Bold').fontSize(10);
+            let x = doc.page.margins.left;
+
+            headers.forEach(header => {
+                doc.text(header.text, x + 5, y + 5, { width: header.width, align: header.align || 'left' });
+                doc.rect(x, y, header.width, 20).stroke();
+                x += header.width;
+            });
+        };
+
+        const drawTableRow = (row, y) => {
+            doc.font('Helvetica').fontSize(9);
+            let x = doc.page.margins.left;
+
+            row.forEach(cell => {
+                doc.text(cell.text, x + 5, y + 5, { width: cell.width, align: cell.align || 'left' });
+                doc.rect(x, y, cell.width, 20).stroke();
+                x += cell.width;
+            });
+        };
+
         // Order Details Table
         doc.fontSize(12).text('Item Details', { underline: true });
         doc.moveDown(0.5);
 
-        // Table Headers
-        doc.font('Helvetica-Bold').fontSize(10);
-        doc.text('Order ID', { continued: true, width: 80 });
-        doc.text('Product Name', { continued: true, width: 150 });
-        doc.text('Quantity', { continued: true, width: 80 });
-        doc.text('Price', { continued: true, width: 80 });
-        if (order.discounted_price) {
-            doc.text('Discount', { continued: true, width: 80 });
-        }
-        doc.text('Total', { align: 'left' });
-        doc.moveDown(0.5);
+        // Define table structure
+        const headers = [
+            { text: 'Order ID', width: 80 },
+            { text: 'Product Name', width: 160 },
+            { text: 'Quantity', width: 60, align: 'center' },
+            { text: 'Price', width: 70, align: 'right' },
+            { text: 'Discount', width: 70, align: 'right' },
+            { text: 'Total', width: 90, align: 'right' }
+        ];
+
+        drawTableHeaders(headers, doc.y);
+        let y = doc.y + 20;
 
         // Product Rows
         let totalAmount = 0;
@@ -739,16 +770,25 @@ exports.getInvoice = async (req, res, next) => {
             const productTotal = (product.price - (order.discounted_price || 0)) * product.quantity;
             totalAmount += productTotal;
 
-            doc.font('Helvetica').fontSize(9);
-            doc.text(`${order.orderNumber}`, { continued: true, width: 80 });
-            doc.text(`${product.name}`, { continued: true, width: 150 });
-            doc.text(`${product.quantity}`, { continued: true, width: 80 });
-            doc.text(`₹${product.price}`, { continued: true, width: 80 });
-            if (order.discounted_price) {
-                doc.text(`₹${order.discounted_price}`, { continued: true, width: 80 });
+            const row = [
+                { text: order.orderNumber, width: 80 },
+                { text: product.name, width: 160 },
+                { text: product.quantity.toString(), width: 60, align: 'center' },
+                { text: `₹${product.price.toFixed(2)}`, width: 70, align: 'right' },
+                { text: order.discounted_price ? `₹${order.discounted_price.toFixed(2)}` : '₹0', width: 70, align: 'right' },
+                { text: `₹${productTotal.toFixed(2)}`, width: 90, align: 'right' }
+            ];
+
+            drawTableRow(row, y);
+            y += 20;
+
+            // Add new page if content exceeds current page
+            if (y > doc.page.height - doc.page.margins.bottom - 100) {
+                doc.addPage();
+                y = doc.page.margins.top;
+                drawTableHeaders(headers, y);
+                y += 20;
             }
-            doc.text(`₹${productTotal}`, { align: 'left' });
-            doc.moveDown(0.5);
         });
 
         // Totals Section
@@ -756,20 +796,24 @@ exports.getInvoice = async (req, res, next) => {
         const deliveryCharge = order.delivery_charges || 0;
         const payableAmount = totalAmount + deliveryCharge - totalDiscount;
 
-        doc.moveDown(1);
-        doc.fontSize(10).text(`Total Amount: ₹${totalAmount.toFixed(2)}`, { align: 'right' });
+        // Align total section properly
+        doc.moveDown(1.5);
+        doc.fontSize(10);
+        const totalSectionX = doc.page.width - doc.page.margins.right - 200;
+
+        doc.text(`Total Amount: ₹${totalAmount.toFixed(2)}`, totalSectionX, y + 20, { align: 'right' });
         if (totalDiscount > 0) {
-            doc.text(`Discount Amount: ₹${totalDiscount.toFixed(2)}`, { align: 'right' });
+            doc.text(`Discount Amount: ₹${totalDiscount.toFixed(2)}`, totalSectionX, y + 40, { align: 'right' });
         }
-        doc.text(`Delivery Charge: ₹${deliveryCharge.toFixed(2)}`, { align: 'right' });
-        doc.text(`Paid Amount: ₹${payableAmount.toFixed(2)}`, { align: 'right' });
+        doc.text(`Delivery Charge: ₹${deliveryCharge.toFixed(2)}`, totalSectionX, y + 60, { align: 'right' });
+        doc.text(`Payable Amount: ₹${payableAmount.toFixed(2)}`, totalSectionX, y + 80, { align: 'right' });
 
         // Footer Section
-        doc.moveDown(2);
+        doc.moveDown(3);
         doc.fontSize(8).text('Thank you for your purchase!', { align: 'center' });
         doc.text('trendView - Your trusted partner in quality.', { align: 'center' });
 
-        // Finalize the PDF and end the stream
+        // Finalize the PDF
         doc.end();
     } catch (error) {
         console.error('Error generating PDF:', error);

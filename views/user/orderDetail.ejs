@@ -508,8 +508,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
            
           
-          <li class="text text-start">Total Mrp <span class="order_summary" id="">₹ <%= order.totalAmount +order.discounted_price%></span></li>
-          <li class="">Discound On MRP <span class="text-success" id=""> <%= order.discounted_price?'₹'+ order.discounted_price :'' %></span></li>
+          <li class="text text-start">Total Mrp <span class="order_summary" id="">₹ <%= order.totalAmount +order.discounted_price ||0%></span></li>
+          <li class="">Discound On MRP <span class="text-success" id=""> <%= order.discounted_price?'₹'+ order.discounted_price :'No Discount on Product' %></span></li>
           <% if(order.coupon_name){ %>
           <li class="">Coupon Name <span class="text-success" id="cart-total"> <%= order.coupon_name %></span></li>
           <% } %>
@@ -632,7 +632,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
   }
     </script>
-    <div class="footer-container">
+    <div class="footer-container container-fluid">
 <%- include("../partials/mainFooter") %>
     </div>
 <%- include("../partials/homeFooter") %>
