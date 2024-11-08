@@ -508,8 +508,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
            
           
-          <li class="text text-start">Total Mrp <span class="order_summary" id="">₹ <%= order.totalAmount +order.discounted_price ||0%></span></li>
-          <li class="">Discound On MRP <span class="text-success" id=""> <%= order.discounted_price?'₹'+ order.discounted_price :'No Discount on Product' %></span></li>
+          <li class="text text-start">Total MRP <span class="order_summary" id="">₹  <%= (order.totalAmount || 0) + (order.discounted_price || 0) %></span></li>
+          <li class="">Discound On MRP <span class="text-success" id="">₹<%= order.discounted_price  %></span></li>
           <% if(order.coupon_name){ %>
           <li class="">Coupon Name <span class="text-success" id="cart-total"> <%= order.coupon_name %></span></li>
           <% } %>

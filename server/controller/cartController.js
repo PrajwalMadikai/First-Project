@@ -91,6 +91,7 @@ exports.getCart = async (req,res,next) => {
         if (!cart) {
             let newCart = new Cart({
                 user_id: user._id,
+                isCoupon:false
             });
             await Cart.create(newCart);
             cart = newCart;  // Set cart to the newly created cart
