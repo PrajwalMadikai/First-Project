@@ -60,6 +60,7 @@ exports.addCart = async (req,res,next) => {
                   createdAt: Date.now(),
               }],
               total_price: cartPrice,
+              isCoupon:false
           });
       }
 
