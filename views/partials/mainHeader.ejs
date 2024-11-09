@@ -78,21 +78,23 @@
     
                         <!-- Mobile Right-Side Content -->
                         <div class="mobile-right d-flex d-lg-none align-items-center align-items-center mr-3 mb-4">
-                            <a href="#" class="    me-3">
+                            <a href="/wishlist" class="    me-3">
                                 <img src="/public/icons/heart.png" alt="" style="height: 20px;">
                             </a>
-                            <a href="#" class="    me-3">
+                            <a href="/cart-items" class="    me-3">
                                 <img src="/public/icons/shopping-cart.png" alt="" style="height: 20px;">
                             </a>
     
                             <!-- User Icon -->
-                            <a href="#" class="    me-3">
+                            <a href="/profile" class="    me-3">
                                 <img src="/public/icons/user.png" alt="" style="height: 20px;">
                             </a>
                             <% if(!user ) {%>
-                                <button class=" me-2 logIn" type=" "> <a href="/login" style="text-decoration: none;  ">Login</a></button>
+                                <div class="logIn me-2" type="">
+                                    <a href="/login" class="custom-link logIn " >Login</a>
+                                  </div>
                                 <% }else{ %>
-                                    <button class="btn btn-danger  me-2" type="button"> <a href="/logout" style="text-decoration: none;">Logout</a></button>
+                                    <div class="logIn me-2" type=""><a href="/logout" class="logIn custom-link me-2" style="text-decoration: none;">Logout</a> </div>
                             <% } %>
                         </div>
     
